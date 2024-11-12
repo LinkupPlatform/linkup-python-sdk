@@ -1,9 +1,7 @@
 import httpx
 from typing import Literal
 import os
-from dotenv import load_dotenv
 
-# load_dotenv()
 
 
 class LinkupClient:
@@ -14,10 +12,12 @@ class LinkupClient:
     __version__ = "0.1.0"
     __base_url__ = "https://api.linkup.so/v1"
 
-    def __init__(self, api_key: str = os.getenv("LINKUP_API_KEY")):
+    def __init__(self, api_key: str | None = None) -> None:
+        if api_key is None:
+            api_key = os.getenv("LINKUP_API_KEY")
         if not api_key:
-            raise ValueError("LINKUP_API_KEY is not set")
-        
+            raise ValueError("The Linkup API key was not provided")
+
         self.api_key = api_key
         self.client = httpx.Client(base_url=self.__base_url__, headers=self._headers())
 
