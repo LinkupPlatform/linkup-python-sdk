@@ -3,7 +3,7 @@
 [![PyPI version](https://badge.fury.io/py/linkup-python-sdk.svg)](https://pypi.org/project/linkup-python-sdk/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A Python SDK for the [Linkup API](https://api.linkup.so/v1), allowing easy integration with Linkup's services. 🐍
+A Python SDK for the [Linkup API](https://linkup-api.readme.io/reference/getting-started), allowing easy integration with Linkup's services. 🐍
 
 ## 🌟 Features
 
@@ -16,7 +16,7 @@ A Python SDK for the [Linkup API](https://api.linkup.so/v1), allowing easy integ
 Install the SDK using `pip`:
 
 ```bash
-pip install linkup-sdk
+pip install linkup-python-sdk
 ```
 
 ## 🛠️ Usage
