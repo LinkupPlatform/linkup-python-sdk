@@ -27,7 +27,7 @@ setup(
     ],
     keywords="linkup api sdk client search",
     packages=find_packages(),
-    python_requires=">=3.7",
+    python_requires=">=3.8",
     install_requires=[
         "httpx",
         "python-dotenv",
