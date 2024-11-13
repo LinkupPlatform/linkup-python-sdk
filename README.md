@@ -29,17 +29,34 @@ pip install linkup-python-sdk
 
 2. **⚙️ Set the API Key as an Environment Variable:**
 
-	Option 1: Export the LINKUP_API_KEY environment variable in your shell.
+	Option 1: Export the LINKUP_API_KEY environment variable in your shell before using the Python
+  SDK.
 
-	```bash
-	export LINKUP_API_KEY='your_api_key_here'
-	```
+  ```bash
+  export LINKUP_API_KEY='YOUR_LINKUP_API_KEY'
+  ```
 
-	Option 2: Create a .env file in your project directory and add your API key.
+  Option 2: Set the `LINKUP_API_KEY` environment variable directly within Python, using
+  `os.environ` or [python-dotenv](https://github.com/theskumar/python-dotenv) for instance, before
+  creating the Linkup Client.
 
-	```env
-	LINKUP_API_KEY=your_api_key_here
-	```
+  ```python
+  import os
+  from linkup import LinkupClient
+
+  os.environ["LINKUP_API_KEY"] = "YOUR_LINKUP_API_KEY"
+  client = LinkupClient()
+  ...
+  ```
+
+  Option 3: Pass the Linkup API key to the Linkup Client when creating it.
+
+  ```python
+  from linkup import LinkupClient
+
+  client = LinkupClient(api_key="YOUR_LINKUP_API_KEY")
+  ...
+  ```
 
 ## 📋 Example
 
