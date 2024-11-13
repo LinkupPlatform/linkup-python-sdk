@@ -1,8 +1,11 @@
-from linkup import LinkupClient
-import json
+from linkup import LinkupClient, LinkupClientResponse
 
 client = LinkupClient()
 
-result = client.search("What are the 10 major events in the life of Abraham Lincoln ?", depth="deep")
+query: str = "What are the 10 major events in the life of Abraham Lincoln ?"
+response: LinkupClientResponse = client.search(query=query, depth="deep")
 
-print(json.dumps(result, indent=4))
+print(f"Linkup answer:\n{response.content}\n")
+print("Sources:\n")
+for source in response.sources:
+    print(f"{source.name} ({source.url}): {source.snippet}\n")

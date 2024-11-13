@@ -44,14 +44,15 @@ pip install linkup-python-sdk
 ## 📋 Example
 
 ```python
-from linkup.client import LinkupClient
+from linkup.client import LinkupClient, LinkupClientResponse
 
 # Initialize the client (API key is automatically read from the environment variable)
 client = LinkupClient()
 
 # Perform a search query
-results = client.search("example query", depth="standard")
+reponse: LinkupClientResponse = client.search("example query", depth="standard")
 
 # Print the results
-print(results)
+print(f"Content: {response.content}")
+print(f"Sources: {response.sources}")
 ```

@@ -1,3 +1,3 @@
-from .client import LinkupClient
+from .client import LinkupClient, LinkupClientResponse, LinkupClientSource
 
-__all__ = ["LinkupClient"]
+__all__ = ["LinkupClient", "LinkupClientResponse", "LinkupClientSource"]
