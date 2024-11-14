@@ -16,7 +16,7 @@ A Python SDK for the [Linkup API](https://linkup-api.readme.io/reference/getting
 Install the SDK using `pip`:
 
 ```bash
-pip install linkup-python-sdk
+pip install linkup-sdk
 ```
 
 ## 🛠️ Usage
