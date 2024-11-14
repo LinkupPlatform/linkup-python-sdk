@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 # Read the contents of README.md for the long_description
 with open("README.md", "r", encoding="utf-8") as fh:
@@ -30,5 +30,6 @@ setup(
     python_requires=">=3.8",
     install_requires=[
         "httpx",
+        "pydantic",
     ],
 )

@@ -36,15 +36,17 @@ pip install linkup-python-sdk
    export LINKUP_API_KEY='YOUR_LINKUP_API_KEY'
    ```
 
-   Option 2: Set the `LINKUP_API_KEY` environment variable directly within Python, using
-   `os.environ` or [python-dotenv](https://github.com/theskumar/python-dotenv) for instance, before
-   creating the Linkup Client.
+   Option 2: Set the `LINKUP_API_KEY` environment variable directly within Python, using for
+   instance `os.environ` or [python-dotenv](https://github.com/theskumar/python-dotenv) with a
+   `.env` file (python-dotenv needs to be installed separately in this case), before creating the
+   Linkup Client.
 
    ```python
    import os
    from linkup import LinkupClient
 
    os.environ["LINKUP_API_KEY"] = "YOUR_LINKUP_API_KEY"
+   # or dotenv.load_dotenv()
    client = LinkupClient()
    ...
    ```
@@ -61,15 +63,15 @@ pip install linkup-python-sdk
 ## 📋 Example
 
 ```python
-from linkup.client import LinkupClient, LinkupClientResponse
+from linkup import LinkupClient
 
-# Initialize the client (API key is automatically read from the environment variable)
+# Initialize the client (API key can be read from the environment variable or passed as an argument)
 client = LinkupClient()
 
 # Perform a search query
-reponse: LinkupClientResponse = client.search("example query", depth="standard")
+response = client.search(query="What are the 3 major events in the life of Abraham Lincoln ?")
 
-# Print the results
-print(f"Content: {response.content}")
-print(f"Sources: {response.sources}")
+print(response)
 ```
+
+See the `examples/` directory for more examples and documentation.
