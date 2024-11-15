@@ -71,6 +71,9 @@ client = LinkupClient()
 # Perform a search query
 search_response = client.search(
     query="What are the 3 major events in the life of Abraham Lincoln?",
+    depth="standard",  # or "deep"
+    output_type="searchResults",  # or "sourcedAnswer" or "structured"
+    structured_output_schema=None,  # must be filled if output_type is "structured"
 )
 print(search_response)
 

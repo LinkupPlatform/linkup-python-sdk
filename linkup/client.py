@@ -95,7 +95,7 @@ class LinkupClient:
         self,
         query: str,
         depth: Literal["standard", "deep"] = "standard",
-        output_type: Literal["sourcedAnswer", "searchResults", "structured"] = "sourcedAnswer",
+        output_type: Literal["searchResults", "sourcedAnswer", "structured"] = "searchResults",
         structured_output_schema: Type[BaseModel] | str | None = None,
     ) -> Any:
         """
@@ -106,18 +106,18 @@ class LinkupClient:
             depth: The depth of the search, "standard" (default) or "deep". Asking for a standard
                 depth will make the API respond quickly. In contrast, asking for a deep depth will
                 take longer for the API to respond, but results will be spot on.
-            output_type: The type of output which is expected: "sourcedAnswer" (default) will output
-                the answer to the query and sources supporting it, "searchResults" will output raw
-                search results, and "structured" will base the output on the format provided in
+            output_type: The type of output which is expected: "searchResults" (default) will output
+                raw search results, "sourcedAnswer" will output the answer to the query and sources
+                supporting it, and "structured" will base the output on the format provided in
                 structured_output_schema.
             structured_output_schema: If output_type is "structured", specify the schema of the
                 output. Supported formats are a pydantic.BaseModel or a string representing a
                 valid object JSON schema.
 
         Returns:
-            The Linkup API search result. If output_type is "sourcedAnswer", the result will be a
-            linkup.LinkupSourcedAnswer. If output_type is "searchResults", the result will be a
-            linkup.LinkupSearchResults. If output_type is "structured", the result will be either an
+            The Linkup API search result. If output_type is "searchResults", the result will be a
+            linkup.LinkupSearchResults. If output_type is "sourcedAnswer", the result will be a
+            linkup.LinkupSourcedAnswer. If output_type is "structured", the result will be either an
             instance of the provided pydantic.BaseModel, or an arbitrary data structure, following
             structured_output_schema.
 
@@ -185,10 +185,10 @@ class LinkupClient:
 
         response_data: Any = response.json()
         output_base_model: Type[BaseModel] | None = None
-        if output_type == "sourcedAnswer":
-            output_base_model = LinkupSourcedAnswer
-        elif output_type == "searchResults":
+        if output_type == "searchResults":
             output_base_model = LinkupSearchResults
+        elif output_type == "sourcedAnswer":
+            output_base_model = LinkupSourcedAnswer
         elif (
             output_type == "structured"
             and not isinstance(structured_output_schema, (str, type(None)))
