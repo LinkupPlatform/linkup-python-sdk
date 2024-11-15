@@ -69,9 +69,17 @@ from linkup import LinkupClient
 client = LinkupClient()
 
 # Perform a search query
-response = client.search(query="What are the 3 major events in the life of Abraham Lincoln ?")
+search_response = client.search(
+    query="What are the 3 major events in the life of Abraham Lincoln?",
+)
+print(search_response)
 
-print(response)
+# Get access to our Premium Sources Partners content
+content_response = client.content(
+    url="https://www.thebridgechronicle.com/news/capgemini-employees-walk-together-in-celebration-"
+    "of-indias-independence",
+)
+print(content_response)
 ```
 
 See the `examples/` directory for more examples and documentation.
