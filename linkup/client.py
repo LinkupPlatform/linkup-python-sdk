@@ -5,6 +5,7 @@ from typing import Any, Literal, Type
 import httpx
 from pydantic import BaseModel, ValidationError
 
+from linkup.errors import LinkupAuthenticationError, LinkupInvalidRequestError, LinkupUnknownError
 from linkup.types import LinkupSearchResults, LinkupSourcedAnswer
 
 
@@ -34,8 +35,19 @@ class LinkupClient:
             "User-Agent": self._user_agent(),
         }
 
-    def _request(self, method: str, path: str, **kwargs) -> httpx.Response:
-        return self.client.request(method, path, **kwargs)
+    def _request(self, method: str, url: str, **kwargs) -> httpx.Response:
+        response: httpx.Response = self.client.request(method=method, url=url, **kwargs)
+        if response.status_code == 200:
+            return response
+
+        message: Any = response.json().get("message", "No message provided")
+        message = ", ".join(message) if isinstance(message, list) else str(message)
+        if response.status_code == 400:
+            raise LinkupInvalidRequestError(message)
+        elif response.status_code == 403:
+            raise LinkupAuthenticationError(message)
+        else:
+            raise LinkupUnknownError(f"Status code: {response.status_code}", message)
 
     def search(
         self,
@@ -90,16 +102,12 @@ class LinkupClient:
                     f"Unexpected structured_output_schema type: '{type(structured_output_schema)}'"
                 )
 
-        try:
-            response: httpx.Response = self._request(
-                method="GET",
-                path="/search",
-                params=params,
-                timeout=None,
-            )
-        except Exception as e:
-            raise Exception(f"Something went wrong during the API call: '{e}'")
-
+        response: httpx.Response = self._request(
+            method="GET",
+            url="/search",
+            params=params,
+            timeout=None,
+        )
         response_data: Any = response.json()
 
         output_base_model: Type[BaseModel] | None = None
