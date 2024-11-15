@@ -1,7 +1,7 @@
 """
-The structured search feature of the Linkup API makes possible to require any arbitrary and
-documented data structure to the Linkup API, using JSON schema, in order to steer the Linkup API in
-any direction.
+With output_type set to "structured", the Linkup search can be used to require any arbitrary data
+structure, based on a JSON schema or a pydantic.BaseModel. This can be used with a well defined and
+documented schema to steer the Linkup search in any direction.
 """
 
 from linkup import LinkupClient
@@ -25,5 +25,4 @@ response = client.search(
     output_type="structured",
     structured_output_schema=Events,
 )
-
 print(response)
