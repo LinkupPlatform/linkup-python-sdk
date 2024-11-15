@@ -3,7 +3,7 @@ import os
 from typing import Any, Literal, Type
 
 import httpx
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 
 from linkup.errors import LinkupAuthenticationError, LinkupInvalidRequestError, LinkupUnknownError
 from linkup.types import LinkupSearchResults, LinkupSourcedAnswer
@@ -36,18 +36,11 @@ class LinkupClient:
         }
 
     def _request(self, method: str, url: str, **kwargs) -> httpx.Response:
-        response: httpx.Response = self.client.request(method=method, url=url, **kwargs)
-        if response.status_code == 200:
-            return response
-
-        message: Any = response.json().get("message", "No message provided")
-        message = ", ".join(message) if isinstance(message, list) else str(message)
-        if response.status_code == 400:
-            raise LinkupInvalidRequestError(message)
-        elif response.status_code == 403:
-            raise LinkupAuthenticationError(message)
-        else:
-            raise LinkupUnknownError(f"Status code: {response.status_code}", message)
+        return self.client.request(
+            method=method,
+            url=url,
+            **kwargs,
+        )
 
     def search(
         self,
@@ -78,8 +71,18 @@ class LinkupClient:
             linkup.LinkupSearchResults. If output_type is "structured", the result will be either an
             instance of the provided pydantic.BaseModel, or an arbitrary data structure, following
             structured_output_schema.
+
+        Raises:
+            ValueError: If structured_output_schema is not provided when output_type is
+                "structured".
+            TypeError: If structured_output_schema is not a string or a pydantic.BaseModel when
+                output_type is "structured".
+            LinkupInvalidRequestError: If structured_output_schema doesn't represent a valid object
+                JSON schema when output_type is "structured".
+            LinkupAuthenticationError: If the Linkup API key is invalid, or there is no more credit
+                available.
         """
-        params = dict(
+        params: dict[str, str] = dict(
             q=query,
             depth=depth,
             outputType=output_type,
@@ -108,8 +111,30 @@ class LinkupClient:
             params=params,
             timeout=None,
         )
-        response_data: Any = response.json()
+        if response.status_code != 200:
+            message: Any = response.json().get("message", "No message provided")
+            message = ", ".join(message) if isinstance(message, list) else str(message)
+            if response.status_code == 400:
+                raise LinkupInvalidRequestError(
+                    "The Linkup API returned an invalid request error (400). Make sure the "
+                    "parameters you are using are valid, (e.g. structured_output_schema must be a "
+                    "valid object schema if output_type is 'structured'), and you are using the "
+                    "latest version of the Python SDK.\n"
+                    f"Original error message: {message}."
+                )
+            elif response.status_code == 403:
+                raise LinkupAuthenticationError(
+                    "The Linkup API returned an authentication error (403). Make sure your API "
+                    "key is valid, and you haven't exhausted your credits.\n"
+                    f"Original error message: {message}."
+                )
+            else:
+                raise LinkupUnknownError(
+                    f"The Linkup API returned an unknown error ({response.status_code}).\n"
+                    f"Original error message: ({message})."
+                )
 
+        response_data: Any = response.json()
         output_base_model: Type[BaseModel] | None = None
         if output_type == "sourcedAnswer":
             output_base_model = LinkupSourcedAnswer
@@ -124,11 +149,4 @@ class LinkupClient:
 
         if output_base_model is None:
             return response_data
-
-        try:
-            return output_base_model.model_validate(response_data)
-        except ValidationError:
-            raise ValueError(
-                f"The response data format doesn't match the required format of "
-                f"'{output_base_model}': '{response_data}'"
-            )
+        return output_base_model.model_validate(response_data)
