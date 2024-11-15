@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="linkup-sdk",
-    version="0.1.3",
+    version="0.1.4",
     author="LINKUP TECHNOLOGIES",
     author_email="contact@linkup.so",
     description="A Python Client SDK for the Linkup API",
