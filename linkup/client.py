@@ -6,7 +6,7 @@ import httpx
 from pydantic import BaseModel
 
 from linkup.errors import LinkupAuthenticationError, LinkupInvalidRequestError, LinkupUnknownError
-from linkup.types import LinkupSearchResults, LinkupSourcedAnswer
+from linkup.types import LinkupContent, LinkupSearchResults, LinkupSourcedAnswer
 
 
 class LinkupClient:
@@ -41,6 +41,55 @@ class LinkupClient:
             url=url,
             **kwargs,
         )
+
+    def content(self, url: str) -> LinkupContent:
+        """
+        Retrieve the content of a webpage of one of our Premium Sources Partners.
+
+        Args:
+            url: The URL of the webpage.
+
+        Returns:
+            The content of the webpage.
+
+        Raises:
+            LinkupInvalidRequestError: If the URL is not a valid URL in our Premium Sources
+                Partners.
+            LinkupAuthenticationError: If the Linkup API key is invalid, or there is no more credit
+                available.
+        """
+        params: dict[str, str] = dict(url=url)
+
+        response: httpx.Response = self._request(
+            method="GET",
+            url="/content",
+            params=params,
+            timeout=None,
+        )
+        if response.status_code != 200:
+            message: Any = response.json().get("message", "No message provided")
+            message = ", ".join(message) if isinstance(message, list) else str(message)
+            if response.status_code == 400:
+                raise LinkupInvalidRequestError(
+                    "The Linkup API returned an invalid request error (400). Make sure the URL you "
+                    "requested is a valid URL in our Premium Sources Partners, and you are using "
+                    "the latest version of the Python SDK.\n"
+                    f"Original error message: {message}."
+                )
+            elif response.status_code == 403:
+                raise LinkupAuthenticationError(
+                    "The Linkup API returned an authentication error (403). Make sure your API "
+                    "key is valid, and you haven't exhausted your credits.\n"
+                    f"Original error message: {message}."
+                )
+            else:
+                raise LinkupUnknownError(
+                    f"The Linkup API returned an unknown error ({response.status_code}).\n"
+                    f"Original error message: ({message})."
+                )
+
+        response_data: Any = response.json()
+        return LinkupContent.model_validate(response_data)
 
     def search(
         self,
