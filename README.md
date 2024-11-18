@@ -85,4 +85,5 @@ content_response = client.content(
 print(content_response)
 ```
 
-See the `examples/` directory for more examples and documentation.
+See the `examples/` directory for more examples and documentation, for instance on how to use Linkup
+entrypoints using asynchronous functions.
