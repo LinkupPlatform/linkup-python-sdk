@@ -24,7 +24,6 @@ class LinkupClient:
             raise ValueError("The Linkup API key was not provided")
 
         self.api_key = api_key
-        self.client = httpx.Client(base_url=self.__base_url__, headers=self._headers())
 
     def _user_agent(self) -> str:
         return f"Linkup-Python/{self.__version__}"
@@ -36,11 +35,12 @@ class LinkupClient:
         }
 
     def _request(self, method: str, url: str, **kwargs) -> httpx.Response:
-        return self.client.request(
-            method=method,
-            url=url,
-            **kwargs,
-        )
+        with httpx.Client(base_url=self.__base_url__, headers=self._headers()) as client:
+            return client.request(
+                method=method,
+                url=url,
+                **kwargs,
+            )
 
     def content(self, url: str) -> LinkupContent:
         """
