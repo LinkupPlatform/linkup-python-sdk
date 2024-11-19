@@ -28,13 +28,13 @@ class LinkupClient:
     def _user_agent(self) -> str:
         return f"Linkup-Python/{self.__version__}"
 
-    def _headers(self) -> dict:
+    def _headers(self) -> dict[str, str]:
         return {
             "Authorization": f"Bearer {self.api_key}",
             "User-Agent": self._user_agent(),
         }
 
-    def _request(self, method: str, url: str, **kwargs) -> httpx.Response:
+    def _request(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
         with httpx.Client(base_url=self.__base_url__, headers=self._headers()) as client:
             return client.request(
                 method=method,
@@ -42,7 +42,7 @@ class LinkupClient:
                 **kwargs,
             )
 
-    async def _async_request(self, method: str, url: str, **kwargs) -> httpx.Response:
+    async def _async_request(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
         async with httpx.AsyncClient(base_url=self.__base_url__, headers=self._headers()) as client:
             return await client.request(
                 method=method,
