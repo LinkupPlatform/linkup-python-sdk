@@ -25,64 +25,6 @@ class LinkupClient:
 
         self.api_key = api_key
 
-    def _user_agent(self) -> str:  # pragma: no cover
-        return f"Linkup-Python/{self.__version__}"
-
-    def _headers(self) -> dict[str, str]:  # pragma: no cover
-        return {
-            "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": self._user_agent(),
-        }
-
-    def _request(
-        self,
-        method: str,
-        url: str,
-        **kwargs: Any,
-    ) -> httpx.Response:  # pragma: no cover
-        with httpx.Client(base_url=self.__base_url__, headers=self._headers()) as client:
-            return client.request(
-                method=method,
-                url=url,
-                **kwargs,
-            )
-
-    async def _async_request(
-        self,
-        method: str,
-        url: str,
-        **kwargs: Any,
-    ) -> httpx.Response:  # pragma: no cover
-        async with httpx.AsyncClient(base_url=self.__base_url__, headers=self._headers()) as client:
-            return await client.request(
-                method=method,
-                url=url,
-                **kwargs,
-            )
-
-    def _raise_content_error(self, response: httpx.Response) -> None:
-        message: Any = response.json().get("message", "No message provided")
-        message = ", ".join(message) if isinstance(message, list) else str(message)
-
-        if response.status_code == 400:
-            raise LinkupInvalidRequestError(
-                "The Linkup API returned an invalid request error (400). Make sure the URL you "
-                "requested is a valid URL in our Premium Sources Partners, and you are using "
-                "the latest version of the Python SDK.\n"
-                f"Original error message: {message}."
-            )
-        elif response.status_code == 403:
-            raise LinkupAuthenticationError(
-                "The Linkup API returned an authentication error (403). Make sure your API "
-                "key is valid, and you haven't exhausted your credits.\n"
-                f"Original error message: {message}."
-            )
-        else:
-            raise LinkupUnknownError(
-                f"The Linkup API returned an unknown error ({response.status_code}).\n"
-                f"Original error message: ({message})."
-            )
-
     def content(self, url: str) -> LinkupContent:
         """
         Retrieve the content of a webpage of one of our Premium Sources Partners.
@@ -108,7 +50,7 @@ class LinkupClient:
             timeout=None,
         )
         if response.status_code != 200:
-            self._raise_content_error(response=response)
+            self._raise_linkup_error(response=response)
 
         return LinkupContent.model_validate(response.json())
 
@@ -137,88 +79,9 @@ class LinkupClient:
             timeout=None,
         )
         if response.status_code != 200:
-            self._raise_content_error(response)
+            self._raise_linkup_error(response)
 
         return LinkupContent.model_validate(response.json())
-
-    def _get_search_params(
-        self,
-        query: str,
-        depth: Literal["standard", "deep"],
-        output_type: Literal["searchResults", "sourcedAnswer", "structured"],
-        structured_output_schema: Type[BaseModel] | str | None,
-    ) -> dict[str, str]:
-        params: dict[str, str] = dict(
-            q=query,
-            depth=depth,
-            outputType=output_type,
-        )
-
-        if output_type == "structured":
-            if structured_output_schema is None:
-                raise ValueError(
-                    "A structured_output_schema must be provided when using "
-                    "output_type='structured'"
-                )
-
-            if isinstance(structured_output_schema, str):
-                params["structuredOutputSchema"] = structured_output_schema
-            elif issubclass(structured_output_schema, BaseModel):
-                json_schema: dict[str, Any] = structured_output_schema.model_json_schema()
-                params["structuredOutputSchema"] = json.dumps(json_schema)
-            else:
-                raise TypeError(
-                    f"Unexpected structured_output_schema type: '{type(structured_output_schema)}'"
-                )
-
-        return params
-
-    def _raise_search_error(self, response: httpx.Response) -> None:
-        message: Any = response.json().get("message", "No message provided")
-        message = ", ".join(message) if isinstance(message, list) else str(message)
-
-        if response.status_code == 400:
-            raise LinkupInvalidRequestError(
-                "The Linkup API returned an invalid request error (400). Make sure the "
-                "parameters you are using are valid, (e.g. structured_output_schema must be a "
-                "valid object schema if output_type is 'structured'), and you are using the "
-                "latest version of the Python SDK.\n"
-                f"Original error message: {message}."
-            )
-        elif response.status_code == 403:
-            raise LinkupAuthenticationError(
-                "The Linkup API returned an authentication error (403). Make sure your API "
-                "key is valid, and you haven't exhausted your credits.\n"
-                f"Original error message: {message}."
-            )
-        else:
-            raise LinkupUnknownError(
-                f"The Linkup API returned an unknown error ({response.status_code}).\n"
-                f"Original error message: ({message})."
-            )
-
-    def _validate_search_response(
-        self,
-        response: httpx.Response,
-        output_type: Literal["searchResults", "sourcedAnswer", "structured"],
-        structured_output_schema: Type[BaseModel] | str | None,
-    ) -> Any:
-        response_data: Any = response.json()
-        output_base_model: Type[BaseModel] | None = None
-        if output_type == "searchResults":
-            output_base_model = LinkupSearchResults
-        elif output_type == "sourcedAnswer":
-            output_base_model = LinkupSourcedAnswer
-        elif (
-            output_type == "structured"
-            and not isinstance(structured_output_schema, (str, type(None)))
-            and issubclass(structured_output_schema, BaseModel)
-        ):
-            output_base_model = structured_output_schema
-
-        if output_base_model is None:
-            return response_data
-        return output_base_model.model_validate(response_data)
 
     def search(
         self,
@@ -274,7 +137,7 @@ class LinkupClient:
             timeout=None,
         )
         if response.status_code != 200:
-            self._raise_search_error(response)
+            self._raise_linkup_error(response)
 
         return self._validate_search_response(
             response=response,
@@ -336,10 +199,123 @@ class LinkupClient:
             timeout=None,
         )
         if response.status_code != 200:
-            self._raise_search_error(response)
+            self._raise_linkup_error(response)
 
         return self._validate_search_response(
             response=response,
             output_type=output_type,
             structured_output_schema=structured_output_schema,
         )
+
+    def _user_agent(self) -> str:  # pragma: no cover
+        return f"Linkup-Python/{self.__version__}"
+
+    def _headers(self) -> dict[str, str]:  # pragma: no cover
+        return {
+            "Authorization": f"Bearer {self.api_key}",
+            "User-Agent": self._user_agent(),
+        }
+
+    def _request(
+        self,
+        method: str,
+        url: str,
+        **kwargs: Any,
+    ) -> httpx.Response:  # pragma: no cover
+        with httpx.Client(base_url=self.__base_url__, headers=self._headers()) as client:
+            return client.request(
+                method=method,
+                url=url,
+                **kwargs,
+            )
+
+    async def _async_request(
+        self,
+        method: str,
+        url: str,
+        **kwargs: Any,
+    ) -> httpx.Response:  # pragma: no cover
+        async with httpx.AsyncClient(base_url=self.__base_url__, headers=self._headers()) as client:
+            return await client.request(
+                method=method,
+                url=url,
+                **kwargs,
+            )
+
+    def _raise_linkup_error(self, response: httpx.Response) -> None:
+        message: Any = response.json().get("message", "No message provided")
+        message = ", ".join(message) if isinstance(message, list) else str(message)
+
+        if response.status_code == 400:
+            raise LinkupInvalidRequestError(
+                "The Linkup API returned an invalid request error (400). Make sure the parameters "
+                "you used are valid (correct values, types, mandatory parameters, etc.) and you "
+                "are using the latest version of the Python SDK.\n"
+                f"Original error message: {message}."
+            )
+        elif response.status_code == 403:
+            raise LinkupAuthenticationError(
+                "The Linkup API returned an authentication error (403). Make sure your API "
+                "key is valid and you haven't exhausted your credits.\n"
+                f"Original error message: {message}."
+            )
+        else:
+            raise LinkupUnknownError(
+                f"The Linkup API returned an unknown error ({response.status_code}).\n"
+                f"Original error message: ({message})."
+            )
+
+    def _get_search_params(
+        self,
+        query: str,
+        depth: Literal["standard", "deep"],
+        output_type: Literal["searchResults", "sourcedAnswer", "structured"],
+        structured_output_schema: Type[BaseModel] | str | None,
+    ) -> dict[str, str]:
+        params: dict[str, str] = dict(
+            q=query,
+            depth=depth,
+            outputType=output_type,
+        )
+
+        if output_type == "structured":
+            if structured_output_schema is None:
+                raise ValueError(
+                    "A structured_output_schema must be provided when using "
+                    "output_type='structured'"
+                )
+
+            if isinstance(structured_output_schema, str):
+                params["structuredOutputSchema"] = structured_output_schema
+            elif issubclass(structured_output_schema, BaseModel):
+                json_schema: dict[str, Any] = structured_output_schema.model_json_schema()
+                params["structuredOutputSchema"] = json.dumps(json_schema)
+            else:
+                raise TypeError(
+                    f"Unexpected structured_output_schema type: '{type(structured_output_schema)}'"
+                )
+
+        return params
+
+    def _validate_search_response(
+        self,
+        response: httpx.Response,
+        output_type: Literal["searchResults", "sourcedAnswer", "structured"],
+        structured_output_schema: Type[BaseModel] | str | None,
+    ) -> Any:
+        response_data: Any = response.json()
+        output_base_model: Type[BaseModel] | None = None
+        if output_type == "searchResults":
+            output_base_model = LinkupSearchResults
+        elif output_type == "sourcedAnswer":
+            output_base_model = LinkupSourcedAnswer
+        elif (
+            output_type == "structured"
+            and not isinstance(structured_output_schema, (str, type(None)))
+            and issubclass(structured_output_schema, BaseModel)
+        ):
+            output_base_model = structured_output_schema
+
+        if output_base_model is None:
+            return response_data
+        return output_base_model.model_validate(response_data)
