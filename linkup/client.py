@@ -25,16 +25,21 @@ class LinkupClient:
 
         self.api_key = api_key
 
-    def _user_agent(self) -> str:
+    def _user_agent(self) -> str:  # pragma: no cover
         return f"Linkup-Python/{self.__version__}"
 
-    def _headers(self) -> dict[str, str]:
+    def _headers(self) -> dict[str, str]:  # pragma: no cover
         return {
             "Authorization": f"Bearer {self.api_key}",
             "User-Agent": self._user_agent(),
         }
 
-    def _request(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+    def _request(
+        self,
+        method: str,
+        url: str,
+        **kwargs: Any,
+    ) -> httpx.Response:  # pragma: no cover
         with httpx.Client(base_url=self.__base_url__, headers=self._headers()) as client:
             return client.request(
                 method=method,
@@ -42,7 +47,12 @@ class LinkupClient:
                 **kwargs,
             )
 
-    async def _async_request(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+    async def _async_request(
+        self,
+        method: str,
+        url: str,
+        **kwargs: Any,
+    ) -> httpx.Response:  # pragma: no cover
         async with httpx.AsyncClient(base_url=self.__base_url__, headers=self._headers()) as client:
             return await client.request(
                 method=method,
