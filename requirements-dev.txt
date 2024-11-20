@@ -4,4 +4,5 @@ pytest
 pytest-asyncio
 pytest-cov
 pytest-mock
+setuptools
 types-setuptools
