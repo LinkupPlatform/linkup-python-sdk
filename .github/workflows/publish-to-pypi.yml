@@ -1,10 +1,10 @@
 name: Publish Python 🐍 distribution 📦 to PyPI
 
-on: 
+on:
   push:
-    tags:        
+    tags:
       - '*'
-  
+
 jobs:
   build:
     name: Build distribution 📦
