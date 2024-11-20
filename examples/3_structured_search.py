@@ -4,6 +4,8 @@ structure, based on a JSON schema or a pydantic.BaseModel. This can be used with
 documented schema to steer the Linkup search in any direction.
 """
 
+from typing import List
+
 from linkup import LinkupClient
 from pydantic import BaseModel, Field
 
@@ -14,7 +16,7 @@ class Event(BaseModel):
 
 
 class Events(BaseModel):
-    events: list[Event] = Field(description="The list of events")
+    events: List[Event] = Field(description="The list of events")
 
 
 client = LinkupClient()
