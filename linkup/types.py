@@ -1,3 +1,5 @@
+from typing import List
+
 from pydantic import BaseModel
 
 
@@ -35,7 +37,7 @@ class LinkupSearchResults(BaseModel):
         results: The results of the Linkup search.
     """
 
-    results: list[LinkupSearchResult]
+    results: List[LinkupSearchResult]
 
 
 class LinkupSource(BaseModel):
@@ -63,4 +65,4 @@ class LinkupSourcedAnswer(BaseModel):
     """
 
     answer: str
-    sources: list[LinkupSource]
+    sources: List[LinkupSource]

@@ -6,12 +6,13 @@ duration.
 
 import asyncio
 import time
+from typing import List
 
 from linkup import LinkupClient
 
 client = LinkupClient()
 
-queries: list[str] = [
+queries: List[str] = [
     "What are the 3 major events in the life of Abraham Lincoln?",
     "What are the 3 major events in the life of George Washington?",
 ]

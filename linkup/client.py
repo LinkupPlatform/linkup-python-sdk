@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Any, Literal, Type
+from typing import Any, Dict, Literal, Optional, Type, Union
 
 import httpx
 from pydantic import BaseModel
@@ -17,7 +17,7 @@ class LinkupClient:
     __version__ = "0.1.0"
     __base_url__ = "https://api.linkup.so/v1"
 
-    def __init__(self, api_key: str | None = None) -> None:
+    def __init__(self, api_key: Optional[str] = None) -> None:
         if api_key is None:
             api_key = os.getenv("LINKUP_API_KEY")
         if not api_key:
@@ -41,7 +41,7 @@ class LinkupClient:
             LinkupAuthenticationError: If the Linkup API key is invalid, or there is no more credit
                 available.
         """
-        params: dict[str, str] = dict(url=url)
+        params: Dict[str, str] = dict(url=url)
 
         response: httpx.Response = self._request(
             method="GET",
@@ -70,7 +70,7 @@ class LinkupClient:
             LinkupAuthenticationError: If the Linkup API key is invalid, or there is no more credit
                 available.
         """
-        params: dict[str, str] = dict(url=url)
+        params: Dict[str, str] = dict(url=url)
 
         response: httpx.Response = await self._async_request(
             method="GET",
@@ -88,7 +88,7 @@ class LinkupClient:
         query: str,
         depth: Literal["standard", "deep"] = "standard",
         output_type: Literal["searchResults", "sourcedAnswer", "structured"] = "searchResults",
-        structured_output_schema: Type[BaseModel] | str | None = None,
+        structured_output_schema: Union[Type[BaseModel], str, None] = None,
     ) -> Any:
         """
         Search for a query in the Linkup API.
@@ -123,7 +123,7 @@ class LinkupClient:
             LinkupAuthenticationError: If the Linkup API key is invalid, or there is no more credit
                 available.
         """
-        params: dict[str, str] = self._get_search_params(
+        params: Dict[str, str] = self._get_search_params(
             query=query,
             depth=depth,
             output_type=output_type,
@@ -150,7 +150,7 @@ class LinkupClient:
         query: str,
         depth: Literal["standard", "deep"] = "standard",
         output_type: Literal["searchResults", "sourcedAnswer", "structured"] = "searchResults",
-        structured_output_schema: Type[BaseModel] | str | None = None,
+        structured_output_schema: Union[Type[BaseModel], str, None] = None,
     ) -> Any:
         """
         Asynchronously search for a query in the Linkup API.
@@ -185,7 +185,7 @@ class LinkupClient:
             LinkupAuthenticationError: If the Linkup API key is invalid, or there is no more credit
                 available.
         """
-        params: dict[str, str] = self._get_search_params(
+        params: Dict[str, str] = self._get_search_params(
             query=query,
             depth=depth,
             output_type=output_type,
@@ -210,7 +210,7 @@ class LinkupClient:
     def _user_agent(self) -> str:  # pragma: no cover
         return f"Linkup-Python/{self.__version__}"
 
-    def _headers(self) -> dict[str, str]:  # pragma: no cover
+    def _headers(self) -> Dict[str, str]:  # pragma: no cover
         return {
             "Authorization": f"Bearer {self.api_key}",
             "User-Agent": self._user_agent(),
@@ -270,9 +270,9 @@ class LinkupClient:
         query: str,
         depth: Literal["standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
-        structured_output_schema: Type[BaseModel] | str | None,
-    ) -> dict[str, str]:
-        params: dict[str, str] = dict(
+        structured_output_schema: Union[Type[BaseModel], str, None],
+    ) -> Dict[str, str]:
+        params: Dict[str, str] = dict(
             q=query,
             depth=depth,
             outputType=output_type,
@@ -288,7 +288,7 @@ class LinkupClient:
             if isinstance(structured_output_schema, str):
                 params["structuredOutputSchema"] = structured_output_schema
             elif issubclass(structured_output_schema, BaseModel):
-                json_schema: dict[str, Any] = structured_output_schema.model_json_schema()
+                json_schema: Dict[str, Any] = structured_output_schema.model_json_schema()
                 params["structuredOutputSchema"] = json.dumps(json_schema)
             else:
                 raise TypeError(
@@ -301,10 +301,10 @@ class LinkupClient:
         self,
         response: httpx.Response,
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
-        structured_output_schema: Type[BaseModel] | str | None,
+        structured_output_schema: Union[Type[BaseModel], str, None],
     ) -> Any:
         response_data: Any = response.json()
-        output_base_model: Type[BaseModel] | None = None
+        output_base_model: Optional[Type[BaseModel]] = None
         if output_type == "searchResults":
             output_base_model = LinkupSearchResults
         elif output_type == "sourcedAnswer":

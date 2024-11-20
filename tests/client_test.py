@@ -1,5 +1,5 @@
 import json
-from typing import Any, Type
+from typing import Any, List, Type, Union
 
 import pytest
 from httpx import Response
@@ -22,7 +22,7 @@ class Company(BaseModel):
     name: str
     creation_date: str
     website_url: str
-    founders_names: list[str]
+    founders_names: List[str]
 
 
 def test_content(mocker: MockerFixture, client: LinkupClient) -> None:
@@ -296,7 +296,7 @@ def test_search_sourced_answer(mocker: MockerFixture, client: LinkupClient) -> N
 def test_search_structured_search(
     mocker: MockerFixture,
     client: LinkupClient,
-    structured_output_schema: Type[BaseModel] | str,
+    structured_output_schema: Union[Type[BaseModel], str],
 ) -> None:
     query = "What is Linkup, the new French AI company?"
     depth = "standard"
@@ -532,7 +532,7 @@ async def test_async_search_sourced_answer(mocker: MockerFixture, client: Linkup
 async def test_async_search_structured_search(
     mocker: MockerFixture,
     client: LinkupClient,
-    structured_output_schema: Type[BaseModel] | str,
+    structured_output_schema: Union[Type[BaseModel], str],
 ) -> None:
     query = "What is Linkup, the new French AI company?"
     depth = "standard"
