@@ -8,3 +8,18 @@ asyncio_default_fixture_loop_scope = "function"
 
 [tool.coverage.report]
 exclude_also = ["raise ValueError", "raise TypeError"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+
+[tool.ruff.lint]
+select = [
+  "E", # pycodestyle
+  "F", # pyflakes
+  "I", # isort
+  "S", # flake8-bandit
+]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"tests/*_test.py" = ["S101"] # Use of assert detected

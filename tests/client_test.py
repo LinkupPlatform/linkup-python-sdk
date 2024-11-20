@@ -3,6 +3,9 @@ from typing import Any, List, Type, Union
 
 import pytest
 from httpx import Response
+from pydantic import BaseModel
+from pytest_mock import MockerFixture
+
 from linkup import (
     LinkupAuthenticationError,
     LinkupClient,
@@ -14,8 +17,6 @@ from linkup import (
     LinkupSourcedAnswer,
     LinkupUnknownError,
 )
-from pydantic import BaseModel
-from pytest_mock import MockerFixture
 
 
 class Company(BaseModel):
