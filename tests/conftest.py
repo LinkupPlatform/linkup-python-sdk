@@ -1,6 +1,7 @@
 import os
 
 import pytest
+
 from linkup import LinkupClient
 
 

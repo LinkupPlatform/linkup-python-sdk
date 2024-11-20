@@ -6,8 +6,9 @@ documented schema to steer the Linkup search in any direction.
 
 from typing import List
 
-from linkup import LinkupClient
 from pydantic import BaseModel, Field
+
+from linkup import LinkupClient
 
 
 class Event(BaseModel):
