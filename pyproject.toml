@@ -3,7 +3,6 @@ exclude = ['^tests/']
 strict = true
 
 [tool.pytest.ini_options]
-addopts = "--cov=linkup/ --cov-report term-missing"
 asyncio_default_fixture_loop_scope = "function"
 
 [tool.coverage.report]
@@ -22,4 +21,4 @@ select = [
 ]
 
 [tool.ruff.lint.extend-per-file-ignores]
-"tests/*_test.py" = ["S101"] # Use of assert detected
+"tests/**/*_test.py" = ["S101"] # Use of assert detected
