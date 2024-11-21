@@ -1,7 +1,6 @@
 """
-By default, the Linkup search outputs a raw search results, which can then be re-used in different
-use-cases, for instance in a RAG system. This is controlled by the output_type parameter, which
-defaults to "searchResults".
+The Linkup search can output raw search results which can then be re-used in different use-cases,
+for instance in a RAG system, with the output_type parameter set to "searchResults".
 """
 
 from linkup import LinkupClient
