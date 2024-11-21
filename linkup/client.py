@@ -86,8 +86,8 @@ class LinkupClient:
     def search(
         self,
         query: str,
-        depth: Literal["standard", "deep"] = "standard",
-        output_type: Literal["searchResults", "sourcedAnswer", "structured"] = "searchResults",
+        depth: Literal["standard", "deep"],
+        output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[Type[BaseModel], str, None] = None,
     ) -> Any:
         """
@@ -95,11 +95,10 @@ class LinkupClient:
 
         Args:
             query: The search query.
-            depth: The depth of the search, "standard" (default) or "deep". Asking for a standard
-                depth will make the API respond quickly. In contrast, asking for a deep depth will
-                take longer for the API to respond, but results will be spot on.
-            output_type: The type of output which is expected: "searchResults" (default) will output
-                raw search results, "sourcedAnswer" will output the answer to the query and sources
+            depth: The depth of the search. Can be either "standard", for a straighforward and
+                fast search, or "deep" for a more powerful agentic workflow.
+            output_type: The type of output which is expected: "searchResults" will output raw
+                search results, "sourcedAnswer" will output the answer to the query and sources
                 supporting it, and "structured" will base the output on the format provided in
                 structured_output_schema.
             structured_output_schema: If output_type is "structured", specify the schema of the
@@ -108,16 +107,14 @@ class LinkupClient:
 
         Returns:
             The Linkup API search result. If output_type is "searchResults", the result will be a
-            linkup.LinkupSearchResults. If output_type is "sourcedAnswer", the result will be a
-            linkup.LinkupSourcedAnswer. If output_type is "structured", the result will be either an
-            instance of the provided pydantic.BaseModel, or an arbitrary data structure, following
-            structured_output_schema.
+                linkup.LinkupSearchResults. If output_type is "sourcedAnswer", the result will be a
+                linkup.LinkupSourcedAnswer. If output_type is "structured", the result will be
+                either an instance of the provided pydantic.BaseModel, or an arbitrary data
+                structure, following structured_output_schema.
 
         Raises:
-            ValueError: If structured_output_schema is not provided when output_type is
-                "structured".
-            TypeError: If structured_output_schema is not a string or a pydantic.BaseModel when
-                output_type is "structured".
+            TypeError: If structured_output_schema is not provided or is not a string or a
+                pydantic.BaseModel when output_type is "structured".
             LinkupInvalidRequestError: If structured_output_schema doesn't represent a valid object
                 JSON schema when output_type is "structured".
             LinkupAuthenticationError: If the Linkup API key is invalid, or there is no more credit
@@ -148,8 +145,8 @@ class LinkupClient:
     async def async_search(
         self,
         query: str,
-        depth: Literal["standard", "deep"] = "standard",
-        output_type: Literal["searchResults", "sourcedAnswer", "structured"] = "searchResults",
+        depth: Literal["standard", "deep"],
+        output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[Type[BaseModel], str, None] = None,
     ) -> Any:
         """
@@ -157,11 +154,10 @@ class LinkupClient:
 
         Args:
             query: The search query.
-            depth: The depth of the search, "standard" (default) or "deep". Asking for a standard
-                depth will make the API respond quickly. In contrast, asking for a deep depth will
-                take longer for the API to respond, but results will be spot on.
-            output_type: The type of output which is expected: "searchResults" (default) will output
-                raw search results, "sourcedAnswer" will output the answer to the query and sources
+            depth: The depth of the search. Can be either "standard", for a straighforward and
+                fast search, or "deep" for a more powerful agentic workflow.
+            output_type: The type of output which is expected: "searchResults" will output raw
+                search results, "sourcedAnswer" will output the answer to the query and sources
                 supporting it, and "structured" will base the output on the format provided in
                 structured_output_schema.
             structured_output_schema: If output_type is "structured", specify the schema of the
@@ -170,16 +166,14 @@ class LinkupClient:
 
         Returns:
             The Linkup API search result. If output_type is "searchResults", the result will be a
-            linkup.LinkupSearchResults. If output_type is "sourcedAnswer", the result will be a
-            linkup.LinkupSourcedAnswer. If output_type is "structured", the result will be either an
-            instance of the provided pydantic.BaseModel, or an arbitrary data structure, following
-            structured_output_schema.
+                linkup.LinkupSearchResults. If output_type is "sourcedAnswer", the result will be a
+                linkup.LinkupSourcedAnswer. If output_type is "structured", the result will be
+                either an instance of the provided pydantic.BaseModel, or an arbitrary data
+                structure, following structured_output_schema.
 
         Raises:
-            ValueError: If structured_output_schema is not provided when output_type is
-                "structured".
-            TypeError: If structured_output_schema is not a string or a pydantic.BaseModel when
-                output_type is "structured".
+            TypeError: If structured_output_schema is not provided or is not a string or a
+                pydantic.BaseModel when output_type is "structured".
             LinkupInvalidRequestError: If structured_output_schema doesn't represent a valid object
                 JSON schema when output_type is "structured".
             LinkupAuthenticationError: If the Linkup API key is invalid, or there is no more credit
@@ -280,7 +274,7 @@ class LinkupClient:
 
         if output_type == "structured":
             if structured_output_schema is None:
-                raise ValueError(
+                raise TypeError(
                     "A structured_output_schema must be provided when using "
                     "output_type='structured'"
                 )
