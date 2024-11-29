@@ -5,7 +5,13 @@ from typing import Any, Dict, Literal, Optional, Type, Union
 import httpx
 from pydantic import BaseModel
 
-from linkup.errors import LinkupAuthenticationError, LinkupInvalidRequestError, LinkupUnknownError
+from linkup.errors import (
+    LinkupAuthenticationError,
+    LinkupInsufficientCreditError,
+    LinkupInvalidRequestError,
+    LinkupNoResultError,
+    LinkupUnknownError,
+)
 from linkup.types import LinkupContent, LinkupSearchResults, LinkupSourcedAnswer
 
 
@@ -15,15 +21,17 @@ class LinkupClient:
     """
 
     __version__ = "0.1.0"
-    __base_url__ = "https://api.linkup.so/v1"
 
-    def __init__(self, api_key: Optional[str] = None) -> None:
+    def __init__(
+        self, api_key: Optional[str] = None, base_url: str = "https://api.linkup.so/v1"
+    ) -> None:
         if api_key is None:
             api_key = os.getenv("LINKUP_API_KEY")
         if not api_key:
             raise ValueError("The Linkup API key was not provided")
 
-        self.api_key = api_key
+        self.__api_key = api_key
+        self.__base_url = base_url
 
     def content(self, url: str) -> LinkupContent:
         """
@@ -206,7 +214,7 @@ class LinkupClient:
 
     def _headers(self) -> Dict[str, str]:  # pragma: no cover
         return {
-            "Authorization": f"Bearer {self.api_key}",
+            "Authorization": f"Bearer {self.__api_key}",
             "User-Agent": self._user_agent(),
         }
 
@@ -216,7 +224,7 @@ class LinkupClient:
         url: str,
         **kwargs: Any,
     ) -> httpx.Response:  # pragma: no cover
-        with httpx.Client(base_url=self.__base_url__, headers=self._headers()) as client:
+        with httpx.Client(base_url=self.__base_url, headers=self._headers()) as client:
             return client.request(
                 method=method,
                 url=url,
@@ -229,7 +237,7 @@ class LinkupClient:
         url: str,
         **kwargs: Any,
     ) -> httpx.Response:  # pragma: no cover
-        async with httpx.AsyncClient(base_url=self.__base_url__, headers=self._headers()) as client:
+        async with httpx.AsyncClient(base_url=self.__base_url, headers=self._headers()) as client:
             return await client.request(
                 method=method,
                 url=url,
@@ -241,16 +249,28 @@ class LinkupClient:
         message = ", ".join(message) if isinstance(message, list) else str(message)
 
         if response.status_code == 400:
-            raise LinkupInvalidRequestError(
-                "The Linkup API returned an invalid request error (400). Make sure the parameters "
-                "you used are valid (correct values, types, mandatory parameters, etc.) and you "
-                "are using the latest version of the Python SDK.\n"
-                f"Original error message: {message}."
-            )
+            if message == "The query did not yield any result":
+                raise LinkupNoResultError(
+                    "The Linkup API returned a no result error (400). Try rephrasing you query.\n"
+                    f"Original error message: {message}."
+                )
+            else:
+                raise LinkupInvalidRequestError(
+                    "The Linkup API returned an invalid request error (400). Make sure the "
+                    "parameters you used are valid (correct values, types, mandatory parameters, "
+                    "etc.) and you are using the latest version of the Python SDK.\n"
+                    f"Original error message: {message}."
+                )
         elif response.status_code == 403:
             raise LinkupAuthenticationError(
                 "The Linkup API returned an authentication error (403). Make sure your API "
-                "key is valid and you haven't exhausted your credits.\n"
+                "key is valid.\n"
+                f"Original error message: {message}."
+            )
+        elif response.status_code == 429:
+            raise LinkupInsufficientCreditError(
+                "The Linkup API returned an insufficient credit error (429). Make sure "
+                "you haven't exhausted your credits.\n"
                 f"Original error message: {message}."
             )
         else:

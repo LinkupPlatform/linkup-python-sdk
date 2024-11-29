@@ -17,6 +17,7 @@ from linkup import (
     LinkupSourcedAnswer,
     LinkupUnknownError,
 )
+from linkup.errors import LinkupInsufficientCreditError, LinkupNoResultError
 
 
 class Company(BaseModel):
@@ -353,6 +354,18 @@ def test_search_authentication_error(mocker: MockerFixture, client: LinkupClient
         client.search(query=query, depth=depth, output_type=output_type)
 
 
+def test_search_insufficient_credit_error(mocker: MockerFixture, client: LinkupClient) -> None:
+    mocker.patch(
+        "linkup.client.LinkupClient._request",
+        return_value=Response(
+            status_code=429,
+            content=b"{}",
+        ),
+    )
+    with pytest.raises(LinkupInsufficientCreditError):
+        client.search(query="foo", depth="standard", output_type="searchResults")
+
+
 def test_search_structured_search_invalid_request(
     mocker: MockerFixture,
     client: LinkupClient,
@@ -394,6 +407,18 @@ def test_search_structured_search_invalid_request(
             output_type=output_type,
             structured_output_schema=structured_output_schema,
         )
+
+
+def test_search_no_result_error(mocker: MockerFixture, client: LinkupClient) -> None:
+    mocker.patch(
+        "linkup.client.LinkupClient._request",
+        return_value=Response(
+            status_code=400,
+            content=b'{"message": "The query did not yield any result"}',
+        ),
+    )
+    with pytest.raises(LinkupNoResultError):
+        client.search(query="foo", depth="standard", output_type="searchResults")
 
 
 def test_search_unknown_error(mocker: MockerFixture, client: LinkupClient) -> None:
@@ -593,6 +618,18 @@ async def test_async_search_authentication_error(
 
 
 @pytest.mark.asyncio
+async def test_async_search_insufficient_credit_error(
+    mocker: MockerFixture, client: LinkupClient
+) -> None:
+    mocker.patch(
+        "linkup.client.LinkupClient._async_request",
+        return_value=Response(status_code=429, content=b"{}"),
+    )
+    with pytest.raises(LinkupInsufficientCreditError):
+        await client.async_search(query="foo", depth="standard", output_type="searchResults")
+
+
+@pytest.mark.asyncio
 async def test_async_search_structured_search_invalid_request(
     mocker: MockerFixture,
     client: LinkupClient,
@@ -634,6 +671,19 @@ async def test_async_search_structured_search_invalid_request(
             output_type=output_type,
             structured_output_schema=structured_output_schema,
         )
+
+
+@pytest.mark.asyncio
+async def test_async_search_no_result_error(mocker: MockerFixture, client: LinkupClient) -> None:
+    mocker.patch(
+        "linkup.client.LinkupClient._async_request",
+        return_value=Response(
+            status_code=400,
+            content=b'{"message": "The query did not yield any result"}',
+        ),
+    )
+    with pytest.raises(LinkupNoResultError):
+        await client.async_search(query="foo", depth="standard", output_type="searchResults")
 
 
 @pytest.mark.asyncio
