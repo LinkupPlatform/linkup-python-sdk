@@ -28,7 +28,7 @@ setup(
     keywords="linkup api sdk client search",
     packages=find_packages(),
     package_data={"linkup": ["py.typed"]},
-    python_requires=">=3.8",
+    python_requires=">=3.9",
     install_requires=[
         "httpx",
         "pydantic",
