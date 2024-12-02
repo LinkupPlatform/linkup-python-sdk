@@ -17,14 +17,24 @@ from linkup.types import LinkupSearchResults, LinkupSourcedAnswer
 
 
 class LinkupClient:
-    """
-    The Linkup Client class.
+    """The Linkup Client class.
+
+    The LinkupClient class provides functions and other tools to interact with the Linkup API in
+    Python, making possible to perform search queries based on the Linkup API sources, that is the
+    web and the Linkup Premium Partner sources, using natural language.
+
+    Args:
+        api_key: The API key for the Linkup API. If None, the API key will be read from the
+            environment variable `LINKUP_API_KEY`.
+        base_url: The base URL for the Linkup API. In general, there's no need to change this.
     """
 
     __version__ = __version__
 
     def __init__(
-        self, api_key: Optional[str] = None, base_url: str = "https://api.linkup.so/v1"
+        self,
+        api_key: Optional[str] = None,
+        base_url: str = "https://api.linkup.so/v1",
     ) -> None:
         if api_key is None:
             api_key = os.getenv("LINKUP_API_KEY")
