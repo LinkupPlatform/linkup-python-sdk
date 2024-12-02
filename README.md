@@ -62,7 +62,7 @@ pip install linkup-sdk
    ...
    ```
 
-## 📋 Example
+### 📋 Examples
 
 All search queries can be used with two very different modes:
 
@@ -72,7 +72,7 @@ All search queries can be used with two very different modes:
   but it will be able to solve more complex queries (e.g. "What is the company profile of LangChain
   accross the last few years, and how does it compare to its concurrents?")
 
-### 📝 Standard Search Query
+#### 📝 Standard Search Query
 
 ```python
 from linkup import LinkupClient
@@ -90,7 +90,7 @@ search_response = client.search(
 print(search_response)
 ```
 
-### 📚 More Examples
+#### 📚 More Examples
 
 See the `examples/` directory for more examples and documentation, for instance on how to use Linkup
 entrypoints using asynchronous functions.
