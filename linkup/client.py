@@ -20,7 +20,7 @@ class LinkupClient:
     The Linkup Client class.
     """
 
-    __version__ = "0.1.8"
+    __version__ = "0.2.0"
 
     def __init__(
         self, api_key: Optional[str] = None, base_url: str = "https://api.linkup.so/v1"
