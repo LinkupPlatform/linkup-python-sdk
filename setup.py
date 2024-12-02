@@ -1,12 +1,28 @@
+from typing import Optional
+
 from setuptools import find_packages, setup
 
-# Read the contents of README.md for the long_description
-with open("README.md", "r", encoding="utf-8") as fh:
-    long_description = fh.read()
+# Read the content of linkup/_version.py for the version, without importing the module
+# This assumes the version is defined as `__version__ = "x.y.z"` (support type hint or inline
+# comment at the end of the line)
+version: Optional[str] = None
+with open("linkup/_version.py", "r") as version_file:
+    for line in version_file.readlines():
+        if line.startswith("__version__"):
+            version = line.split("=")[1].split("#")[0].strip().strip('"').strip("'")
+            break
+if version is None:
+    raise ValueError("Could not determine the version from linkup/_version.py")
+
+
+# Read the content of README.md for the long description
+with open("README.md", "r", encoding="utf-8") as readme_file:
+    long_description = readme_file.read()
+
 
 setup(
     name="linkup-sdk",
-    version="0.2.0",
+    version=version,
     author="LINKUP TECHNOLOGIES",
     author_email="contact@linkup.so",
     description="A Python Client SDK for the Linkup API",
