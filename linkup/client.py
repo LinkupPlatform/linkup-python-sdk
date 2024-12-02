@@ -12,7 +12,7 @@ from linkup.errors import (
     LinkupNoResultError,
     LinkupUnknownError,
 )
-from linkup.types import LinkupContent, LinkupSearchResults, LinkupSourcedAnswer
+from linkup.types import LinkupSearchResults, LinkupSourcedAnswer
 
 
 class LinkupClient:
@@ -32,64 +32,6 @@ class LinkupClient:
 
         self.__api_key = api_key
         self.__base_url = base_url
-
-    def content(self, url: str) -> LinkupContent:
-        """
-        Retrieve the content of a webpage of one of our Premium Sources Partners.
-
-        Args:
-            url: The URL of the webpage.
-
-        Returns:
-            The content of the webpage.
-
-        Raises:
-            LinkupInvalidRequestError: If the URL is not a valid URL in our Premium Sources
-                Partners.
-            LinkupAuthenticationError: If the Linkup API key is invalid, or there is no more credit
-                available.
-        """
-        params: Dict[str, str] = dict(url=url)
-
-        response: httpx.Response = self._request(
-            method="GET",
-            url="/content",
-            params=params,
-            timeout=None,
-        )
-        if response.status_code != 200:
-            self._raise_linkup_error(response=response)
-
-        return LinkupContent.model_validate(response.json())
-
-    async def async_content(self, url: str) -> LinkupContent:
-        """
-        Asynchronously retrieve the content of a webpage of one of our Premium Sources Partners.
-
-        Args:
-            url: The URL of the webpage.
-
-        Returns:
-            The content of the webpage.
-
-        Raises:
-            LinkupInvalidRequestError: If the URL is not a valid URL in our Premium Sources
-                Partners.
-            LinkupAuthenticationError: If the Linkup API key is invalid, or there is no more credit
-                available.
-        """
-        params: Dict[str, str] = dict(url=url)
-
-        response: httpx.Response = await self._async_request(
-            method="GET",
-            url="/content",
-            params=params,
-            timeout=None,
-        )
-        if response.status_code != 200:
-            self._raise_linkup_error(response)
-
-        return LinkupContent.model_validate(response.json())
 
     def search(
         self,
