@@ -3,17 +3,6 @@ from typing import List
 from pydantic import BaseModel
 
 
-class LinkupContent(BaseModel):
-    """
-    The content of a webpage of one of our Premium Sources Partners.
-
-    Attributes:
-        content: The content of the webpage.
-    """
-
-    content: str
-
-
 class LinkupSearchResult(BaseModel):
     """
     A result in a Linkup search.

@@ -90,22 +90,6 @@ search_response = client.search(
 print(search_response)
 ```
 
-### 📰 Content Access
-
-```python
-from linkup import LinkupClient
-
-# Initialize the client (API key can be read from the environment variable or passed as an argument)
-client = LinkupClient()
-
-# Get access to our Premium Sources Partners content
-content_response = client.content(
-    url="https://www.thebridgechronicle.com/news/capgemini-employees-walk-together-in-celebration-"
-    "of-indias-independence",
-)
-print(content_response)
-```
-
 ### 📚 More Examples
 
 See the `examples/` directory for more examples and documentation, for instance on how to use Linkup
