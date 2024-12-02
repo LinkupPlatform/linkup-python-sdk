@@ -20,8 +20,7 @@ class LinkupNoResultError(Exception):
 class LinkupAuthenticationError(Exception):
     """Authenfication error, raised when the Linkup API returns a 403 status code.
 
-    It is returned when there is an authenfication issue, typically when the API key is not valid
-    or when the user has exhausted its credits.
+    It is returned when there is an authenfication issue, typically when the API key is not valid.
     """
 
     pass

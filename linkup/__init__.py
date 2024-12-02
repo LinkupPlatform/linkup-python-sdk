@@ -3,7 +3,9 @@ from .client import (
 )
 from .errors import (
     LinkupAuthenticationError,
+    LinkupInsufficientCreditError,
     LinkupInvalidRequestError,
+    LinkupNoResultError,
     LinkupUnknownError,
 )
 from .types import (
@@ -19,6 +21,8 @@ __all__ = [
     "LinkupAuthenticationError",
     "LinkupInvalidRequestError",
     "LinkupUnknownError",
+    "LinkupNoResultError",
+    "LinkupInsufficientCreditError",
     "LinkupContent",
     "LinkupSearchResult",
     "LinkupSearchResults",
