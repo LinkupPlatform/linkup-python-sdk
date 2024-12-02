@@ -125,8 +125,9 @@ class LinkupClient:
                 pydantic.BaseModel when output_type is "structured".
             LinkupInvalidRequestError: If structured_output_schema doesn't represent a valid object
                 JSON schema when output_type is "structured".
-            LinkupAuthenticationError: If the Linkup API key is invalid, or there is no more credit
-                available.
+            LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupInsufficientCreditError: If you have run out of credit.
+            LinkupNoResultError: If the search query did not yield any result.
         """
         params: Dict[str, str] = self._get_search_params(
             query=query,
