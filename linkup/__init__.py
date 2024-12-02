@@ -1,3 +1,4 @@
+from ._version import __version__
 from .client import (
     LinkupClient,
 )
@@ -16,6 +17,7 @@ from .types import (
 )
 
 __all__ = [
+    "__version__",
     "LinkupClient",
     "LinkupAuthenticationError",
     "LinkupInvalidRequestError",
