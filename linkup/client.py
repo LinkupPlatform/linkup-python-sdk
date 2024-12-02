@@ -293,13 +293,7 @@ class LinkupClient:
             outputType=output_type,
         )
 
-        if output_type == "structured":
-            if structured_output_schema is None:
-                raise TypeError(
-                    "A structured_output_schema must be provided when using "
-                    "output_type='structured'"
-                )
-
+        if output_type == "structured" and structured_output_schema is not None:
             if isinstance(structured_output_schema, str):
                 params["structuredOutputSchema"] = structured_output_schema
             elif issubclass(structured_output_schema, BaseModel):
