@@ -3,9 +3,9 @@ from typing import List
 from pydantic import BaseModel
 
 
-class LinkupSearchResult(BaseModel):
+class LinkupSearchTextResult(BaseModel):
     """
-    A result in a Linkup search.
+    A text result from a Linkup search.
 
     Attributes:
         name: The name of the search result.
@@ -18,6 +18,19 @@ class LinkupSearchResult(BaseModel):
     content: str
 
 
+class LinkupSearchImageResult(BaseModel):
+    """
+    An image result from a Linkup search.
+
+    Attributes:
+        name: The name of the image result.
+        url: The URL of the image result.
+    """
+
+    name: str
+    url: str
+
+
 class LinkupSearchResults(BaseModel):
     """
     The results of the Linkup search.
@@ -26,7 +39,7 @@ class LinkupSearchResults(BaseModel):
         results: The results of the Linkup search.
     """
 
-    results: List[LinkupSearchResult]
+    results: List[LinkupSearchTextResult | LinkupSearchImageResult]
 
 
 class LinkupSource(BaseModel):

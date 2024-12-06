@@ -10,8 +10,9 @@ from .errors import (
     LinkupUnknownError,
 )
 from .types import (
-    LinkupSearchResult,
+    LinkupSearchImageResult,
     LinkupSearchResults,
+    LinkupSearchTextResult,
     LinkupSource,
     LinkupSourcedAnswer,
 )
@@ -24,6 +25,8 @@ __all__ = [
     "LinkupUnknownError",
     "LinkupNoResultError",
     "LinkupInsufficientCreditError",
+    "LinkupSearchTextResult",
+    "LinkupSearchImageResult",
     "LinkupSearchResult",
     "LinkupSearchResults",
     "LinkupSource",
