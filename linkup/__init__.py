@@ -27,7 +27,6 @@ __all__ = [
     "LinkupInsufficientCreditError",
     "LinkupSearchTextResult",
     "LinkupSearchImageResult",
-    "LinkupSearchResult",
     "LinkupSearchResults",
     "LinkupSource",
     "LinkupSourcedAnswer",

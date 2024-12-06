@@ -10,13 +10,13 @@ from linkup import (
     LinkupAuthenticationError,
     LinkupClient,
     LinkupInvalidRequestError,
-    LinkupSearchResult,
     LinkupSearchResults,
     LinkupSource,
     LinkupSourcedAnswer,
     LinkupUnknownError,
 )
 from linkup.errors import LinkupInsufficientCreditError, LinkupNoResultError
+from linkup.types import LinkupSearchImageResult, LinkupSearchTextResult
 
 
 class Company(BaseModel):
@@ -27,113 +27,74 @@ class Company(BaseModel):
 
 
 def test_search_search_results(mocker: MockerFixture, client: LinkupClient) -> None:
-    query = "What is Linkup, the new French AI company?"
-    depth = "standard"
-    output_type = "searchResults"
+    content = b"""
+    {
+      "results": [
+        {
+          "type": "text",
+          "name": "foo",
+          "url": "https://foo.bar/baz",
+          "content": "foo bar baz"
+        },
+        {
+          "type": "image",
+          "name": "foo",
+          "url": "https://foo.bar/baz"
+        }
+      ]
+    }
+    """
 
     mocker.patch(
         "linkup.client.LinkupClient._request",
         return_value=Response(
             status_code=200,
-            content=b'{"results":[{"name":"Paris-based Linkup raises \xe2\x82\xac3 million aiming '
-            b'to revolutionise ethical ...","url":"https://www.eu-startups.com/2024/11/paris-'
-            b"based-linkup-raises-e3-million-aiming-to-revolutionise-ethical-and-efficient-web-"
-            b'access-for-ai/","content":"Linkup, a French startup providing AI with fast, ethical '
-            b"access to online content, has secured \xe2\x82\xac3 million supported by leading "
-            b"investors, including Seedcamp, Axeleo Capital, Motier Ventures, and a network of "
-            b"prominent tech and media industry angels to further develop its sustainable "
-            b"alternative to web scraping and address the challenges posed by AI-driven web "
-            b'traffic."},{"name":"French Tech : Linkup, le moteur de recherche d\xc3\xa9di'
-            b'\xc3\xa9 aux intelligences ...","url":"https://www.midilibre.fr/2024/11/18/french-'
-            b"tech-linkup-le-moteur-de-recherche-dedie-aux-intelligences-artificielles-12331232."
-            b'php","content":"La start-up Linkup, fond\xc3\xa9e d\xc3\xa9but 2024 par Philippe '
-            b"Mizrahi, Denis Charrier et Boris Toledano, propose une avanc\xc3\xa9e r\xc3\xa9elle "
-            b"dans l\xe2\x80\x99acc\xc3\xa8s des intelligences artificielles (IA) au contenu de "
-            b'web."}]}',
+            content=content,
         ),
     )
 
-    response: Any = client.search(query=query, depth=depth, output_type=output_type)
+    response: Any = client.search(query="foo", depth="standard", output_type="searchResults")
 
     assert isinstance(response, LinkupSearchResults)
-    assert isinstance(response.results, list)
-    assert response.results
-    assert isinstance(response.results[0], LinkupSearchResult)
-    assert (
-        response.results[0].name
-        == "Paris-based Linkup raises €3 million aiming to revolutionise ethical ..."
-    )
-    assert (
-        response.results[0].url
-        == "https://www.eu-startups.com/2024/11/paris-based-linkup-raises-e3-million-aiming-to-revolutionise-ethical-and-efficient-web-access-for-ai/"
-    )
-    assert (
-        response.results[0].content
-        == "Linkup, a French startup providing AI with fast, ethical access to online content, has "
-        "secured €3 million supported by leading investors, including Seedcamp, Axeleo Capital, "
-        "Motier Ventures, and a network of prominent tech and media industry angels to further "
-        "develop its sustainable alternative to web scraping and address the challenges posed by "
-        "AI-driven web traffic."
-    )
+    assert isinstance(response.results[0], LinkupSearchTextResult)
+    assert response.results[0].name == "foo"
+    assert response.results[0].url == "https://foo.bar/baz"
+    assert response.results[0].content == "foo bar baz"
+    assert isinstance(response.results[1], LinkupSearchImageResult)
+    assert response.results[1].name == "foo"
+    assert response.results[1].url == "https://foo.bar/baz"
 
 
 def test_search_sourced_answer(mocker: MockerFixture, client: LinkupClient) -> None:
-    query = "What is Linkup, the new French AI company?"
-    depth = "standard"
-    output_type = "sourcedAnswer"
+    content = b"""
+    {
+      "answer": "foo bar baz",
+      "sources": [
+        {
+          "name": "foo",
+          "url": "https://foo.bar/baz",
+          "snippet": "foo bar baz qux"
+        }
+      ]
+    }
+    """
 
     mocker.patch(
         "linkup.client.LinkupClient._request",
         return_value=Response(
             status_code=200,
-            content=b'{"answer":"Linkup is a Paris-based startup that focuses on providing AI with '
-            b"fast and ethical access to online content. The company aims to create a sustainable "
-            b"alternative to web scraping by addressing the challenges posed by AI-driven web "
-            b"traffic. Linkup has recently raised \xe2\x82\xac3 million to further develop its "
-            b"platform, which serves as an intermediary between AI technologies and content "
-            b'publishers, allowing AI to access content in a way that is legal and efficient.",'
-            b'"sources":[{"name":"Paris-based Linkup raises \xe2\x82\xac3 million aiming to '
-            b'revolutionise ethical ...","url":"https://www.eu-startups.com/2024/11/paris-based-'
-            b"linkup-raises-e3-million-aiming-to-revolutionise-ethical-and-efficient-web-access-"
-            b'for-ai/","snippet":"Linkup, a French startup providing AI with fast, ethical access '
-            b"to online content, has secured \xe2\x82\xac3 million supported by leading "
-            b'investors."},{"name":"Linkup l\xc3\xa8ve 3 millions d\xe2\x80\x99euros pour faire '
-            b'le pont entre IA et les ...","url":"https://www.frenchweb.fr/linkup-leve-3-millions-'
-            b"deuros-pour-faire-le-pont-entre-ia-et-les-editeurs-de-contenus-dans-un-monde-post-"
-            b'webscraping/449941","snippet":"Linkup, une start-up parisienne fond\xc3\xa9e en '
-            b"2024, veut proposer un acc\xc3\xa8s maitris\xc3\xa9 et l\xc3\xa9gal aux diff"
-            b'\xc3\xa9rents protagonistes."}]}',
+            content=content,
         ),
     )
 
-    response: Any = client.search(query=query, depth=depth, output_type=output_type)
+    response: Any = client.search(query="foo", depth="standard", output_type="sourcedAnswer")
 
     assert isinstance(response, LinkupSourcedAnswer)
-    assert (
-        response.answer
-        == "Linkup is a Paris-based startup that focuses on providing AI with fast and ethical "
-        "access to online content. The company aims to create a sustainable alternative to web "
-        "scraping by addressing the challenges posed by AI-driven web traffic. Linkup has recently "
-        "raised €3 million to further develop its platform, which serves as an intermediary "
-        "between AI technologies and content publishers, allowing AI to access content in a way "
-        "that is legal and efficient."
-    )
-    assert isinstance(response.sources, list)
-    assert response.sources
     assert isinstance(response.sources[0], LinkupSource)
-    assert (
-        response.sources[0].name
-        == "Paris-based Linkup raises €3 million aiming to revolutionise ethical ..."
-    )
-    assert (
-        response.sources[0].url
-        == "https://www.eu-startups.com/2024/11/paris-based-linkup-raises-e3-million-aiming-to-revolutionise-ethical-and-efficient-web-access-for-ai/"
-    )
-    assert (
-        response.sources[0].snippet
-        == "Linkup, a French startup providing AI with fast, ethical access to online content, has "
-        "secured €3 million supported by leading investors."
-    )
+    assert response.answer == "foo bar baz"
+    assert response.sources[0].name == "foo"
+    assert response.sources[0].url == "https://foo.bar/baz"
+    assert response.sources[0].snippet == "foo bar baz qux"
 
 
 @pytest.mark.parametrize(
@@ -285,114 +246,79 @@ def test_search_unknown_error(mocker: MockerFixture, client: LinkupClient) -> No
 
 @pytest.mark.asyncio
 async def test_async_search_search_results(mocker: MockerFixture, client: LinkupClient) -> None:
-    query = "What is Linkup, the new French AI company?"
-    depth = "standard"
-    output_type = "searchResults"
+    content = b"""
+    {
+      "results": [
+        {
+          "type": "text",
+          "name": "foo",
+          "url": "https://foo.bar/baz",
+          "content": "foo bar baz"
+        },
+        {
+          "type": "image",
+          "name": "foo",
+          "url": "https://foo.bar/baz"
+        }
+      ]
+    }
+    """
 
     mocker.patch(
         "linkup.client.LinkupClient._async_request",
         return_value=Response(
             status_code=200,
-            content=b'{"results":[{"name":"Paris-based Linkup raises \xe2\x82\xac3 million aiming '
-            b'to revolutionise ethical ...","url":"https://www.eu-startups.com/2024/11/paris-'
-            b"based-linkup-raises-e3-million-aiming-to-revolutionise-ethical-and-efficient-web-"
-            b'access-for-ai/","content":"Linkup, a French startup providing AI with fast, ethical '
-            b"access to online content, has secured \xe2\x82\xac3 million supported by leading "
-            b"investors, including Seedcamp, Axeleo Capital, Motier Ventures, and a network of "
-            b"prominent tech and media industry angels to further develop its sustainable "
-            b"alternative to web scraping and address the challenges posed by AI-driven web "
-            b'traffic."},{"name":"French Tech : Linkup, le moteur de recherche d\xc3\xa9di'
-            b'\xc3\xa9 aux intelligences ...","url":"https://www.midilibre.fr/2024/11/18/french-'
-            b"tech-linkup-le-moteur-de-recherche-dedie-aux-intelligences-artificielles-12331232."
-            b'php","content":"La start-up Linkup, fond\xc3\xa9e d\xc3\xa9but 2024 par Philippe '
-            b"Mizrahi, Denis Charrier et Boris Toledano, propose une avanc\xc3\xa9e r\xc3\xa9elle "
-            b"dans l\xe2\x80\x99acc\xc3\xa8s des intelligences artificielles (IA) au contenu de "
-            b'web."}]}',
+            content=content,
         ),
     )
 
-    response: Any = await client.async_search(query=query, depth=depth, output_type=output_type)
+    response: Any = await client.async_search(
+        query="foo", depth="standard", output_type="searchResults"
+    )
 
     assert isinstance(response, LinkupSearchResults)
-    assert isinstance(response.results, list)
-    assert response.results
-    assert isinstance(response.results[0], LinkupSearchResult)
-    assert (
-        response.results[0].name
-        == "Paris-based Linkup raises €3 million aiming to revolutionise ethical ..."
-    )
-    assert (
-        response.results[0].url
-        == "https://www.eu-startups.com/2024/11/paris-based-linkup-raises-e3-million-aiming-to-revolutionise-ethical-and-efficient-web-access-for-ai/"
-    )
-    assert (
-        response.results[0].content
-        == "Linkup, a French startup providing AI with fast, ethical access to online content, has "
-        "secured €3 million supported by leading investors, including Seedcamp, Axeleo Capital, "
-        "Motier Ventures, and a network of prominent tech and media industry angels to further "
-        "develop its sustainable alternative to web scraping and address the challenges posed by "
-        "AI-driven web traffic."
-    )
+    assert isinstance(response.results[0], LinkupSearchTextResult)
+    assert response.results[0].name == "foo"
+    assert response.results[0].url == "https://foo.bar/baz"
+    assert response.results[0].content == "foo bar baz"
+    assert isinstance(response.results[1], LinkupSearchImageResult)
+    assert response.results[1].name == "foo"
+    assert response.results[1].url == "https://foo.bar/baz"
 
 
 @pytest.mark.asyncio
 async def test_async_search_sourced_answer(mocker: MockerFixture, client: LinkupClient) -> None:
-    query = "What is Linkup, the new French AI company?"
-    depth = "standard"
-    output_type = "sourcedAnswer"
+    content = b"""
+    {
+      "answer": "foo bar baz",
+      "sources": [
+        {
+          "name": "foo",
+          "url": "https://foo.bar/baz",
+          "snippet": "foo bar baz qux"
+        }
+      ]
+    }
+    """
 
     mocker.patch(
         "linkup.client.LinkupClient._async_request",
         return_value=Response(
             status_code=200,
-            content=b'{"answer":"Linkup is a Paris-based startup that focuses on providing AI with '
-            b"fast and ethical access to online content. The company aims to create a sustainable "
-            b"alternative to web scraping by addressing the challenges posed by AI-driven web "
-            b"traffic. Linkup has recently raised \xe2\x82\xac3 million to further develop its "
-            b"platform, which serves as an intermediary between AI technologies and content "
-            b'publishers, allowing AI to access content in a way that is legal and efficient.",'
-            b'"sources":[{"name":"Paris-based Linkup raises \xe2\x82\xac3 million aiming to '
-            b'revolutionise ethical ...","url":"https://www.eu-startups.com/2024/11/paris-based-'
-            b"linkup-raises-e3-million-aiming-to-revolutionise-ethical-and-efficient-web-access-"
-            b'for-ai/","snippet":"Linkup, a French startup providing AI with fast, ethical access '
-            b"to online content, has secured \xe2\x82\xac3 million supported by leading "
-            b'investors."},{"name":"Linkup l\xc3\xa8ve 3 millions d\xe2\x80\x99euros pour faire '
-            b'le pont entre IA et les ...","url":"https://www.frenchweb.fr/linkup-leve-3-millions-'
-            b"deuros-pour-faire-le-pont-entre-ia-et-les-editeurs-de-contenus-dans-un-monde-post-"
-            b'webscraping/449941","snippet":"Linkup, une start-up parisienne fond\xc3\xa9e en '
-            b"2024, veut proposer un acc\xc3\xa8s maitris\xc3\xa9 et l\xc3\xa9gal aux diff"
-            b'\xc3\xa9rents protagonistes."}]}',
+            content=content,
         ),
     )
 
-    response: Any = await client.async_search(query=query, depth=depth, output_type=output_type)
+    response: Any = await client.async_search(
+        query="foo", depth="standard", output_type="sourcedAnswer"
+    )
 
     assert isinstance(response, LinkupSourcedAnswer)
-    assert (
-        response.answer
-        == "Linkup is a Paris-based startup that focuses on providing AI with fast and ethical "
-        "access to online content. The company aims to create a sustainable alternative to web "
-        "scraping by addressing the challenges posed by AI-driven web traffic. Linkup has recently "
-        "raised €3 million to further develop its platform, which serves as an intermediary "
-        "between AI technologies and content publishers, allowing AI to access content in a way "
-        "that is legal and efficient."
-    )
-    assert isinstance(response.sources, list)
-    assert response.sources
     assert isinstance(response.sources[0], LinkupSource)
-    assert (
-        response.sources[0].name
-        == "Paris-based Linkup raises €3 million aiming to revolutionise ethical ..."
-    )
-    assert (
-        response.sources[0].url
-        == "https://www.eu-startups.com/2024/11/paris-based-linkup-raises-e3-million-aiming-to-revolutionise-ethical-and-efficient-web-access-for-ai/"
-    )
-    assert (
-        response.sources[0].snippet
-        == "Linkup, a French startup providing AI with fast, ethical access to online content, has "
-        "secured €3 million supported by leading investors."
-    )
+    assert response.answer == "foo bar baz"
+    assert response.sources[0].name == "foo"
+    assert response.sources[0].url == "https://foo.bar/baz"
+    assert response.sources[0].snippet == "foo bar baz qux"
 
 
 @pytest.mark.asyncio

@@ -13,6 +13,7 @@ class LinkupSearchTextResult(BaseModel):
         content: The text of the search result.
     """
 
+    type: str
     name: str
     url: str
     content: str
@@ -27,6 +28,7 @@ class LinkupSearchImageResult(BaseModel):
         url: The URL of the image result.
     """
 
+    type: str
     name: str
     url: str
 
