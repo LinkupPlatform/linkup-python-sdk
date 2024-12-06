@@ -50,6 +50,7 @@ class LinkupClient:
         depth: Literal["standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[Type[BaseModel], str, None] = None,
+        include_images: Union[bool, None] = None,
     ) -> Any:
         """
         Search for a query in the Linkup API.
@@ -65,6 +66,8 @@ class LinkupClient:
             structured_output_schema: If output_type is "structured", specify the schema of the
                 output. Supported formats are a pydantic.BaseModel or a string representing a
                 valid object JSON schema.
+            include_images: If output_type is "searchResults", specifies if the response can include
+                images.
 
         Returns:
             The Linkup API search result. If output_type is "searchResults", the result will be a
@@ -87,6 +90,7 @@ class LinkupClient:
             depth=depth,
             output_type=output_type,
             structured_output_schema=structured_output_schema,
+            include_images=include_images,
         )
 
         response: httpx.Response = self._request(
@@ -110,6 +114,7 @@ class LinkupClient:
         depth: Literal["standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[Type[BaseModel], str, None] = None,
+        include_images: Union[bool, None] = None,
     ) -> Any:
         """
         Asynchronously search for a query in the Linkup API.
@@ -125,6 +130,8 @@ class LinkupClient:
             structured_output_schema: If output_type is "structured", specify the schema of the
                 output. Supported formats are a pydantic.BaseModel or a string representing a
                 valid object JSON schema.
+            include_images: If output_type is "searchResults", specifies if the response can include
+                images.
 
         Returns:
             The Linkup API search result. If output_type is "searchResults", the result will be a
@@ -146,12 +153,13 @@ class LinkupClient:
             depth=depth,
             output_type=output_type,
             structured_output_schema=structured_output_schema,
+            include_images=include_images,
         )
 
         response: httpx.Response = await self._async_request(
-            method="GET",
+            method="POST",
             url="/search",
-            params=params,
+            data=params,
             timeout=None,
         )
         if response.status_code != 200:
@@ -239,11 +247,13 @@ class LinkupClient:
         depth: Literal["standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[Type[BaseModel], str, None],
+        include_images: Union[bool, None] = None,
     ) -> Dict[str, str]:
         params: Dict[str, str] = dict(
             q=query,
             depth=depth,
             outputType=output_type,
+            includeImages=include_images,
         )
 
         if output_type == "structured" and structured_output_schema is not None:

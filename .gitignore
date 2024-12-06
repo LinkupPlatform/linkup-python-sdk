@@ -164,3 +164,7 @@ cython_debug/
 
 # OSX
 .DS_Store
+
+# Dev
+playground.ipynb
+playground.py
