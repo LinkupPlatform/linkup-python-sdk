@@ -248,8 +248,8 @@ class LinkupClient:
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[Type[BaseModel], str, None],
         include_images: Union[bool, None] = None,
-    ) -> Dict[str, str]:
-        params: Dict[str, str] = dict(
+    ) -> Dict[str, Union[str, bool]]:
+        params: Dict[str, Union[str, bool]] = dict(
             q=query,
             depth=depth,
             outputType=output_type,

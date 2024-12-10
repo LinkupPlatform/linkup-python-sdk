@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 from pydantic import BaseModel
 
@@ -41,7 +41,7 @@ class LinkupSearchResults(BaseModel):
         results: The results of the Linkup search.
     """
 
-    results: List[LinkupSearchTextResult | LinkupSearchImageResult]
+    results: List[Union[LinkupSearchTextResult | LinkupSearchImageResult]]
 
 
 class LinkupSource(BaseModel):
