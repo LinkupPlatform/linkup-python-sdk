@@ -41,7 +41,7 @@ class LinkupSearchResults(BaseModel):
         results: The results of the Linkup search.
     """
 
-    results: List[Union[LinkupSearchTextResult | LinkupSearchImageResult]]
+    results: List[Union[LinkupSearchTextResult, LinkupSearchImageResult]]
 
 
 class LinkupSource(BaseModel):
