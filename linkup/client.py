@@ -50,7 +50,7 @@ class LinkupClient:
         depth: Literal["standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[Type[BaseModel], str, None] = None,
-        include_images: Union[bool, None] = None,
+        include_images: bool = False,
     ) -> Any:
         """
         Search for a query in the Linkup API.
@@ -67,7 +67,7 @@ class LinkupClient:
                 output. Supported formats are a pydantic.BaseModel or a string representing a
                 valid object JSON schema.
             include_images: If output_type is "searchResults", specifies if the response can include
-                images.
+                images. Default to False.
 
         Returns:
             The Linkup API search result. If output_type is "searchResults", the result will be a
@@ -114,7 +114,7 @@ class LinkupClient:
         depth: Literal["standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[Type[BaseModel], str, None] = None,
-        include_images: Union[bool, None] = None,
+        include_images: bool = False,
     ) -> Any:
         """
         Asynchronously search for a query in the Linkup API.
@@ -131,7 +131,7 @@ class LinkupClient:
                 output. Supported formats are a pydantic.BaseModel or a string representing a
                 valid object JSON schema.
             include_images: If output_type is "searchResults", specifies if the response can include
-                images.
+                images. Default to False
 
         Returns:
             The Linkup API search result. If output_type is "searchResults", the result will be a
@@ -247,12 +247,13 @@ class LinkupClient:
         depth: Literal["standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[Type[BaseModel], str, None],
-        include_images: Union[bool, None] = None,
+        include_images: bool,
     ) -> Dict[str, Union[str, bool]]:
         params: Dict[str, Union[str, bool]] = dict(
             q=query,
             depth=depth,
             outputType=output_type,
+            includeImages=include_images,
         )
 
         if output_type == "structured" and structured_output_schema is not None:
@@ -265,9 +266,6 @@ class LinkupClient:
                 raise TypeError(
                     f"Unexpected structured_output_schema type: '{type(structured_output_schema)}'"
                 )
-
-        if include_images:
-            params["includeImages"] = True
 
         return params
 
