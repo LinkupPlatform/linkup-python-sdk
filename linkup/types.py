@@ -8,6 +8,7 @@ class LinkupSearchTextResult(BaseModel):
     A text result from a Linkup search.
 
     Attributes:
+        type: The type of the search result, in this case 'text'
         name: The name of the search result.
         url: The URL of the search result.
         content: The text of the search result.
@@ -24,6 +25,7 @@ class LinkupSearchImageResult(BaseModel):
     An image result from a Linkup search.
 
     Attributes:
+        type: The type of the search result, in this case 'image'
         name: The name of the image result.
         url: The URL of the image result.
     """
