@@ -1,5 +1,5 @@
 [tool.mypy]
-exclude = ['^tests/']
+exclude = ['^tests/', 'venv/', '.venv/']
 strict = true
 
 [tool.pytest.ini_options]

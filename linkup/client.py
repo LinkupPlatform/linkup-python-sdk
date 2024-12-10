@@ -85,7 +85,7 @@ class LinkupClient:
             LinkupInsufficientCreditError: If you have run out of credit.
             LinkupNoResultError: If the search query did not yield any result.
         """
-        params: Dict[str, str] = self._get_search_params(
+        params: Dict[str, Union[str, bool]] = self._get_search_params(
             query=query,
             depth=depth,
             output_type=output_type,
@@ -148,7 +148,7 @@ class LinkupClient:
             LinkupAuthenticationError: If the Linkup API key is invalid, or there is no more credit
                 available.
         """
-        params: Dict[str, str] = self._get_search_params(
+        params: Dict[str, Union[str, bool]] = self._get_search_params(
             query=query,
             depth=depth,
             output_type=output_type,
@@ -253,7 +253,6 @@ class LinkupClient:
             q=query,
             depth=depth,
             outputType=output_type,
-            includeImages=include_images,
         )
 
         if output_type == "structured" and structured_output_schema is not None:
@@ -266,6 +265,9 @@ class LinkupClient:
                 raise TypeError(
                     f"Unexpected structured_output_schema type: '{type(structured_output_schema)}'"
                 )
+
+        if include_images:
+            params["includeImages"] = True
 
         return params
 
