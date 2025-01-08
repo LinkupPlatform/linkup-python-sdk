@@ -2,6 +2,7 @@
 
 [![PyPI version](https://badge.fury.io/py/linkup-sdk.svg)](https://pypi.org/project/linkup-sdk/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/linkup-sdk)
 
 A Python SDK for the [Linkup API](https://linkup-api.readme.io/reference/getting-started), allowing
 easy integration with Linkup's services. 🐍
