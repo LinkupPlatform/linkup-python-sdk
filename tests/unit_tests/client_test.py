@@ -74,6 +74,17 @@ def test_search_sourced_answer(mocker: MockerFixture, client: LinkupClient) -> N
           "name": "foo",
           "url": "https://foo.bar/baz",
           "snippet": "foo bar baz qux"
+        },
+        {
+          "type": "text",
+          "name": "bar",
+          "url": "https://foo.bar/baz",
+          "content": "foo bar baz qux"
+        },
+        {
+          "type": "image",
+          "name": "baz",
+          "url": "https://foo.bar/baz"
         }
       ]
     }
@@ -95,6 +106,17 @@ def test_search_sourced_answer(mocker: MockerFixture, client: LinkupClient) -> N
     assert response.sources[0].name == "foo"
     assert response.sources[0].url == "https://foo.bar/baz"
     assert response.sources[0].snippet == "foo bar baz qux"
+    assert isinstance(response.sources[1], LinkupSearchTextResult)
+    assert response.answer == "foo bar baz"
+    assert response.sources[1].type == "text"
+    assert response.sources[1].name == "bar"
+    assert response.sources[1].url == "https://foo.bar/baz"
+    assert response.sources[1].content == "foo bar baz qux"
+    assert isinstance(response.sources[2], LinkupSearchImageResult)
+    assert response.answer == "foo bar baz"
+    assert response.sources[2].type == "image"
+    assert response.sources[2].name == "baz"
+    assert response.sources[2].url == "https://foo.bar/baz"
 
 
 @pytest.mark.parametrize(
@@ -296,6 +318,17 @@ async def test_async_search_sourced_answer(mocker: MockerFixture, client: Linkup
           "name": "foo",
           "url": "https://foo.bar/baz",
           "snippet": "foo bar baz qux"
+        },
+        {
+          "type": "text",
+          "name": "bar",
+          "url": "https://foo.bar/baz",
+          "content": "foo bar baz qux"
+        },
+        {
+          "type": "image",
+          "name": "baz",
+          "url": "https://foo.bar/baz"
         }
       ]
     }
@@ -319,6 +352,17 @@ async def test_async_search_sourced_answer(mocker: MockerFixture, client: Linkup
     assert response.sources[0].name == "foo"
     assert response.sources[0].url == "https://foo.bar/baz"
     assert response.sources[0].snippet == "foo bar baz qux"
+    assert isinstance(response.sources[1], LinkupSearchTextResult)
+    assert response.answer == "foo bar baz"
+    assert response.sources[1].type == "text"
+    assert response.sources[1].name == "bar"
+    assert response.sources[1].url == "https://foo.bar/baz"
+    assert response.sources[1].content == "foo bar baz qux"
+    assert isinstance(response.sources[2], LinkupSearchImageResult)
+    assert response.answer == "foo bar baz"
+    assert response.sources[2].type == "image"
+    assert response.sources[2].name == "baz"
+    assert response.sources[2].url == "https://foo.bar/baz"
 
 
 @pytest.mark.asyncio

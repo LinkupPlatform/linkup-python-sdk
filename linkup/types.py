@@ -71,4 +71,4 @@ class LinkupSourcedAnswer(BaseModel):
     """
 
     answer: str
-    sources: List[LinkupSource]
+    sources: List[Union[LinkupSource, LinkupSearchTextResult, LinkupSearchImageResult]]
