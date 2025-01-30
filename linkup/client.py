@@ -94,9 +94,9 @@ class LinkupClient:
         )
 
         response: httpx.Response = self._request(
-            method="GET",
+            method="POST",
             url="/search",
-            params=params,
+            data=params,
             timeout=None,
         )
         if response.status_code != 200:
@@ -207,39 +207,60 @@ class LinkupClient:
             )
 
     def _raise_linkup_error(self, response: httpx.Response) -> None:
-        message: Any = response.json().get("message", "No message provided")
-        message = ", ".join(message) if isinstance(message, list) else str(message)
+        error_data = response.json()
 
-        if response.status_code == 400:
-            if message == "The query did not yield any result":
-                raise LinkupNoResultError(
-                    "The Linkup API returned a no result error (400). Try rephrasing you query.\n"
-                    f"Original error message: {message}."
+        if "error" in error_data:
+            error = error_data["error"]
+            code = error.get("code", "")
+            message = error.get("message", "")
+            details = error.get("details", [])
+
+            error_msg = f"{message}"
+            if details and isinstance(details, list):
+                for detail in details:
+                    if isinstance(detail, dict):
+                        field = detail.get("field", "")
+                        field_message = detail.get("message", "")
+                        error_msg += f" {field}: {field_message}"
+
+            if response.status_code == 400:
+                if code == "SEARCH_QUERY_NO_RESULT":
+                    raise LinkupNoResultError(
+                        "The Linkup API returned a no result error (400). "
+                        "Try rephrasing you query.\n"
+                        f"Original error message: {error_msg}."
+                    )
+                else:
+                    raise LinkupInvalidRequestError(
+                        "The Linkup API returned an invalid request error (400). Make sure the "
+                        "parameters you used are valid (correct values, types, mandatory "
+                        "parameters, etc.) and you are using the latest version of the Python "
+                        "SDK.\n"
+                        f"Original error message: {error_msg}."
+                    )
+            elif response.status_code == 401:
+                raise LinkupAuthenticationError(
+                    "The Linkup API returned an authentication error (401). Make sure your API "
+                    "key is valid.\n"
+                    f"Original error message: {error_msg}."
+                )
+            elif response.status_code == 403:
+                raise LinkupAuthenticationError(
+                    "The Linkup API returned an authorization error (403). Make sure your API "
+                    "key is valid.\n"
+                    f"Original error message: {error_msg}."
+                )
+            elif response.status_code == 429:
+                raise LinkupInsufficientCreditError(
+                    "The Linkup API returned an insufficient credit error (429). Make sure "
+                    "you haven't exhausted your credits.\n"
+                    f"Original error message: {error_msg}."
                 )
             else:
-                raise LinkupInvalidRequestError(
-                    "The Linkup API returned an invalid request error (400). Make sure the "
-                    "parameters you used are valid (correct values, types, mandatory parameters, "
-                    "etc.) and you are using the latest version of the Python SDK.\n"
-                    f"Original error message: {message}."
+                raise LinkupUnknownError(
+                    f"The Linkup API returned an unknown error ({response.status_code}).\n"
+                    f"Original error message: ({error_msg})."
                 )
-        elif response.status_code == 403:
-            raise LinkupAuthenticationError(
-                "The Linkup API returned an authentication error (403). Make sure your API "
-                "key is valid.\n"
-                f"Original error message: {message}."
-            )
-        elif response.status_code == 429:
-            raise LinkupInsufficientCreditError(
-                "The Linkup API returned an insufficient credit error (429). Make sure "
-                "you haven't exhausted your credits.\n"
-                f"Original error message: {message}."
-            )
-        else:
-            raise LinkupUnknownError(
-                f"The Linkup API returned an unknown error ({response.status_code}).\n"
-                f"Original error message: ({message})."
-            )
 
     def _get_search_params(
         self,
