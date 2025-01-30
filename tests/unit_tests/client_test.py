@@ -165,17 +165,50 @@ def test_search_structured_search(
         assert response.founders_names == ["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"]
 
 
+def test_search_authorization_error(mocker: MockerFixture, client: LinkupClient) -> None:
+    query = "What is Linkup, the new French AI company?"
+    depth = "standard"
+    output_type = "searchResults"
+
+    mock_response = mocker.Mock()
+    mock_response.status_code = 403
+    mock_response.json.return_value = {
+        "statusCode": 403,
+        "error": {
+            "code": "FORBIDDEN",
+            "message": "Forbidden action",
+            "details": [],
+        },
+    }
+
+    mocker.patch(
+        "linkup.client.LinkupClient._request",
+        return_value=mock_response,
+    )
+
+    with pytest.raises(LinkupAuthenticationError):
+        client.search(query=query, depth=depth, output_type=output_type)
+
+
 def test_search_authentication_error(mocker: MockerFixture, client: LinkupClient) -> None:
     query = "What is Linkup, the new French AI company?"
     depth = "standard"
     output_type = "searchResults"
 
+    mock_response = mocker.Mock()
+    mock_response.status_code = 401
+    mock_response.json.return_value = {
+        "statusCode": 401,
+        "error": {
+            "code": "UNAUTHORIZED",
+            "message": "Unauthorized action",
+            "details": [],
+        },
+    }
+
     mocker.patch(
         "linkup.client.LinkupClient._request",
-        return_value=Response(
-            status_code=403,
-            content=b'{"message":"Forbidden resource","error":"Forbidden","statusCode":403}',
-        ),
+        return_value=mock_response,
     )
 
     with pytest.raises(LinkupAuthenticationError):
@@ -183,13 +216,22 @@ def test_search_authentication_error(mocker: MockerFixture, client: LinkupClient
 
 
 def test_search_insufficient_credit_error(mocker: MockerFixture, client: LinkupClient) -> None:
+    mock_response = mocker.Mock()
+    mock_response.status_code = 429
+    mock_response.json.return_value = {
+        "statusCode": 429,
+        "error": {
+            "code": "INSUFFICIENT_CREDITS",
+            "message": "You do not have enough credits to perform this request.",
+            "details": [],
+        },
+    }
+
     mocker.patch(
         "linkup.client.LinkupClient._request",
-        return_value=Response(
-            status_code=429,
-            content=b"{}",
-        ),
+        return_value=mock_response,
     )
+
     with pytest.raises(LinkupInsufficientCreditError):
         client.search(query="foo", depth="standard", output_type="searchResults")
 
@@ -218,15 +260,23 @@ def test_search_structured_search_invalid_request(
             "title": "Company",
         }
     )
+    mock_response = mocker.Mock()
+    mock_response.status_code = 400
+    mock_response.json.return_value = {
+        "statusCode": 400,
+        "error": {
+            "code": "VALIDATION_ERROR",
+            "message": "Validation failed",
+            "details": [
+                {
+                    "field": "structuredOutputSchema",
+                    "message": "structuredOutputSchema must be valid JSON schema of type",
+                },
+            ],
+        },
+    }
 
-    mocker.patch(
-        "linkup.client.LinkupClient._request",
-        return_value=Response(
-            status_code=400,
-            content=b'{"message":["structuredOutputSchema must be valid JSON schema of type '
-            b'object"],"error":"Bad Request","statusCode":400}',
-        ),
-    )
+    mocker.patch("linkup.client.LinkupClient._request", return_value=mock_response)
 
     with pytest.raises(LinkupInvalidRequestError):
         client.search(
@@ -238,12 +288,20 @@ def test_search_structured_search_invalid_request(
 
 
 def test_search_no_result_error(mocker: MockerFixture, client: LinkupClient) -> None:
+    mock_response = mocker.Mock()
+    mock_response.status_code = 400
+    mock_response.json.return_value = {
+        "statusCode": 400,
+        "error": {
+            "code": "SEARCH_QUERY_NO_RESULT",
+            "message": "The query did not yield any result",
+            "details": [],
+        },
+    }
+
     mocker.patch(
         "linkup.client.LinkupClient._request",
-        return_value=Response(
-            status_code=400,
-            content=b'{"message": "The query did not yield any result"}',
-        ),
+        return_value=mock_response,
     )
     with pytest.raises(LinkupNoResultError):
         client.search(query="foo", depth="standard", output_type="searchResults")
@@ -254,12 +312,20 @@ def test_search_unknown_error(mocker: MockerFixture, client: LinkupClient) -> No
     depth = "standard"
     output_type = "searchResults"
 
+    mock_response = mocker.Mock()
+    mock_response.status_code = 500
+    mock_response.json.return_value = {
+        "statusCode": 500,
+        "error": {
+            "code": "INTERNAL_SERVER_ERROR",
+            "message": "Internal server error",
+            "details": [],
+        },
+    }
+
     mocker.patch(
         "linkup.client.LinkupClient._request",
-        return_value=Response(
-            status_code=500,
-            content=b'{"message":"Something weird happened","error":"unknown","statusCode":500}',
-        ),
+        return_value=mock_response,
     )
 
     with pytest.raises(LinkupUnknownError):
@@ -413,6 +479,34 @@ async def test_async_search_structured_search(
 
 
 @pytest.mark.asyncio
+async def test_async_search_authorization_error(
+    mocker: MockerFixture, client: LinkupClient
+) -> None:
+    query = "What is Linkup, the new French AI company?"
+    depth = "standard"
+    output_type = "searchResults"
+
+    mock_response = mocker.Mock()
+    mock_response.status_code = 403
+    mock_response.json.return_value = {
+        "statusCode": 403,
+        "error": {
+            "code": "FORBIDDEN",
+            "message": "Forbidden action",
+            "details": [],
+        },
+    }
+
+    mocker.patch(
+        "linkup.client.LinkupClient._async_request",
+        return_value=mock_response,
+    )
+
+    with pytest.raises(LinkupAuthenticationError):
+        await client.async_search(query=query, depth=depth, output_type=output_type)
+
+
+@pytest.mark.asyncio
 async def test_async_search_authentication_error(
     mocker: MockerFixture, client: LinkupClient
 ) -> None:
@@ -420,12 +514,20 @@ async def test_async_search_authentication_error(
     depth = "standard"
     output_type = "searchResults"
 
+    mock_response = mocker.Mock()
+    mock_response.status_code = 401
+    mock_response.json.return_value = {
+        "statusCode": 401,
+        "error": {
+            "code": "UNAUTHORIZED",
+            "message": "Unauthorized action",
+            "details": [],
+        },
+    }
+
     mocker.patch(
         "linkup.client.LinkupClient._async_request",
-        return_value=Response(
-            status_code=403,
-            content=b'{"message":"Forbidden resource","error":"Forbidden","statusCode":403}',
-        ),
+        return_value=mock_response,
     )
 
     with pytest.raises(LinkupAuthenticationError):
@@ -436,9 +538,20 @@ async def test_async_search_authentication_error(
 async def test_async_search_insufficient_credit_error(
     mocker: MockerFixture, client: LinkupClient
 ) -> None:
+    mock_response = mocker.Mock()
+    mock_response.status_code = 429
+    mock_response.json.return_value = {
+        "statusCode": 429,
+        "error": {
+            "code": "INSUFFICIENT_CREDITS",
+            "message": "You do not have enough credits to perform this request.",
+            "details": [],
+        },
+    }
+
     mocker.patch(
         "linkup.client.LinkupClient._async_request",
-        return_value=Response(status_code=429, content=b"{}"),
+        return_value=mock_response,
     )
     with pytest.raises(LinkupInsufficientCreditError):
         await client.async_search(query="foo", depth="standard", output_type="searchResults")
@@ -470,13 +583,25 @@ async def test_async_search_structured_search_invalid_request(
         }
     )
 
+    mock_response = mocker.Mock()
+    mock_response.status_code = 400
+    mock_response.json.return_value = {
+        "statusCode": 400,
+        "error": {
+            "code": "VALIDATION_ERROR",
+            "message": "Validation failed",
+            "details": [
+                {
+                    "field": "structuredOutputSchema",
+                    "message": "structuredOutputSchema must be valid JSON schema of type",
+                },
+            ],
+        },
+    }
+
     mocker.patch(
         "linkup.client.LinkupClient._async_request",
-        return_value=Response(
-            status_code=400,
-            content=b'{"message":["structuredOutputSchema must be valid JSON schema of type '
-            b'object"],"error":"Bad Request","statusCode":400}',
-        ),
+        return_value=mock_response,
     )
 
     with pytest.raises(LinkupInvalidRequestError):
@@ -490,12 +615,20 @@ async def test_async_search_structured_search_invalid_request(
 
 @pytest.mark.asyncio
 async def test_async_search_no_result_error(mocker: MockerFixture, client: LinkupClient) -> None:
+    mock_response = mocker.Mock()
+    mock_response.status_code = 400
+    mock_response.json.return_value = {
+        "statusCode": 400,
+        "error": {
+            "code": "SEARCH_QUERY_NO_RESULT",
+            "message": "The query did not yield any result",
+            "details": [],
+        },
+    }
+
     mocker.patch(
         "linkup.client.LinkupClient._async_request",
-        return_value=Response(
-            status_code=400,
-            content=b'{"message": "The query did not yield any result"}',
-        ),
+        return_value=mock_response,
     )
     with pytest.raises(LinkupNoResultError):
         await client.async_search(query="foo", depth="standard", output_type="searchResults")
@@ -507,12 +640,20 @@ async def test_async_search_unknown_error(mocker: MockerFixture, client: LinkupC
     depth = "standard"
     output_type = "searchResults"
 
+    mock_response = mocker.Mock()
+    mock_response.status_code = 500
+    mock_response.json.return_value = {
+        "statusCode": 500,
+        "error": {
+            "code": "INTERNAL_SERVER_ERROR",
+            "message": "Internal server error",
+            "details": [],
+        },
+    }
+
     mocker.patch(
         "linkup.client.LinkupClient._async_request",
-        return_value=Response(
-            status_code=500,
-            content=b'{"message":"Something weird happened","error":"unknown","statusCode":500}',
-        ),
+        return_value=mock_response,
     )
 
     with pytest.raises(LinkupUnknownError):
