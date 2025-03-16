@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 from typing import Any, Dict, Literal, Optional, Type, Union
 
 import httpx
@@ -51,6 +52,8 @@ class LinkupClient:
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[Type[BaseModel], str, None] = None,
         include_images: bool = False,
+        from_date: Union[datetime, None] = None,
+        to_date: Union[datetime, None] = None,
     ) -> Any:
         """
         Search for a query in the Linkup API.
@@ -68,6 +71,10 @@ class LinkupClient:
                 valid object JSON schema.
             include_images: If output_type is "searchResults", specifies if the response can include
                 images. Default to False.
+            from_date: The date from which the search results should be considered. If None, the
+                search results will not be filtered by date.
+            to_date: The date until which the search results should be considered. If None, the
+                search results will not be filtered by date.
 
         Returns:
             The Linkup API search result. If output_type is "searchResults", the result will be a
@@ -91,6 +98,8 @@ class LinkupClient:
             output_type=output_type,
             structured_output_schema=structured_output_schema,
             include_images=include_images,
+            from_date=from_date,
+            to_date=to_date,
         )
 
         response: httpx.Response = self._request(
@@ -269,6 +278,8 @@ class LinkupClient:
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[Type[BaseModel], str, None],
         include_images: bool,
+        from_date: Union[datetime, None] = None,
+        to_date: Union[datetime, None] = None,
     ) -> Dict[str, Union[str, bool]]:
         params: Dict[str, Union[str, bool]] = dict(
             q=query,
@@ -287,6 +298,10 @@ class LinkupClient:
                 raise TypeError(
                     f"Unexpected structured_output_schema type: '{type(structured_output_schema)}'"
                 )
+        if from_date is not None:
+            params["fromDate"] = from_date.isoformat()
+        if to_date is not None:
+            params["toDate"] = to_date.isoformat()
 
         return params
 
