@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime
+from datetime import date
 from typing import Any, Dict, Literal, Optional, Type, Union
 
 import httpx
@@ -52,8 +52,8 @@ class LinkupClient:
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[Type[BaseModel], str, None] = None,
         include_images: bool = False,
-        from_date: Union[datetime, None] = None,
-        to_date: Union[datetime, None] = None,
+        from_date: Union[date, None] = None,
+        to_date: Union[date, None] = None,
     ) -> Any:
         """
         Search for a query in the Linkup API.
@@ -278,8 +278,8 @@ class LinkupClient:
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[Type[BaseModel], str, None],
         include_images: bool,
-        from_date: Union[datetime, None] = None,
-        to_date: Union[datetime, None] = None,
+        from_date: Union[date, None] = None,
+        to_date: Union[date, None] = None,
     ) -> Dict[str, Union[str, bool]]:
         params: Dict[str, Union[str, bool]] = dict(
             q=query,
