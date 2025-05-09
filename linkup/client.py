@@ -124,6 +124,8 @@ class LinkupClient:
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[Type[BaseModel], str, None] = None,
         include_images: bool = False,
+        from_date: Union[date, None] = None,
+        to_date: Union[date, None] = None,
     ) -> Any:
         """
         Asynchronously search for a query in the Linkup API.
@@ -141,6 +143,10 @@ class LinkupClient:
                 valid object JSON schema.
             include_images: If output_type is "searchResults", specifies if the response can include
                 images. Default to False
+            from_date: The date from which the search results should be considered. If None, the
+                search results will not be filtered by date.
+            to_date: The date until which the search results should be considered. If None, the
+                search results will not be filtered by date.
 
         Returns:
             The Linkup API search result. If output_type is "searchResults", the result will be a
@@ -163,6 +169,8 @@ class LinkupClient:
             output_type=output_type,
             structured_output_schema=structured_output_schema,
             include_images=include_images,
+            from_date=from_date,
+            to_date=to_date,
         )
 
         response: httpx.Response = await self._async_request(
@@ -278,8 +286,8 @@ class LinkupClient:
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[Type[BaseModel], str, None],
         include_images: bool,
-        from_date: Union[date, None] = None,
-        to_date: Union[date, None] = None,
+        from_date: Union[date, None],
+        to_date: Union[date, None],
     ) -> Dict[str, Union[str, bool]]:
         params: Dict[str, Union[str, bool]] = dict(
             q=query,
