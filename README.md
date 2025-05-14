@@ -4,8 +4,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/linkup-sdk)
 
-A Python SDK for the [Linkup API](https://linkup-api.readme.io/reference/getting-started), allowing
-easy integration with Linkup's services. 🐍
+A [Python SDK](https://docs.linkup.so/pages/sdk/python/python) for the
+[Linkup API](https://www.linkup.so/), allowing easy integration with Linkup's services. 🐍
 
 ## 🌟 Features
 
