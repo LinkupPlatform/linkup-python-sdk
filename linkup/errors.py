@@ -35,6 +35,15 @@ class LinkupInsufficientCreditError(Exception):
     pass
 
 
+class LinkupTooManyRequestsError(Exception):
+    """Too many requests error, raised when the Linkup API returns a 429 status code.
+
+    It is returned when you are sending too many requests at a time.
+    """
+
+    pass
+
+
 class LinkupUnknownError(Exception):
     """Unknown error, raised when the Linkup API returns an unknown status code."""
 

@@ -15,7 +15,11 @@ from linkup import (
     LinkupSourcedAnswer,
     LinkupUnknownError,
 )
-from linkup.errors import LinkupInsufficientCreditError, LinkupNoResultError
+from linkup.errors import (
+    LinkupInsufficientCreditError,
+    LinkupNoResultError,
+    LinkupTooManyRequestsError,
+)
 from linkup.types import LinkupSearchImageResult, LinkupSearchTextResult
 
 
@@ -221,7 +225,7 @@ def test_search_insufficient_credit_error(mocker: MockerFixture, client: LinkupC
     mock_response.json.return_value = {
         "statusCode": 429,
         "error": {
-            "code": "INSUFFICIENT_CREDITS",
+            "code": "INSUFFICIENT_FUNDS_CREDITS",
             "message": "You do not have enough credits to perform this request.",
             "details": [],
         },
@@ -233,6 +237,27 @@ def test_search_insufficient_credit_error(mocker: MockerFixture, client: LinkupC
     )
 
     with pytest.raises(LinkupInsufficientCreditError):
+        client.search(query="foo", depth="standard", output_type="searchResults")
+
+
+def test_search_too_many_requests_error(mocker: MockerFixture, client: LinkupClient) -> None:
+    mock_response = mocker.Mock()
+    mock_response.status_code = 429
+    mock_response.json.return_value = {
+        "statusCode": 429,
+        "error": {
+            "code": "TOO_MANY_REQUESTS",
+            "message": "Too many requests.",
+            "details": [],
+        },
+    }
+
+    mocker.patch(
+        "linkup.client.LinkupClient._request",
+        return_value=mock_response,
+    )
+
+    with pytest.raises(LinkupTooManyRequestsError):
         client.search(query="foo", depth="standard", output_type="searchResults")
 
 
@@ -543,7 +568,7 @@ async def test_async_search_insufficient_credit_error(
     mock_response.json.return_value = {
         "statusCode": 429,
         "error": {
-            "code": "INSUFFICIENT_CREDITS",
+            "code": "INSUFFICIENT_FUNDS_CREDITS",
             "message": "You do not have enough credits to perform this request.",
             "details": [],
         },
@@ -554,6 +579,29 @@ async def test_async_search_insufficient_credit_error(
         return_value=mock_response,
     )
     with pytest.raises(LinkupInsufficientCreditError):
+        await client.async_search(query="foo", depth="standard", output_type="searchResults")
+
+
+@pytest.mark.asyncio
+async def test_async_search_too_many_requests_error(
+    mocker: MockerFixture, client: LinkupClient
+) -> None:
+    mock_response = mocker.Mock()
+    mock_response.status_code = 429
+    mock_response.json.return_value = {
+        "statusCode": 429,
+        "error": {
+            "code": "TOO_MANY_REQUESTS",
+            "message": "Too many requests.",
+            "details": [],
+        },
+    }
+
+    mocker.patch(
+        "linkup.client.LinkupClient._async_request",
+        return_value=mock_response,
+    )
+    with pytest.raises(LinkupTooManyRequestsError):
         await client.async_search(query="foo", depth="standard", output_type="searchResults")
 
 
