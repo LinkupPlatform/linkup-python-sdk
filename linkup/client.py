@@ -12,6 +12,7 @@ from linkup.errors import (
     LinkupInsufficientCreditError,
     LinkupInvalidRequestError,
     LinkupNoResultError,
+    LinkupTooManyRequestsError,
     LinkupUnknownError,
 )
 from linkup.types import LinkupSearchResults, LinkupSourcedAnswer
@@ -268,11 +269,26 @@ class LinkupClient:
                     f"Original error message: {error_msg}."
                 )
             elif response.status_code == 429:
-                raise LinkupInsufficientCreditError(
-                    "The Linkup API returned an insufficient credit error (429). Make sure "
-                    "you haven't exhausted your credits.\n"
-                    f"Original error message: {error_msg}."
-                )
+                if code == "INSUFFICIENT_FUNDS_CREDITS":
+                    raise LinkupInsufficientCreditError(
+                        "The Linkup API returned an insufficient credit error (429). Make sure "
+                        "you haven't exhausted your credits.\n"
+                        f"Original error message: {error_msg}."
+                    )
+                elif code == "TOO_MANY_REQUESTS":
+                    raise LinkupTooManyRequestsError(
+                        "The Linkup API returned a too many requests error (429). Make sure "
+                        "you not sending too many requests at a time.\n"
+                        f"Original error message: {error_msg}."
+                    )
+                else:
+                    raise LinkupUnknownError(
+                        "The Linkup API returned an invalid request error (429). Make sure the "
+                        "parameters you used are valid (correct values, types, mandatory "
+                        "parameters, etc.) and you are using the latest version of the Python "
+                        "SDK.\n"
+                        f"Original error message: {error_msg}."
+                    )
             else:
                 raise LinkupUnknownError(
                     f"The Linkup API returned an unknown error ({response.status_code}).\n"
