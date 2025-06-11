@@ -3,6 +3,8 @@
 [![PyPI version](https://badge.fury.io/py/linkup-sdk.svg)](https://pypi.org/project/linkup-sdk/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/linkup-sdk)
+[![Discord](https://img.shields.io/discord/1303713168916348959?color=7289da&logo=discord&logoColor=white)](https://discord.gg/9q9mCYJa86)
+
 
 A [Python SDK](https://docs.linkup.so/pages/sdk/python/python) for the
 [Linkup API](https://www.linkup.so/), allowing easy integration with Linkup's services. 🐍
