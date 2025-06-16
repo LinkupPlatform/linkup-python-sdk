@@ -53,8 +53,8 @@ class LinkupClient:
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[Type[BaseModel], str, None] = None,
         include_images: bool = False,
-        restrictions: list[str] = None,
-        obligations: list[str] = None,
+        restrictions: Union[list[str], None] = None,
+        obligations: Union[list[str], None] = None,
         from_date: Union[date, None] = None,
         to_date: Union[date, None] = None,
     ) -> Any:
@@ -97,7 +97,7 @@ class LinkupClient:
             LinkupInsufficientCreditError: If you have run out of credit.
             LinkupNoResultError: If the search query did not yield any result.
         """
-        params: Dict[str, Union[str, bool]] = self._get_search_params(
+        params: Dict[str, Union[str, bool, list[str]]] = self._get_search_params(
             query=query,
             depth=depth,
             output_type=output_type,
@@ -131,8 +131,8 @@ class LinkupClient:
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[Type[BaseModel], str, None] = None,
         include_images: bool = False,
-        restrictions: list[str] = None,
-        obligations: list[str] = None,
+        restrictions: Union[list[str], None] = None,
+        obligations: Union[list[str], None] = None,
         from_date: Union[date, None] = None,
         to_date: Union[date, None] = None,
     ) -> Any:
@@ -174,7 +174,7 @@ class LinkupClient:
             LinkupAuthenticationError: If the Linkup API key is invalid, or there is no more credit
                 available.
         """
-        params: Dict[str, Union[str, bool]] = self._get_search_params(
+        params: Dict[str, Union[str, bool, list[str]]] = self._get_search_params(
             query=query,
             depth=depth,
             output_type=output_type,
@@ -315,11 +315,11 @@ class LinkupClient:
         structured_output_schema: Union[Type[BaseModel], str, None],
         include_images: bool,
         from_date: Union[date, None],
-        obligations: list[str],
-        restrictions: list[str],
+        obligations: Union[list[str], None],
+        restrictions: Union[list[str], None],
         to_date: Union[date, None],
-    ) -> Dict[str, Union[str, bool]]:
-        params: Dict[str, Union[str, bool]] = dict(
+    ) -> Dict[str, Union[str, bool, list[str]]]:
+        params: Dict[str, Union[str, bool, list[str]]] = dict(
             q=query,
             depth=depth,
             outputType=output_type,
