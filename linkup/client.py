@@ -53,8 +53,8 @@ class LinkupClient:
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[Type[BaseModel], str, None] = None,
         include_images: bool = False,
-        restrictions: Union[list[str], None] = None,
-        obligations: Union[list[str], None] = None,
+        exclude_domains: Union[list[str], None] = None,
+        include_domains: Union[list[str], None] = None,
         from_date: Union[date, None] = None,
         to_date: Union[date, None] = None,
     ) -> Any:
@@ -74,8 +74,8 @@ class LinkupClient:
                 valid object JSON schema.
             include_images: If output_type is "searchResults", specifies if the response can include
                 images. Default to False.
-            restrictions: If you want to exclude specific domains from your search.
-            obligations: If you want the search to only return results from certain domains.
+            exclude_domains: If you want to exclude specific domains from your search.
+            include_domains: If you want the search to only return results from certain domains.
             from_date: The date from which the search results should be considered. If None, the
                 search results will not be filtered by date.
             to_date: The date until which the search results should be considered. If None, the
@@ -103,8 +103,8 @@ class LinkupClient:
             output_type=output_type,
             structured_output_schema=structured_output_schema,
             include_images=include_images,
-            restrictions=restrictions,
-            obligations=obligations,
+            exclude_domains=exclude_domains,
+            include_domains=include_domains,
             from_date=from_date,
             to_date=to_date,
         )
@@ -131,8 +131,8 @@ class LinkupClient:
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[Type[BaseModel], str, None] = None,
         include_images: bool = False,
-        restrictions: Union[list[str], None] = None,
-        obligations: Union[list[str], None] = None,
+        exclude_domains: Union[list[str], None] = None,
+        include_domains: Union[list[str], None] = None,
         from_date: Union[date, None] = None,
         to_date: Union[date, None] = None,
     ) -> Any:
@@ -152,8 +152,8 @@ class LinkupClient:
                 valid object JSON schema.
             include_images: If output_type is "searchResults", specifies if the response can include
                 images. Default to False
-            restrictions: If you want to exclude specific domains from your search.
-            obligations: If you want the search to only return results from certain domains.
+            exclude_domains: If you want to exclude specific domains from your search.
+            include_domains: If you want the search to only return results from certain domains.
             from_date: The date from which the search results should be considered. If None, the
                 search results will not be filtered by date.
             to_date: The date until which the search results should be considered. If None, the
@@ -180,8 +180,8 @@ class LinkupClient:
             output_type=output_type,
             structured_output_schema=structured_output_schema,
             include_images=include_images,
-            restrictions=restrictions,
-            obligations=obligations,
+            exclude_domains=exclude_domains,
+            include_domains=include_domains,
             from_date=from_date,
             to_date=to_date,
         )
@@ -315,8 +315,8 @@ class LinkupClient:
         structured_output_schema: Union[Type[BaseModel], str, None],
         include_images: bool,
         from_date: Union[date, None],
-        obligations: Union[list[str], None],
-        restrictions: Union[list[str], None],
+        include_domains: Union[list[str], None],
+        exclude_domains: Union[list[str], None],
         to_date: Union[date, None],
     ) -> Dict[str, Union[str, bool, list[str]]]:
         params: Dict[str, Union[str, bool, list[str]]] = dict(
@@ -338,10 +338,10 @@ class LinkupClient:
                 )
         if from_date is not None:
             params["fromDate"] = from_date.isoformat()
-        if restrictions is not None:
-            params["restrictions"] = restrictions
-        if obligations is not None:
-            params["obligations"] = obligations
+        if exclude_domains is not None:
+            params["excludeDomains"] = exclude_domains
+        if include_domains is not None:
+            params["includeDomains"] = include_domains
         if to_date is not None:
             params["toDate"] = to_date.isoformat()
 
