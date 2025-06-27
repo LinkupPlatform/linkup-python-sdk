@@ -1,3 +1,39 @@
+[project]
+authors = []
+dependencies = []
+description = ""
+name = "linkup-python-sdk"
+readme = "README.md"
+requires-python = ">=3.13"
+version = "0.1.0"
+
+[dependency-groups]
+dev = [
+  "distlib==0.3.9",
+  "filelock==3.18.0",
+  "identify==2.6.12",
+  "iniconfig==2.1.0",
+  "mypy==1.16.1",
+  "mypy-extensions==1.1.0",
+  "nodeenv==1.9.1",
+  "packaging==25.0",
+  "pathspec==0.12.1",
+  "platformdirs==4.3.8",
+  "pluggy==1.6.0",
+  "pre-commit==4.2.0",
+  "pygments==2.19.2",
+  "pytest==8.4.1",
+  "pytest-asyncio==1.0.0",
+  "pytest-cov==6.2.1",
+  "pytest-mock==3.14.1",
+  "pytest-socket==0.7.0",
+  "pyyaml==6.0.2",
+  "setuptools==80.9.0",
+  "types-setuptools==80.9.0.20250529",
+  "typing-extensions==4.14.0",
+  "virtualenv==20.31.2"
+]
+
 [tool.mypy]
 exclude = ['^tests/', 'venv/', '.venv/']
 strict = true
