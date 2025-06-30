@@ -4,7 +4,7 @@ dependencies = []
 description = ""
 name = "linkup-python-sdk"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.9"
 version = "0.1.0"
 
 [dependency-groups]
