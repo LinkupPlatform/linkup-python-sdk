@@ -1,6 +1,9 @@
 [project]
 authors = []
-dependencies = []
+dependencies = [
+  "cohere>=5.14.0",
+  "pydantic>=2.10.6"
+]
 description = ""
 name = "linkup-python-sdk"
 readme = "README.md"
