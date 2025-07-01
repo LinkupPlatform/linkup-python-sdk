@@ -112,7 +112,7 @@ class LinkupClient:
         response: httpx.Response = self._request(
             method="POST",
             url="/search",
-            data=params,
+            json=params,
             timeout=None,
         )
         if response.status_code != 200:
@@ -189,7 +189,7 @@ class LinkupClient:
         response: httpx.Response = await self._async_request(
             method="POST",
             url="/search",
-            data=params,
+            json=params,
             timeout=None,
         )
         if response.status_code != 200:
