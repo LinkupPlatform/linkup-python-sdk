@@ -1,10 +1,6 @@
-install:
+install-dev:
 	@echo "Installing local package..."
 	uv sync
-	uv run pre-commit install
-install-dev:
-	@echo "Installing local package in developper mode..."
-	uv pip install -e ".[dev]"
 	uv run pre-commit install
 test:
 	@echo "Running tests..."

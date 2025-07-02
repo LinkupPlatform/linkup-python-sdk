@@ -21,7 +21,7 @@ A [Python SDK](https://docs.linkup.so/pages/sdk/python/python) for the
 Simply install the Linkup Python SDK using `pip`:
 
 ```bash
-uv pip install linkup-sdk
+pip install linkup-sdk
 ```
 
 ## 🛠️ Usage
