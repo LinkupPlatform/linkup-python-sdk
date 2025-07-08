@@ -1,3 +1,29 @@
+[project]
+authors = []
+dependencies = [
+  "httpx",
+  "pydantic"
+]
+
+description = ""
+name = "linkup-python-sdk"
+readme = "README.md"
+requires-python = ">=3.9"
+version = "0.1.0"
+
+[dependency-groups]
+dev = [
+  "mypy>=1.16.1",
+  "pre-commit>=4.2.0",
+  "pytest>=8.4.1",
+  "pytest-asyncio>=1.0.0",
+  "pytest-cov>=6.2.1",
+  "pytest-mock>=3.14.1",
+  "pytest-socket>=0.7.0",
+  "ruff>=0.8.0",
+  "types-setuptools>=80.9.0"
+]
+
 [tool.mypy]
 exclude = ['^tests/', 'venv/', '.venv/']
 strict = true
@@ -22,3 +48,10 @@ select = [
 
 [tool.ruff.lint.extend-per-file-ignores]
 "tests/**/*_test.py" = ["S101"] # Use of assert detected
+
+# [tool.setuptools.packages.find]
+# where = ["src"]
+
+# [build-system]
+# requires = ["setuptools >= 77.0.3"]
+# build-backend = "setuptools.build_meta"
