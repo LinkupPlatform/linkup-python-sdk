@@ -49,9 +49,5 @@ select = [
 [tool.ruff.lint.extend-per-file-ignores]
 "tests/**/*_test.py" = ["S101"] # Use of assert detected
 
-# [tool.setuptools.packages.find]
-# where = ["src"]
-
-# [build-system]
-# requires = ["setuptools >= 77.0.3"]
-# build-backend = "setuptools.build_meta"
+[tool.setuptools.packages.find]
+where = ["src"]
