@@ -1,15 +1,30 @@
 [project]
-authors = []
+name = "linkup-python-sdk"
+version = "0.1.0"
+description = "A Python Client SDK for the Linkup API"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+  { name = "LINKUP TECHNOLOGIES", email = "contact@linkup.so" }
+]
+keywords = ["linkup", "api", "sdk", "client", "search"]
+
+classifiers = [
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent"
+]
+
 dependencies = [
   "httpx",
   "pydantic"
 ]
 
-description = ""
-name = "linkup-python-sdk"
-readme = "README.md"
-requires-python = ">=3.9"
-version = "0.1.0"
+[project.urls]
+Documentation = "https://github.com/LinkupPlatform/linkup-python-sdk#readme"
+Source = "https://github.com/LinkupPlatform/linkup-python-sdk"
+Tracker = "https://github.com/LinkupPlatform/linkup-python-sdk/issues"
 
 [dependency-groups]
 dev = [
@@ -23,6 +38,12 @@ dev = [
   "ruff>=0.8.0",
   "types-setuptools>=80.9.0"
 ]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+linkup = ["py.typed"]
 
 [tool.mypy]
 exclude = ['^tests/', 'venv/', '.venv/']
@@ -48,9 +69,6 @@ select = [
 
 [tool.ruff.lint.extend-per-file-ignores]
 "tests/**/*_test.py" = ["S101"] # Use of assert detected
-
-[tool.setuptools.packages.find]
-where = ["src"]
 
 [build-system]
 requires = ["setuptools >= 77.0.3"]
