@@ -1,6 +1,6 @@
 [project]
-name = "linkup-python-sdk"
-version = "0.1.0"
+name = "linkup-sdk"
+version = "0.2.8"
 description = "A Python Client SDK for the Linkup API"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -8,11 +8,11 @@ authors = [
   { name = "LINKUP TECHNOLOGIES", email = "contact@linkup.so" }
 ]
 keywords = ["linkup", "api", "sdk", "client", "search"]
+license = "MIT"
 
 classifiers = [
   "Intended Audience :: Developers",
   "Topic :: Software Development :: Libraries :: Python Modules",
-  "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent"
 ]
 
@@ -22,6 +22,7 @@ dependencies = [
 ]
 
 [project.urls]
+Homepage = "https://github.com/LinkupPlatform/linkup-python-sdk"
 Documentation = "https://github.com/LinkupPlatform/linkup-python-sdk#readme"
 Source = "https://github.com/LinkupPlatform/linkup-python-sdk"
 Tracker = "https://github.com/LinkupPlatform/linkup-python-sdk/issues"
@@ -34,9 +35,7 @@ dev = [
   "pytest-asyncio>=1.0.0",
   "pytest-cov>=6.2.1",
   "pytest-mock>=3.14.1",
-  "pytest-socket>=0.7.0",
-  "ruff>=0.8.0",
-  "types-setuptools>=80.9.0"
+  "pytest-socket>=0.7.0"
 ]
 
 [tool.setuptools.packages.find]
