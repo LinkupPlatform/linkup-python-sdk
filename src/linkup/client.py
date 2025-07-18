@@ -17,6 +17,7 @@ from linkup.errors import (
 )
 from linkup.types import LinkupSearchResults, LinkupSourcedAnswer, LinkupStructuredResult
 
+
 class LinkupClient:
     """The Linkup Client class.
 
