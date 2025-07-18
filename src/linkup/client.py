@@ -17,7 +17,6 @@ from linkup.errors import (
 )
 from linkup.types import LinkupSearchResults, LinkupSourcedAnswer, LinkupStructuredResult
 
-
 class LinkupClient:
     """The Linkup Client class.
 
@@ -86,6 +85,7 @@ class LinkupClient:
                 linkup.LinkupSearchResults. If output_type is "sourcedAnswer", the result will be a
                 linkup.LinkupSourcedAnswer. If output_type is "structured",
                 the result will be a linkup.LinkupStructuredResult
+
         Raises:
             TypeError: If structured_output_schema is not provided or is not a string or a
                 pydantic.BaseModel when output_type is "structured".
@@ -160,6 +160,7 @@ class LinkupClient:
         Returns:
             The Linkup API search result. If output_type is "searchResults", the result will be a
                 linkup.LinkupSearchResults. If output_type is "sourcedAnswer", the result will be a
+
                 linkup.LinkupSourcedAnswer. If output_type is "structured",
                 the result will be a linkup.LinkupStructuredResult
 
