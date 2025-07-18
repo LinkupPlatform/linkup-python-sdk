@@ -15,6 +15,7 @@ from .types import (
     LinkupSearchTextResult,
     LinkupSource,
     LinkupSourcedAnswer,
+    LinkupStructuredResult,
 )
 
 __all__ = [
@@ -30,4 +31,5 @@ __all__ = [
     "LinkupSearchResults",
     "LinkupSource",
     "LinkupSourcedAnswer",
+    "LinkupStructuredResult",
 ]

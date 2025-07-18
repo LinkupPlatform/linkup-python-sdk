@@ -15,7 +15,7 @@ from linkup.errors import (
     LinkupTooManyRequestsError,
     LinkupUnknownError,
 )
-from linkup.types import LinkupSearchResults, LinkupSourcedAnswer
+from linkup.types import LinkupSearchResults, LinkupSourcedAnswer, LinkupStructuredResult
 
 
 class LinkupClient:
@@ -84,10 +84,8 @@ class LinkupClient:
         Returns:
             The Linkup API search result. If output_type is "searchResults", the result will be a
                 linkup.LinkupSearchResults. If output_type is "sourcedAnswer", the result will be a
-                linkup.LinkupSourcedAnswer. If output_type is "structured", the result will be
-                either an instance of the provided pydantic.BaseModel, or an arbitrary data
-                structure, following structured_output_schema.
-
+                linkup.LinkupSourcedAnswer. If output_type is "structured",
+                the result will be a linkup.LinkupStructuredResult
         Raises:
             TypeError: If structured_output_schema is not provided or is not a string or a
                 pydantic.BaseModel when output_type is "structured".
@@ -162,9 +160,8 @@ class LinkupClient:
         Returns:
             The Linkup API search result. If output_type is "searchResults", the result will be a
                 linkup.LinkupSearchResults. If output_type is "sourcedAnswer", the result will be a
-                linkup.LinkupSourcedAnswer. If output_type is "structured", the result will be
-                either an instance of the provided pydantic.BaseModel, or an arbitrary data
-                structure, following structured_output_schema.
+                linkup.LinkupSourcedAnswer. If output_type is "structured",
+                the result will be a linkup.LinkupStructuredResult
 
         Raises:
             TypeError: If structured_output_schema is not provided or is not a string or a
@@ -359,12 +356,8 @@ class LinkupClient:
             output_base_model = LinkupSearchResults
         elif output_type == "sourcedAnswer":
             output_base_model = LinkupSourcedAnswer
-        elif (
-            output_type == "structured"
-            and not isinstance(structured_output_schema, (str, type(None)))
-            and issubclass(structured_output_schema, BaseModel)
-        ):
-            output_base_model = structured_output_schema
+        elif output_type == "structured":
+            output_base_model = LinkupStructuredResult
 
         if output_base_model is None:
             return response_data

@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Any, Dict, List, Union
 
 from pydantic import BaseModel
 
@@ -59,6 +59,19 @@ class LinkupSource(BaseModel):
     name: str
     url: str
     snippet: str
+
+
+class LinkupStructuredResult(BaseModel):
+    """
+    A Linkup answer in structured, with the sources supporting it
+
+    Attributes:
+        data: The answer that strictly follows the structuredOutput
+        sources: The sources supporting the answer.
+    """
+
+    data: Dict[str, Any]
+    sources: List[Union[LinkupSource, LinkupSearchTextResult, LinkupSearchImageResult]]
 
 
 class LinkupSourcedAnswer(BaseModel):
