@@ -13,6 +13,7 @@ from linkup import (
     LinkupSearchResults,
     LinkupSource,
     LinkupSourcedAnswer,
+    LinkupStructuredResult,
     LinkupUnknownError,
 )
 from linkup.errors import (
@@ -136,13 +137,22 @@ def test_search_structured_search(
     depth = "standard"
     output_type = "structured"
 
+    content = b"""
+    {
+      "data":  {
+        "name": "Linkup",
+        "creation_date": "2024",
+        "website_url": "",
+        "founders_names": ["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
+        "title": "Company"
+      },
+      "sources": [{"name": "foo", "url": "https://foo.bar/baz", "snippet": "foo bar baz"}]
+    }
+    """
+
     mocker.patch(
         "linkup.client.LinkupClient._request",
-        return_value=Response(
-            status_code=200,
-            content=b'{"name":"Linkup","founders_names":["Philippe Mizrahi","Denis Charrier",'
-            b'"Boris Toledano"],"creation_date":"2024","website_url":"","title":"Company"}',
-        ),
+        return_value=Response(status_code=200, content=content),
     )
 
     response: Any = client.search(
@@ -152,21 +162,12 @@ def test_search_structured_search(
         structured_output_schema=structured_output_schema,
     )
 
-    if isinstance(structured_output_schema, str):
-        assert response == dict(
-            creation_date="2024",
-            founders_names=["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
-            name="Linkup",
-            title="Company",
-            website_url="",
-        )
-
-    else:
-        assert isinstance(response, Company)
-        assert response.name == "Linkup"
-        assert response.creation_date == "2024"
-        assert response.website_url == ""
-        assert response.founders_names == ["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"]
+    assert isinstance(response, LinkupStructuredResult)
+    assert isinstance(response.data, dict)
+    assert isinstance(response.sources[0], LinkupSource)
+    assert response.sources[0].name == "foo"
+    assert response.sources[0].url == "https://foo.bar/baz"
+    assert response.sources[0].snippet == "foo bar baz"
 
 
 def test_search_authorization_error(mocker: MockerFixture, client: LinkupClient) -> None:
@@ -491,12 +492,23 @@ async def test_async_search_structured_search(
     depth = "standard"
     output_type = "structured"
 
-    mocker.patch(
-        "linkup.client.LinkupClient._async_request",
-        return_value=Response(
-            status_code=200,
-            content=b'{"name":"Linkup","founders_names":["Philippe Mizrahi","Denis Charrier",'
-            b'"Boris Toledano"],"creation_date":"2024","website_url":"","title":"Company"}',
+    content = b"""
+    {
+      "data":  {
+        "name": "Linkup",
+        "creation_date": "2024",
+        "website_url": "",
+        "founders_names": ["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
+        "title": "Company"
+      },
+      "sources": [{"name": "foo", "url": "https://foo.bar/baz", "snippet": "foo bar baz"}]
+    }
+    """
+
+    (
+        mocker.patch(
+            "linkup.client.LinkupClient._async_request",
+            return_value=Response(status_code=200, content=content),
         ),
     )
 
@@ -507,21 +519,12 @@ async def test_async_search_structured_search(
         structured_output_schema=structured_output_schema,
     )
 
-    if isinstance(structured_output_schema, str):
-        assert response == dict(
-            creation_date="2024",
-            founders_names=["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
-            name="Linkup",
-            title="Company",
-            website_url="",
-        )
-
-    else:
-        assert isinstance(response, Company)
-        assert response.name == "Linkup"
-        assert response.creation_date == "2024"
-        assert response.website_url == ""
-        assert response.founders_names == ["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"]
+    assert isinstance(response, LinkupStructuredResult)
+    assert isinstance(response.data, dict)
+    assert isinstance(response.sources[0], LinkupSource)
+    assert response.sources[0].name == "foo"
+    assert response.sources[0].url == "https://foo.bar/baz"
+    assert response.sources[0].snippet == "foo bar baz"
 
 
 @pytest.mark.asyncio
