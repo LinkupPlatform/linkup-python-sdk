@@ -3,7 +3,7 @@ name: Semantic Release
 on:
   push:
     branches:
-      - chore/add_semantic_release
+      - test_semantic_release
 
 jobs:
   release:
