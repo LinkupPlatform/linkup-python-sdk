@@ -13,4 +13,4 @@ test:
 	# pytest tests/integration_tests
 release:
 	@echo "Running semantic release..."
-	semantic-release publish
+	uv run semantic-release publish
