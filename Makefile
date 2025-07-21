@@ -11,6 +11,3 @@ test:
 	uv run pytest --cov=src/linkup/ --cov-report term-missing --disable-socket --allow-unix-socket tests/unit_tests
 	# TODO: uncomment the following line when integration tests are ready
 	# pytest tests/integration_tests
-release:
-	@echo "Running semantic release..."
-	uv run semantic-release publish
