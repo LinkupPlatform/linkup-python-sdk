@@ -1,7 +1,9 @@
-install-dev:
-	@echo "Installing local package..."
+install:
 	uv sync
+install-dev:
+	@$(MAKE) install
 	uv run pre-commit install
+
 test:
 	@echo "Running tests..."
 	uv run pre-commit run --all-files
