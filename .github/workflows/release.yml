@@ -27,7 +27,7 @@ jobs:
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
-          token: ${{ secrets.PYTHON_SEMANTIC_RELEASE_TOKEN }}
+          token: ${{ secrets.GH_TOKEN_FOR_SEMANTIC_RELEASE }}
 
       - name: Setup | Force release branch to be at workflow sha
         run: |
@@ -69,7 +69,7 @@ jobs:
         id: release
         uses: python-semantic-release/python-semantic-release@v10.4.1
         with:
-          github_token: ${{ secrets.PYTHON_SEMANTIC_RELEASE_TOKEN }}
+          github_token: ${{ secrets.GH_TOKEN_FOR_SEMANTIC_RELEASE }}
           git_committer_name: "github-actions"
           git_committer_email: "actions@users.noreply.github.com"
 
@@ -77,7 +77,7 @@ jobs:
         uses: python-semantic-release/publish-action@v10.4.1
         if: steps.release.outputs.released == 'true'
         with:
-          github_token: ${{ secrets.PYTHON_SEMANTIC_RELEASE_TOKEN }}
+          github_token: ${{ secrets.GH_TOKEN_FOR_SEMANTIC_RELEASE }}
           tag: ${{ steps.release.outputs.tag }}
 
       - name: Upload | Distribution Artifacts
