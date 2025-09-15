@@ -1,1 +1,3 @@
-__version__ = "0.2.8"
+from importlib.metadata import version as get_version
+
+__version__: str = get_version("linkup-sdk")
