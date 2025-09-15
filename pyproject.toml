@@ -84,3 +84,4 @@ build_command = """
     git add uv.lock
     uv build
 """
+version_toml = ["pyproject.toml:project.version"]
