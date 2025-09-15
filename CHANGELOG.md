@@ -2,6 +2,114 @@
 
 <!-- version list -->
 
+## v0.3.0 (2025-09-15)
+
+### Bug Fixes
+
+- Add missing import and rename ([#34](https://github.com/LinkupPlatform/linkup-python-sdk/pull/34),
+  [`a666011`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/a6660113c41e72af918c134e2f2ba304c874a169))
+
+- Add missing import and rename ([#33](https://github.com/LinkupPlatform/linkup-python-sdk/pull/33),
+  [`2fb5984`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/2fb5984af59244f314840e4a5f0888c1921cea2c))
+
+- Fetch all commit history for semantic-release
+  ([`d811306`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/d81130693ae04d6b2c13908811adeb0783a8ae65))
+
+- Install uv in python-semantic-release action
+  ([`b7af0eb`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/b7af0eb341ab091408d5b8aace0f630a80683006))
+
+- Keep version in 0.x.x
+  ([`0bbcfbd`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/0bbcfbdce4e9f4833812a8d39c77f7b23d05ac51))
+
+- Semantic release adapt with uv
+  ([#34](https://github.com/LinkupPlatform/linkup-python-sdk/pull/34),
+  [`a666011`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/a6660113c41e72af918c134e2f2ba304c874a169))
+
+- Test local release ([#34](https://github.com/LinkupPlatform/linkup-python-sdk/pull/34),
+  [`a666011`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/a6660113c41e72af918c134e2f2ba304c874a169))
+
+- Update and simplify github actions
+  ([`8e48be3`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/8e48be3b29d47fe9363f5e03f83ffc99671af8a7))
+
+- Use semantic release GH actions
+  ([`069f7e0`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/069f7e039ba3e4723111ba88aae9ecaa3e4eaa75))
+
+### Chores
+
+- Add build system in pyproject ([#34](https://github.com/LinkupPlatform/linkup-python-sdk/pull/34),
+  [`a666011`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/a6660113c41e72af918c134e2f2ba304c874a169))
+
+- Add build system in pyproject ([#33](https://github.com/LinkupPlatform/linkup-python-sdk/pull/33),
+  [`2fb5984`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/2fb5984af59244f314840e4a5f0888c1921cea2c))
+
+- Add more info into pyproject ([#34](https://github.com/LinkupPlatform/linkup-python-sdk/pull/34),
+  [`a666011`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/a6660113c41e72af918c134e2f2ba304c874a169))
+
+- Add more info into pyproject ([#33](https://github.com/LinkupPlatform/linkup-python-sdk/pull/33),
+  [`2fb5984`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/2fb5984af59244f314840e4a5f0888c1921cea2c))
+
+- Add package find in pyproject ([#34](https://github.com/LinkupPlatform/linkup-python-sdk/pull/34),
+  [`a666011`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/a6660113c41e72af918c134e2f2ba304c874a169))
+
+- Add package find in pyproject ([#33](https://github.com/LinkupPlatform/linkup-python-sdk/pull/33),
+  [`2fb5984`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/2fb5984af59244f314840e4a5f0888c1921cea2c))
+
+- Add semantic release ([#34](https://github.com/LinkupPlatform/linkup-python-sdk/pull/34),
+  [`a666011`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/a6660113c41e72af918c134e2f2ba304c874a169))
+
+- Add spaces ([#34](https://github.com/LinkupPlatform/linkup-python-sdk/pull/34),
+  [`a666011`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/a6660113c41e72af918c134e2f2ba304c874a169))
+
+- Add uv for python sdk ([#34](https://github.com/LinkupPlatform/linkup-python-sdk/pull/34),
+  [`a666011`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/a6660113c41e72af918c134e2f2ba304c874a169))
+
+- Add uv for python sdk ([#33](https://github.com/LinkupPlatform/linkup-python-sdk/pull/33),
+  [`2fb5984`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/2fb5984af59244f314840e4a5f0888c1921cea2c))
+
+- Erase step set up python ([#34](https://github.com/LinkupPlatform/linkup-python-sdk/pull/34),
+  [`a666011`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/a6660113c41e72af918c134e2f2ba304c874a169))
+
+- Erase step set up python ([#33](https://github.com/LinkupPlatform/linkup-python-sdk/pull/33),
+  [`2fb5984`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/2fb5984af59244f314840e4a5f0888c1921cea2c))
+
+- Erase useless depenency in the uv lock
+  ([#34](https://github.com/LinkupPlatform/linkup-python-sdk/pull/34),
+  [`a666011`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/a6660113c41e72af918c134e2f2ba304c874a169))
+
+- Order for yml test install uv ([#34](https://github.com/LinkupPlatform/linkup-python-sdk/pull/34),
+  [`a666011`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/a6660113c41e72af918c134e2f2ba304c874a169))
+
+- Order for yml test install uv ([#33](https://github.com/LinkupPlatform/linkup-python-sdk/pull/33),
+  [`2fb5984`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/2fb5984af59244f314840e4a5f0888c1921cea2c))
+
+- Stay on version 0.x ([#34](https://github.com/LinkupPlatform/linkup-python-sdk/pull/34),
+  [`a666011`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/a6660113c41e72af918c134e2f2ba304c874a169))
+
+- Syntax yml ([#34](https://github.com/LinkupPlatform/linkup-python-sdk/pull/34),
+  [`a666011`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/a6660113c41e72af918c134e2f2ba304c874a169))
+
+- Syntax yml ([#33](https://github.com/LinkupPlatform/linkup-python-sdk/pull/33),
+  [`2fb5984`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/2fb5984af59244f314840e4a5f0888c1921cea2c))
+
+- Use hatchling instead of setuptools in pyproject
+  ([#34](https://github.com/LinkupPlatform/linkup-python-sdk/pull/34),
+  [`a666011`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/a6660113c41e72af918c134e2f2ba304c874a169))
+
+- Use hatchling instead of setuptools in pyproject
+  ([#33](https://github.com/LinkupPlatform/linkup-python-sdk/pull/33),
+  [`2fb5984`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/2fb5984af59244f314840e4a5f0888c1921cea2c))
+
+### Continuous Integration
+
+- Change secret variable name
+  ([`7e750d1`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/7e750d11a6d34d4971ba16190b5cef02fadd498c))
+
+### Features
+
+- Add uv with semantic release ([#34](https://github.com/LinkupPlatform/linkup-python-sdk/pull/34),
+  [`a666011`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/a6660113c41e72af918c134e2f2ba304c874a169))
+
+
 ## v0.2.9 (2025-07-25)
 
 ### Bug Fixes
