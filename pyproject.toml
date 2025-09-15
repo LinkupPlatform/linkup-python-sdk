@@ -37,7 +37,6 @@ dev = [
   "pytest-cov>=6.2.1",
   "pytest-mock>=3.14.1",
   "pytest-socket>=0.7.0",
-  "python-semantic-release>=10.2.0",
 ]
 
 [tool.mypy]
