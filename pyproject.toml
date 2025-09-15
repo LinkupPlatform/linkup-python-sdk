@@ -1,6 +1,6 @@
 [project]
 name = "linkup-sdk"
-version = "0.2.8"
+version = "0.3.1"
 description = "A Python Client SDK for the Linkup API"
 readme = "README.md"
 requires-python = ">=3.9"

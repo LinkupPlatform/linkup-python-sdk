@@ -2,6 +2,30 @@
 
 <!-- version list -->
 
+## v0.3.1 (2025-09-15)
+
+### Bug Fixes
+
+- Outdated package version
+  ([`20ae5d0`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/20ae5d0201614c908d6e2f152637b3760059ea8c))
+
+### Chores
+
+- Update pyproject.toml config
+  ([`c573df7`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/c573df7f600c5f8d28346ded7043047fc65d656c))
+
+### Continuous Integration
+
+- Automatically bump pyproject.toml version
+  ([`ee13a6a`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/ee13a6a36f5fbbb508d1a880ed2c377b8ad38a81))
+
+- Expose outputs in release job
+  ([`0af76cb`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/0af76cb83614e88f796ca45ca614ba1d111e3c0e))
+
+- Skip remaining release jobs if no release is made
+  ([`16df390`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/16df390ed42e39e5ba8b4c96bda376baa6cf5fad))
+
+
 ## v0.3.0 (2025-09-15)
 
 ### Bug Fixes
