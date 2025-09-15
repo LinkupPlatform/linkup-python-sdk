@@ -4,12 +4,30 @@ install-dev:
 	@$(MAKE) install
 	uv run pre-commit install
 
+lint:
+	SKIP=no-commit-to-branch uv run pre-commit run --all-files
+
+test-mypy:
+	@# Avoid running mypy on the whole directory ("./") to avoid potential conflicts with files with the same name (e.g. between different types of tests)
+	uv run mypy ./src/
+	uv run mypy ./tests/unit/
+test-pytest:
+	uv run pytest --cov=src/linkup/ ./tests/unit/
 test:
-	@echo "Running tests..."
-	uv run pre-commit run --all-files
-	uv run mypy .
-	# Follow the test practices recommanded by LangChain (v0.3)
-	# See https://python.langchain.com/docs/contributing/how_to/integrations/standard_tests/
-	uv run pytest --cov=src/linkup/ --cov-report term-missing --disable-socket --allow-unix-socket tests/unit_tests
-	# TODO: uncomment the following line when integration tests are ready
-	# pytest tests/integration_tests
+	@$(MAKE) test-mypy
+	@echo
+	@$(MAKE) test-pytest
+
+update-uv:
+	uv lock --upgrade
+	uv sync
+update-pre-commit:
+	uv run pre-commit autoupdate
+
+clean:
+	rm -rf dist/
+	rm -f .coverage
+	rm -rf .mypy_cache/
+	rm -rf .pytest_cache/
+	rm -rf .ruff_cache/
+	rm -rf **/*/__pycache__/

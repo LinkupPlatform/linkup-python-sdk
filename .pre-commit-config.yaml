@@ -1,21 +1,39 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: check-added-large-files
       - id: check-merge-conflict
       - id: detect-private-key
       - id: end-of-file-fixer
-      - id: trailing-whitespace
+      - id: name-tests-test
+      - id: no-commit-to-branch
+        args: [--branch, main]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.0
+    rev: v0.13.0
     hooks:
       - id: ruff
         args: [--fix]
       - id: ruff-format
 
+  - repo: https://github.com/hukkin/mdformat
+    rev: 0.7.22
+    hooks:
+      - id: mdformat
+        exclude: CHANGELOG.md
+
+  - repo: https://github.com/ComPWA/taplo-pre-commit
+    rev: v0.9.3
+    hooks:
+      - id: taplo-format
+
+  - repo: https://github.com/google/yamlfmt
+    rev: v0.17.2
+    hooks:
+      - id: yamlfmt
+
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.21.2
+    rev: v8.28.0
     hooks:
       - id: gitleaks
