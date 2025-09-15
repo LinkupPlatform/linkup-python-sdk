@@ -85,3 +85,6 @@ build_command = """
     uv build
 """
 version_toml = ["pyproject.toml:project.version"]
+
+[tool.semantic_release.commit_parser_options]
+parse_squash_commits = false
