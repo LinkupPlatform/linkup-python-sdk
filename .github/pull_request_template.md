@@ -8,4 +8,5 @@
 
 - [ ] I have run the tests locally with `make install-dev` and `make test`
 - [ ] I have updated the `README.md` if my changes affected it
-- [ ] I have updated the package version in `linkup/_version.py` and `pyproject.toml` if I plan on creating a new release
+- [ ] I have updated the package version in `linkup/_version.py` and `pyproject.toml` if I plan on
+  creating a new release

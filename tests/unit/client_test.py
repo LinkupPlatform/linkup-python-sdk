@@ -1,5 +1,5 @@
 import json
-from typing import Any, List, Type, Union
+from typing import Any, Union
 
 import pytest
 from httpx import Response
@@ -27,7 +27,7 @@ class Company(BaseModel):
     name: str
     creation_date: str
     website_url: str
-    founders_names: List[str]
+    founders_names: list[str]
 
 
 def test_search_search_results(mocker: MockerFixture, client: LinkupClient) -> None:
@@ -130,12 +130,8 @@ def test_search_sourced_answer(mocker: MockerFixture, client: LinkupClient) -> N
 def test_search_structured_search(
     mocker: MockerFixture,
     client: LinkupClient,
-    structured_output_schema: Union[Type[BaseModel], str],
+    structured_output_schema: Union[type[BaseModel], str],
 ) -> None:
-    query = "What is Linkup, the new French AI company?"
-    depth = "standard"
-    output_type = "structured"
-
     mocker.patch(
         "linkup.client.LinkupClient._request",
         return_value=Response(
@@ -146,9 +142,9 @@ def test_search_structured_search(
     )
 
     response: Any = client.search(
-        query=query,
-        depth=depth,
-        output_type=output_type,
+        query="What is Linkup, the new French AI company?",
+        depth="standard",
+        output_type="structured",
         structured_output_schema=structured_output_schema,
     )
 
@@ -170,10 +166,6 @@ def test_search_structured_search(
 
 
 def test_search_authorization_error(mocker: MockerFixture, client: LinkupClient) -> None:
-    query = "What is Linkup, the new French AI company?"
-    depth = "standard"
-    output_type = "searchResults"
-
     mock_response = mocker.Mock()
     mock_response.status_code = 403
     mock_response.json.return_value = {
@@ -191,14 +183,14 @@ def test_search_authorization_error(mocker: MockerFixture, client: LinkupClient)
     )
 
     with pytest.raises(LinkupAuthenticationError):
-        client.search(query=query, depth=depth, output_type=output_type)
+        client.search(
+            query="What is Linkup, the new French AI company?",
+            depth="standard",
+            output_type="searchResults",
+        )
 
 
 def test_search_authentication_error(mocker: MockerFixture, client: LinkupClient) -> None:
-    query = "What is Linkup, the new French AI company?"
-    depth = "standard"
-    output_type = "searchResults"
-
     mock_response = mocker.Mock()
     mock_response.status_code = 401
     mock_response.json.return_value = {
@@ -216,7 +208,11 @@ def test_search_authentication_error(mocker: MockerFixture, client: LinkupClient
     )
 
     with pytest.raises(LinkupAuthenticationError):
-        client.search(query=query, depth=depth, output_type=output_type)
+        client.search(
+            query="What is Linkup, the new French AI company?",
+            depth="standard",
+            output_type="searchResults",
+        )
 
 
 def test_search_insufficient_credit_error(mocker: MockerFixture, client: LinkupClient) -> None:
@@ -286,26 +282,6 @@ def test_search_structured_search_invalid_request(
     mocker: MockerFixture,
     client: LinkupClient,
 ) -> None:
-    query = "What is Linkup, the new French AI company?"
-    depth = "standard"
-    output_type = "structured"
-    # Schema corresponding to the Company class, without "type": "object"
-    structured_output_schema = json.dumps(
-        {
-            "properties": {
-                "name": {"title": "Name", "type": "string"},
-                "creation_date": {"title": "Creation Date", "type": "string"},
-                "website_url": {"title": "Website Url", "type": "string"},
-                "founders_names": {
-                    "items": {"type": "string"},
-                    "title": "Founders Names",
-                    "type": "array",
-                },
-            },
-            "required": ["name", "creation_date", "website_url", "founders_names"],
-            "title": "Company",
-        }
-    )
     mock_response = mocker.Mock()
     mock_response.status_code = 400
     mock_response.json.return_value = {
@@ -326,10 +302,26 @@ def test_search_structured_search_invalid_request(
 
     with pytest.raises(LinkupInvalidRequestError):
         client.search(
-            query=query,
-            depth=depth,
-            output_type=output_type,
-            structured_output_schema=structured_output_schema,
+            query="What is Linkup, the new French AI company?",
+            depth="standard",
+            output_type="structured",
+            # Schema corresponding to the Company class, without "type": "object"
+            structured_output_schema=json.dumps(
+                {
+                    "properties": {
+                        "name": {"title": "Name", "type": "string"},
+                        "creation_date": {"title": "Creation Date", "type": "string"},
+                        "website_url": {"title": "Website Url", "type": "string"},
+                        "founders_names": {
+                            "items": {"type": "string"},
+                            "title": "Founders Names",
+                            "type": "array",
+                        },
+                    },
+                    "required": ["name", "creation_date", "website_url", "founders_names"],
+                    "title": "Company",
+                }
+            ),
         )
 
 
@@ -354,10 +346,6 @@ def test_search_no_result_error(mocker: MockerFixture, client: LinkupClient) -> 
 
 
 def test_search_unknown_error(mocker: MockerFixture, client: LinkupClient) -> None:
-    query = "What is Linkup, the new French AI company?"
-    depth = "standard"
-    output_type = "searchResults"
-
     mock_response = mocker.Mock()
     mock_response.status_code = 500
     mock_response.json.return_value = {
@@ -375,7 +363,11 @@ def test_search_unknown_error(mocker: MockerFixture, client: LinkupClient) -> No
     )
 
     with pytest.raises(LinkupUnknownError):
-        client.search(query=query, depth=depth, output_type=output_type)
+        client.search(
+            query="What is Linkup, the new French AI company?",
+            depth="standard",
+            output_type="searchResults",
+        )
 
 
 @pytest.mark.asyncio
@@ -485,12 +477,8 @@ async def test_async_search_sourced_answer(mocker: MockerFixture, client: Linkup
 async def test_async_search_structured_search(
     mocker: MockerFixture,
     client: LinkupClient,
-    structured_output_schema: Union[Type[BaseModel], str],
+    structured_output_schema: Union[type[BaseModel], str],
 ) -> None:
-    query = "What is Linkup, the new French AI company?"
-    depth = "standard"
-    output_type = "structured"
-
     mocker.patch(
         "linkup.client.LinkupClient._async_request",
         return_value=Response(
@@ -501,9 +489,9 @@ async def test_async_search_structured_search(
     )
 
     response: Any = await client.async_search(
-        query=query,
-        depth=depth,
-        output_type=output_type,
+        query="What is Linkup, the new French AI company?",
+        depth="standard",
+        output_type="structured",
         structured_output_schema=structured_output_schema,
     )
 
@@ -528,10 +516,6 @@ async def test_async_search_structured_search(
 async def test_async_search_authorization_error(
     mocker: MockerFixture, client: LinkupClient
 ) -> None:
-    query = "What is Linkup, the new French AI company?"
-    depth = "standard"
-    output_type = "searchResults"
-
     mock_response = mocker.Mock()
     mock_response.status_code = 403
     mock_response.json.return_value = {
@@ -549,17 +533,17 @@ async def test_async_search_authorization_error(
     )
 
     with pytest.raises(LinkupAuthenticationError):
-        await client.async_search(query=query, depth=depth, output_type=output_type)
+        await client.async_search(
+            query="What is Linkup, the new French AI company?",
+            depth="standard",
+            output_type="searchResults",
+        )
 
 
 @pytest.mark.asyncio
 async def test_async_search_authentication_error(
     mocker: MockerFixture, client: LinkupClient
 ) -> None:
-    query = "What is Linkup, the new French AI company?"
-    depth = "standard"
-    output_type = "searchResults"
-
     mock_response = mocker.Mock()
     mock_response.status_code = 401
     mock_response.json.return_value = {
@@ -577,7 +561,11 @@ async def test_async_search_authentication_error(
     )
 
     with pytest.raises(LinkupAuthenticationError):
-        await client.async_search(query=query, depth=depth, output_type=output_type)
+        await client.async_search(
+            query="What is Linkup, the new French AI company?",
+            depth="standard",
+            output_type="searchResults",
+        )
 
 
 @pytest.mark.asyncio
@@ -654,27 +642,6 @@ async def test_async_search_structured_search_invalid_request(
     mocker: MockerFixture,
     client: LinkupClient,
 ) -> None:
-    query = "What is Linkup, the new French AI company?"
-    depth = "standard"
-    output_type = "structured"
-    # Schema corresponding to the Company class, without "type": "object"
-    structured_output_schema = json.dumps(
-        {
-            "properties": {
-                "name": {"title": "Name", "type": "string"},
-                "creation_date": {"title": "Creation Date", "type": "string"},
-                "website_url": {"title": "Website Url", "type": "string"},
-                "founders_names": {
-                    "items": {"type": "string"},
-                    "title": "Founders Names",
-                    "type": "array",
-                },
-            },
-            "required": ["name", "creation_date", "website_url", "founders_names"],
-            "title": "Company",
-        }
-    )
-
     mock_response = mocker.Mock()
     mock_response.status_code = 400
     mock_response.json.return_value = {
@@ -698,10 +665,26 @@ async def test_async_search_structured_search_invalid_request(
 
     with pytest.raises(LinkupInvalidRequestError):
         await client.async_search(
-            query=query,
-            depth=depth,
-            output_type=output_type,
-            structured_output_schema=structured_output_schema,
+            query="What is Linkup, the new French AI company?",
+            depth="standard",
+            output_type="structured",
+            # Schema corresponding to the Company class, without "type": "object"
+            structured_output_schema=json.dumps(
+                {
+                    "properties": {
+                        "name": {"title": "Name", "type": "string"},
+                        "creation_date": {"title": "Creation Date", "type": "string"},
+                        "website_url": {"title": "Website Url", "type": "string"},
+                        "founders_names": {
+                            "items": {"type": "string"},
+                            "title": "Founders Names",
+                            "type": "array",
+                        },
+                    },
+                    "required": ["name", "creation_date", "website_url", "founders_names"],
+                    "title": "Company",
+                }
+            ),
         )
 
 
@@ -728,10 +711,6 @@ async def test_async_search_no_result_error(mocker: MockerFixture, client: Linku
 
 @pytest.mark.asyncio
 async def test_async_search_unknown_error(mocker: MockerFixture, client: LinkupClient) -> None:
-    query = "What is Linkup, the new French AI company?"
-    depth = "standard"
-    output_type = "searchResults"
-
     mock_response = mocker.Mock()
     mock_response.status_code = 500
     mock_response.json.return_value = {
@@ -749,4 +728,8 @@ async def test_async_search_unknown_error(mocker: MockerFixture, client: LinkupC
     )
 
     with pytest.raises(LinkupUnknownError):
-        await client.async_search(query=query, depth=depth, output_type=output_type)
+        await client.async_search(
+            query="What is Linkup, the new French AI company?",
+            depth="standard",
+            output_type="searchResults",
+        )
