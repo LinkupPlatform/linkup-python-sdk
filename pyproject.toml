@@ -22,6 +22,9 @@ dependencies = [
   "pydantic"
 ]
 
+[project.optional-dependencies]
+build = ["uv>=0.8.0,<0.9.0"] # For python-semantic-release build command, used in GitHub actions
+
 [project.urls]
 Homepage = "https://github.com/LinkupPlatform/linkup-python-sdk"
 Documentation = "https://github.com/LinkupPlatform/linkup-python-sdk#readme"
@@ -84,6 +87,7 @@ commit_parser = "conventional"
 allow_zero_version = true
 major_on_zero = false
 build_command = """
+    python -m pip install -e '.[build]'
     uv lock --upgrade-package "$PACKAGE_NAME"
     git add uv.lock
     uv build
