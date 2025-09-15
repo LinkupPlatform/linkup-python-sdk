@@ -39,33 +39,29 @@ dev = [
   "pytest-asyncio>=1.0.0",
   "pytest-cov>=6.2.1",
   "pytest-mock>=3.14.1",
-  "pytest-socket>=0.7.0",
 ]
 
 [tool.mypy]
-exclude = ['^tests/', 'venv/', '.venv/']
 strict = true
+warn_unreachable = true
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
 
 [tool.coverage.report]
-exclude_also = ["raise ValueError", "raise TypeError"]
+exclude_also = ["raise TypeError", "raise ValueError"]
+show_missing = true
+skip_covered = true
 
 [tool.ruff]
 line-length = 100
 target-version = "py39"
 
 [tool.ruff.lint]
-select = [
-  "E", # pycodestyle
-  "F", # pyflakes
-  "I", # isort
-  "S", # flake8-bandit
-]
+select = ["E", "F", "I", "S", "UP"]
 
 [tool.ruff.lint.extend-per-file-ignores]
-"tests/**/*_test.py" = ["S101"] # Use of assert detected
+"tests/**/*_test.py" = ["S101"]
 
 [build-system]
 requires = ["hatchling"]
@@ -88,3 +84,6 @@ version_toml = ["pyproject.toml:project.version"]
 
 [tool.semantic_release.commit_parser_options]
 parse_squash_commits = false
+
+[tool.uv]
+required-version = ">=0.8.0,<0.9.0"
