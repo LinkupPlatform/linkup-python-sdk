@@ -4,6 +4,8 @@ The Linkup search can also be used to perform direct Question Answering, with ou
 along with the sources supporting it.
 """
 
+from rich import print
+
 from linkup import LinkupClient
 
 client = LinkupClient()

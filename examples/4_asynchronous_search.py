@@ -7,6 +7,8 @@ duration.
 import asyncio
 import time
 
+from rich import print
+
 from linkup import LinkupClient
 
 client = LinkupClient()
