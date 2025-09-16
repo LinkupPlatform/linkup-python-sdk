@@ -72,8 +72,7 @@ class LinkupClient:
             structured_output_schema: If output_type is "structured", specify the schema of the
                 output. Supported formats are a pydantic.BaseModel or a string representing a
                 valid object JSON schema.
-            include_images: If output_type is "searchResults", specifies if the response can include
-                images. Default to False.
+            include_images: Specify if the search should try and include images.
             exclude_domains: If you want to exclude specific domains from your search.
             include_domains: If you want the search to only return results from certain domains.
             from_date: The date from which the search results should be considered. If None, the
@@ -150,8 +149,7 @@ class LinkupClient:
             structured_output_schema: If output_type is "structured", specify the schema of the
                 output. Supported formats are a pydantic.BaseModel or a string representing a
                 valid object JSON schema.
-            include_images: If output_type is "searchResults", specifies if the response can include
-                images. Default to False
+            include_images: Specify if the search should try and include images.
             exclude_domains: If you want to exclude specific domains from your search.
             include_domains: If you want the search to only return results from certain domains.
             from_date: The date from which the search results should be considered. If None, the
