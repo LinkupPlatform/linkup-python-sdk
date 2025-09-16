@@ -44,6 +44,16 @@ class LinkupTooManyRequestsError(Exception):
     pass
 
 
+class LinkupFailedFetchError(Exception):
+    """Failed fetch error, raised when the Linkup API search returns a 400 status code.
+
+    It is returned when the Linkup API failed to fetch the content of an URL due to technical
+    reasons.
+    """
+
+    pass
+
+
 class LinkupUnknownError(Exception):
     """Unknown error, raised when the Linkup API returns an unknown status code."""
 

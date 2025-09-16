@@ -17,11 +17,12 @@ from linkup import (
     LinkupUnknownError,
 )
 from linkup.errors import (
+    LinkupFailedFetchError,
     LinkupInsufficientCreditError,
     LinkupNoResultError,
     LinkupTooManyRequestsError,
 )
-from linkup.types import LinkupSearchImageResult, LinkupSearchTextResult
+from linkup.types import LinkupFetchResponse, LinkupSearchImageResult, LinkupSearchTextResult
 
 
 class Company(BaseModel):
@@ -436,4 +437,171 @@ async def test_async_search_error(
 
     with pytest.raises(expected_exception):
         await client.async_search(query="query", depth="standard", output_type="searchResults")
+    request_mock.assert_called_once()
+
+
+test_fetch_parameters = [
+    (
+        {"url": "https://example.com"},
+        {"url": "https://example.com", "renderJs": False, "includeRawHtml": False},
+        b'{"markdown": "Some web page content"}',
+        LinkupFetchResponse(markdown="Some web page content", raw_html=None),
+    ),
+    (
+        {"url": "https://example.com", "render_js": True},
+        {"url": "https://example.com", "renderJs": True, "includeRawHtml": False},
+        b'{"markdown": "#Some web page content"}',
+        LinkupFetchResponse(markdown="#Some web page content", raw_html=None),
+    ),
+    (
+        {"url": "https://example.com", "include_raw_html": True},
+        {"url": "https://example.com", "renderJs": False, "includeRawHtml": True},
+        b'{"markdown": "#Some web page content", "rawHtml": "<html>...</html>"}',
+        LinkupFetchResponse(markdown="#Some web page content", raw_html="<html>...</html>"),
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "fetch_kwargs, expected_request_params, mock_request_response_content, expected_fetch_response",
+    test_fetch_parameters,
+)
+def test_fetch(
+    mocker: MockerFixture,
+    client: LinkupClient,
+    fetch_kwargs: dict[str, Any],
+    expected_request_params: dict[str, Any],
+    mock_request_response_content: bytes,
+    expected_fetch_response: Any,
+) -> None:
+    request_mock = mocker.patch(
+        "linkup.client.LinkupClient._request",
+        return_value=Response(
+            status_code=200,
+            content=mock_request_response_content,
+        ),
+    )
+
+    fetch_response: Any = client.fetch(**fetch_kwargs)
+    request_mock.assert_called_once_with(
+        method="POST",
+        url="/fetch",
+        json=expected_request_params,
+        timeout=None,
+    )
+    assert fetch_response == expected_fetch_response
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "fetch_kwargs, expected_request_params, mock_request_response_content, expected_fetch_response",
+    test_fetch_parameters,
+)
+async def test_async_fetch(
+    mocker: MockerFixture,
+    client: LinkupClient,
+    fetch_kwargs: dict[str, Any],
+    expected_request_params: dict[str, Any],
+    mock_request_response_content: bytes,
+    expected_fetch_response: Any,
+) -> None:
+    request_mock = mocker.patch(
+        "linkup.client.LinkupClient._async_request",
+        return_value=Response(
+            status_code=200,
+            content=mock_request_response_content,
+        ),
+    )
+
+    fetch_response: Any = await client.async_fetch(**fetch_kwargs)
+    request_mock.assert_called_once_with(
+        method="POST",
+        url="/fetch",
+        json=expected_request_params,
+        timeout=None,
+    )
+    assert fetch_response == expected_fetch_response
+
+
+test_fetch_error_parameters = [
+    (
+        400,
+        b"""
+        {
+            "error": {
+                "code": "FETCH_ERROR",
+                "message": "Could not fetch the URL",
+                "details": []
+            }
+        }
+        """,
+        LinkupFailedFetchError,
+    ),
+    (
+        400,
+        b"""
+        {
+            "error": {
+                "code": "VALIDATION_ERROR",
+                "message": "Validation failed",
+                "details": [
+                    {
+                        "field": "url",
+                        "message": "url must be a valid URL"
+                    }
+                ]
+            }
+        }
+        """,
+        LinkupInvalidRequestError,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "mock_request_response_status_code, mock_request_response_content, expected_exception",
+    test_fetch_error_parameters,
+)
+def test_fetch_error(
+    mocker: MockerFixture,
+    client: LinkupClient,
+    mock_request_response_status_code: int,
+    mock_request_response_content: bytes,
+    expected_exception: Any,
+) -> None:
+    request_mock = mocker.patch(
+        "linkup.client.LinkupClient._request",
+        return_value=Response(
+            status_code=mock_request_response_status_code,
+            content=mock_request_response_content,
+        ),
+    )
+
+    with pytest.raises(expected_exception):
+        client.fetch(url="https://example.com")
+    request_mock.assert_called_once()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "mock_request_response_status_code, mock_request_response_content, expected_exception",
+    test_fetch_error_parameters,
+)
+async def test_async_fetch_error(
+    mocker: MockerFixture,
+    client: LinkupClient,
+    mock_request_response_status_code: int,
+    mock_request_response_content: bytes,
+    expected_exception: Any,
+) -> None:
+    request_mock = mocker.patch(
+        "linkup.client.LinkupClient._async_request",
+        return_value=Response(
+            status_code=mock_request_response_status_code,
+            content=mock_request_response_content,
+        ),
+    )
+
+    with pytest.raises(expected_exception):
+        await client.async_fetch(url="https://example.com")
     request_mock.assert_called_once()

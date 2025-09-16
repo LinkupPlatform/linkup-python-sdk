@@ -1,6 +1,6 @@
-from typing import Literal, Union
+from typing import Literal, Optional, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class LinkupSearchTextResult(BaseModel):
@@ -72,3 +72,18 @@ class LinkupSourcedAnswer(BaseModel):
 
     answer: str
     sources: list[LinkupSource]
+
+
+class LinkupFetchResponse(BaseModel):
+    """
+    The response from a Linkup web page fetch.
+
+    Attributes:
+        markdown: The cleaned up markdown content.
+        raw_html: The optional raw HTML content.
+    """
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    markdown: str
+    raw_html: Optional[str] = Field(default=None, validation_alias="rawHtml")
