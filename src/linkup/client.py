@@ -9,13 +9,14 @@ from pydantic import BaseModel
 from linkup._version import __version__
 from linkup.errors import (
     LinkupAuthenticationError,
+    LinkupFailedFetchError,
     LinkupInsufficientCreditError,
     LinkupInvalidRequestError,
     LinkupNoResultError,
     LinkupTooManyRequestsError,
     LinkupUnknownError,
 )
-from linkup.types import LinkupSearchResults, LinkupSourcedAnswer
+from linkup.types import LinkupFetchResponse, LinkupSearchResults, LinkupSourcedAnswer
 
 
 class LinkupClient:
@@ -115,9 +116,9 @@ class LinkupClient:
             timeout=None,
         )
         if response.status_code != 200:
-            self._raise_linkup_error(response)
+            self._raise_linkup_error(response=response)
 
-        return self._validate_search_response(
+        return self._parse_search_response(
             response=response,
             output_type=output_type,
             structured_output_schema=structured_output_schema,
@@ -191,13 +192,79 @@ class LinkupClient:
             timeout=None,
         )
         if response.status_code != 200:
-            self._raise_linkup_error(response)
+            self._raise_linkup_error(response=response)
 
-        return self._validate_search_response(
+        return self._parse_search_response(
             response=response,
             output_type=output_type,
             structured_output_schema=structured_output_schema,
         )
+
+    def fetch(
+        self,
+        url: str,
+        render_js: bool = False,
+        include_raw_html: bool = False,
+    ) -> LinkupFetchResponse:
+        """Fetch the content of a web page.
+
+        Args:
+            url: The URL of the web page to fetch.
+            render_js: Whether the API should render the JavaScript of the webpage.
+            include_raw_html: Whether to include the raw HTML of the webpage in the response.
+
+        Returns:
+            The response of the web page fetch, containing the web page content.
+        """
+        params: dict[str, Union[str, bool]] = self._get_fetch_params(
+            url=url,
+            render_js=render_js,
+            include_raw_html=include_raw_html,
+        )
+
+        response: httpx.Response = self._request(
+            method="POST",
+            url="/fetch",
+            json=params,
+            timeout=None,
+        )
+        if response.status_code != 200:
+            self._raise_linkup_error(response=response)
+
+        return self._parse_fetch_response(response=response)
+
+    async def async_fetch(
+        self,
+        url: str,
+        render_js: bool = False,
+        include_raw_html: bool = False,
+    ) -> LinkupFetchResponse:
+        """Asynchronously fetch the content of a web page.
+
+        Args:
+            url: The URL of the web page to fetch.
+            render_js: Whether the API should render the JavaScript of the webpage.
+            include_raw_html: Whether to include the raw HTML of the webpage in the response.
+
+        Returns:
+            The response of the web page fetch, containing the web page content.
+        """
+        params: dict[str, Union[str, bool]] = self._get_fetch_params(
+            url=url,
+            render_js=render_js,
+            include_raw_html=include_raw_html,
+        )
+
+        response: httpx.Response = await self._async_request(
+            method="POST",
+            url="/fetch",
+            json=params,
+            timeout=None,
+        )
+        if response.status_code != 200:
+            self._raise_linkup_error(response=response)
+
+        return self._parse_fetch_response(response=response)
 
     def _user_agent(self) -> str:  # pragma: no cover
         return f"Linkup-Python/{self.__version__}"
@@ -240,10 +307,9 @@ class LinkupClient:
         if "error" in error_data:
             error = error_data["error"]
             code = error.get("code", "")
-            message = error.get("message", "")
+            error_msg = error.get("message", "")
             details = error.get("details", [])
 
-            error_msg = f"{message}"
             if details and isinstance(details, list):
                 for detail in details:
                     if isinstance(detail, dict):
@@ -256,6 +322,12 @@ class LinkupClient:
                     raise LinkupNoResultError(
                         "The Linkup API returned a no result error (400). "
                         "Try rephrasing you query.\n"
+                        f"Original error message: {error_msg}."
+                    )
+                if code == "FETCH_ERROR":
+                    raise LinkupFailedFetchError(
+                        "The Linkup API returned a fetch error (400). "
+                        "The provided URL might not be found or can't be fetched.\n"
                         f"Original error message: {error_msg}."
                     )
                 else:
@@ -341,7 +413,19 @@ class LinkupClient:
             toDate=to_date.isoformat() if to_date is not None else date.today().isoformat(),
         )
 
-    def _validate_search_response(
+    def _get_fetch_params(
+        self,
+        url: str,
+        render_js: bool,
+        include_raw_html: bool = False,
+    ) -> dict[str, Union[str, bool]]:
+        return dict(
+            url=url,
+            renderJs=render_js,
+            includeRawHtml=include_raw_html,
+        )
+
+    def _parse_search_response(
         self,
         response: httpx.Response,
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
@@ -363,3 +447,6 @@ class LinkupClient:
         if output_base_model is None:
             return response_data
         return output_base_model.model_validate(response_data)
+
+    def _parse_fetch_response(self, response: httpx.Response) -> LinkupFetchResponse:
+        return LinkupFetchResponse.model_validate(response.json())

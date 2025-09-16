@@ -11,13 +11,13 @@ A [Python SDK](https://docs.linkup.so/pages/sdk/python/python) for the
 ## 🌟 Features
 
 - ✅ **Simple and intuitive API client.**
-- 🔍 **Supports both standard and deep search queries.**
+- 🔍 **Support all Linkup entrypoints and parameters.**
 - ⚡ **Supports synchronous and asynchronous requests.**
 - 🔒 **Handles authentication and request management.**
 
 ## 📦 Installation
 
-Simply install the Linkup Python SDK using `pip`:
+Simply install the Linkup Python SDK as any Python package, for instance using `pip`:
 
 ```bash
 pip install linkup-sdk
@@ -66,7 +66,10 @@ pip install linkup-sdk
 
 ### 📋 Examples
 
-All search queries can be used with two very different modes:
+#### 📝 Search
+
+The `search` function can be used to performs web searches. It supports two very different
+complexity modes:
 
 - with `depth="standard"`, the search will be straightforward and fast, suited for relatively simple
   queries (e.g. "What's the weather in Paris today?")
@@ -74,22 +77,63 @@ All search queries can be used with two very different modes:
   but it will be able to solve more complex queries (e.g. "What is the company profile of LangChain
   accross the last few years, and how does it compare to its concurrents?")
 
-#### 📝 Standard Search Query
+The `search` function also supports three output types:
+
+- with `output_type="searchResults"`, the search will return a list of relevant documents
+- with `output_type="sourcedAnswer"`, the search will return a concise answer with sources
+- with `output_type="structured"`, the search will return a structured output according to a
+  user-defined schema
 
 ```python
-from linkup import LinkupClient
+from linkup import LinkupClient, LinkupSourcedAnswer
+from typing import Any
 
-# Initialize the client (API key can be read from the environment variable or passed as an argument)
-client = LinkupClient()
-
-# Perform a search query
-search_response = client.search(
+client = LinkupClient()  # API key can be read from the environment variable or passed as an argument
+search_response: Any = client.search(
     query="What are the 3 major events in the life of Abraham Lincoln?",
     depth="deep",  # "standard" or "deep"
     output_type="sourcedAnswer",  # "searchResults" or "sourcedAnswer" or "structured"
     structured_output_schema=None,  # must be filled if output_type is "structured"
 )
-print(search_response)
+assert isinstance(search_response, LinkupSourcedAnswer)
+print(search_response.model_dump())
+# Response:
+# {
+#   answer="The three major events in the life of Abraham Lincoln are: 1. ...",
+#   sources=[
+#     {
+#       "name": "HISTORY",
+#       "url": "https://www.history.com/topics/us-presidents/abraham-lincoln",
+#       "snippet": "Abraham Lincoln - Facts & Summary - HISTORY ..."
+#     },
+#     ...
+#   ]
+# }
+```
+
+#### 🪝 Fetch
+
+The `fetch` function can be used to retrieve the content of a given web page in a cleaned up
+markdown format.
+
+You can use the `render_js` flag to execute the JavaScript code of the page before returning the
+content, and ask to `include_raw_html` to the response if you feel like it.
+
+```python
+from linkup import LinkupClient, LinkupFetchResponse
+
+client = LinkupClient()  # API key can be read from the environment variable or passed as an argument
+fetch_response: LinkupFetchResponse = client.fetch(
+    url="https://docs.linkup.so",
+    render_js=False,
+    include_raw_html=True,
+)
+print(fetch_response.model_dump())
+# Response:
+# {
+#   markdown="Get started for free, no credit card required...",
+#   raw_html="<!DOCTYPE html><html lang=\"en\"><head>...</head><body>...</body></html>"
+# }
 ```
 
 #### 📚 More Examples
