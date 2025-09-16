@@ -312,38 +312,34 @@ class LinkupClient:
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[type[BaseModel], str, None],
         include_images: bool,
-        from_date: Union[date, None],
-        include_domains: Union[list[str], None],
         exclude_domains: Union[list[str], None],
+        include_domains: Union[list[str], None],
+        from_date: Union[date, None],
         to_date: Union[date, None],
     ) -> dict[str, Union[str, bool, list[str]]]:
-        params: dict[str, Union[str, bool, list[str]]] = dict(
-            q=query,
-            depth=depth,
-            outputType=output_type,
-            includeImages=include_images,
-        )
-
-        if output_type == "structured" and structured_output_schema is not None:
+        structured_output_schema_param: str = ""
+        if structured_output_schema is not None:
             if isinstance(structured_output_schema, str):
-                params["structuredOutputSchema"] = structured_output_schema
+                structured_output_schema_param = structured_output_schema
             elif issubclass(structured_output_schema, BaseModel):
                 json_schema: dict[str, Any] = structured_output_schema.model_json_schema()
-                params["structuredOutputSchema"] = json.dumps(json_schema)
+                structured_output_schema_param = json.dumps(json_schema)
             else:
                 raise TypeError(
                     f"Unexpected structured_output_schema type: '{type(structured_output_schema)}'"
                 )
-        if from_date is not None:
-            params["fromDate"] = from_date.isoformat()
-        if exclude_domains is not None:
-            params["excludeDomains"] = exclude_domains
-        if include_domains is not None:
-            params["includeDomains"] = include_domains
-        if to_date is not None:
-            params["toDate"] = to_date.isoformat()
 
-        return params
+        return dict(
+            q=query,
+            depth=depth,
+            outputType=output_type,
+            structuredOutputSchema=structured_output_schema_param,
+            includeImages=include_images,
+            excludeDomains=exclude_domains or [],
+            includeDomains=include_domains or [],
+            fromDate=from_date.isoformat() if from_date is not None else "",
+            toDate=to_date.isoformat() if to_date is not None else "",
+        )
 
     def _validate_search_response(
         self,
