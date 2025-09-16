@@ -5,6 +5,7 @@ documented schema to steer the Linkup search in any direction.
 """
 
 from pydantic import BaseModel, Field
+from rich import print
 
 from linkup import LinkupClient
 

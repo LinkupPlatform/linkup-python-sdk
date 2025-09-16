@@ -3,6 +3,8 @@ The Linkup search can output raw search results which can then be re-used in dif
 for instance in a RAG system, with the output_type parameter set to "searchResults".
 """
 
+from rich import print
+
 from linkup import LinkupClient
 
 client = LinkupClient()
