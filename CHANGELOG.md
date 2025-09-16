@@ -2,6 +2,34 @@
 
 <!-- version list -->
 
+## v0.2.10 (2025-09-16)
+
+### Bug Fixes
+
+- Small docstring wording
+  ([`6330633`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/63306336551a5f381f0c2a6fa726f87046eafe1a))
+
+- Types and documentation improvements
+  ([`ecdb6a9`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/ecdb6a9639c8be58fea454c42dab9312dc015fe5))
+
+### Chores
+
+- Format and lint
+  ([`a4d10d7`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/a4d10d739f24d12190b7e5ba6954aaa252507a5d))
+
+- Standardize tools and configs
+  ([`8c9224d`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/8c9224da3409884126f6d44135f8b4976f4b741e))
+
+- Update PR template
+  ([`8567d24`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/8567d247dbb9a5987bfc036fe8358b76d3dfa22f))
+
+- Use lowest supported Python version
+  ([`fe3a7fe`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/fe3a7fed6c5c6f5fd1bc164774ff4dc65f5f5b5e))
+
+- Use rich.print in examples
+  ([`94d5d42`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/94d5d4211f852214a7c3f67d69875f9cb057ff26))
+
+
 ## v0.2.9 (2025-09-15)
 
 ### Bug Fixes
