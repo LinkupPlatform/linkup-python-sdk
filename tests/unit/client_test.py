@@ -1,5 +1,6 @@
 import json
-from typing import Any, Union
+from datetime import date
+from typing import Any
 
 import pytest
 from httpx import Response
@@ -30,696 +31,407 @@ class Company(BaseModel):
     founders_names: list[str]
 
 
-def test_search_search_results(mocker: MockerFixture, client: LinkupClient) -> None:
-    content = b"""
-    {
-      "results": [
+test_search_parameters = [
+    (
+        {"query": "query", "depth": "standard", "output_type": "searchResults"},
         {
-          "type": "text",
-          "name": "foo",
-          "url": "https://foo.bar/baz",
-          "content": "foo bar baz"
+            "q": "query",
+            "depth": "standard",
+            "outputType": "searchResults",
+            "structuredOutputSchema": "",
+            "includeImages": False,
+            "excludeDomains": [],
+            "includeDomains": [],
+            "fromDate": "",
+            "toDate": "",
         },
+        b"""
         {
-          "type": "image",
-          "name": "foo",
-          "url": "https://foo.bar/baz"
+            "results": [
+                {
+                    "type": "text",
+                    "name": "foo",
+                    "url": "https://foo.com",
+                    "content": "lorem ipsum dolor sit amet"
+                },
+                {"type": "image", "name": "bar", "url": "https://bar.com"}
+            ]
         }
-      ]
-    }
-    """
-
-    mocker.patch(
-        "linkup.client.LinkupClient._request",
-        return_value=Response(
-            status_code=200,
-            content=content,
+        """,
+        LinkupSearchResults(
+            results=[
+                LinkupSearchTextResult(
+                    type="text",
+                    name="foo",
+                    url="https://foo.com",
+                    content="lorem ipsum dolor sit amet",
+                ),
+                LinkupSearchImageResult(
+                    type="image",
+                    name="bar",
+                    url="https://bar.com",
+                ),
+            ]
         ),
-    )
-
-    response: Any = client.search(query="foo", depth="standard", output_type="searchResults")
-
-    assert isinstance(response, LinkupSearchResults)
-    assert isinstance(response.results[0], LinkupSearchTextResult)
-    assert response.results[0].name == "foo"
-    assert response.results[0].url == "https://foo.bar/baz"
-    assert response.results[0].content == "foo bar baz"
-    assert isinstance(response.results[1], LinkupSearchImageResult)
-    assert response.results[1].name == "foo"
-    assert response.results[1].url == "https://foo.bar/baz"
-
-
-def test_search_sourced_answer(mocker: MockerFixture, client: LinkupClient) -> None:
-    content = b"""
-    {
-      "answer": "foo bar baz",
-      "sources": [
+    ),
+    (
         {
-          "name": "foo",
-          "url": "https://foo.com",
-          "snippet": "lorem ipsum dolor sit amet"
+            "query": "A long query.",
+            "depth": "deep",
+            "output_type": "searchResults",
+            "include_images": True,
+            "from_date": date(2023, 1, 1),
+            "to_date": date(2023, 12, 31),
+            "include_domains": ["example.com", "example.org"],
+            "exclude_domains": ["excluded.com"],
         },
         {
-          "name": "bar",
-          "url": "https://bar.com",
-          "snippet": "consectetur adipiscing elit"
+            "q": "A long query.",
+            "depth": "deep",
+            "outputType": "searchResults",
+            "structuredOutputSchema": "",
+            "includeImages": True,
+            "excludeDomains": ["excluded.com"],
+            "includeDomains": ["example.com", "example.org"],
+            "fromDate": "2023-01-01",
+            "toDate": "2023-12-31",
         },
+        b'{"results": []}',
+        LinkupSearchResults(results=[]),
+    ),
+    (
+        {"query": "query", "depth": "standard", "output_type": "sourcedAnswer"},
         {
-          "name": "baz",
-          "url": "https://baz.com"
+            "q": "query",
+            "depth": "standard",
+            "outputType": "sourcedAnswer",
+            "structuredOutputSchema": "",
+            "includeImages": False,
+            "excludeDomains": [],
+            "includeDomains": [],
+            "fromDate": "",
+            "toDate": "",
+        },
+        b"""
+        {
+            "answer": "foo bar baz",
+            "sources": [
+                {"name": "foo", "url": "https://foo.com", "snippet": "lorem ipsum dolor sit amet"},
+                {"name": "bar", "url": "https://bar.com", "snippet": "consectetur adipiscing elit"},
+                {"name": "baz", "url": "https://baz.com"}
+            ]
         }
-      ]
-    }
-    """
-
-    mocker.patch(
-        "linkup.client.LinkupClient._request",
-        return_value=Response(
-            status_code=200,
-            content=content,
+        """,
+        LinkupSourcedAnswer(
+            answer="foo bar baz",
+            sources=[
+                LinkupSource(
+                    name="foo",
+                    url="https://foo.com",
+                    snippet="lorem ipsum dolor sit amet",
+                ),
+                LinkupSource(
+                    name="bar",
+                    url="https://bar.com",
+                    snippet="consectetur adipiscing elit",
+                ),
+                LinkupSource(
+                    name="baz",
+                    url="https://baz.com",
+                    snippet="",
+                ),
+            ],
         ),
-    )
-
-    response: Any = client.search(query="foo", depth="standard", output_type="sourcedAnswer")
-
-    assert isinstance(response, LinkupSourcedAnswer)
-    assert isinstance(response.sources[0], LinkupSource)
-    assert response.answer == "foo bar baz"
-    assert response.sources[0].name == "foo"
-    assert response.sources[0].url == "https://foo.com"
-    assert response.sources[0].snippet == "lorem ipsum dolor sit amet"
-    assert isinstance(response.sources[1], LinkupSource)
-    assert response.sources[1].name == "bar"
-    assert response.sources[1].url == "https://bar.com"
-    assert response.sources[1].snippet == "consectetur adipiscing elit"
-    assert isinstance(response.sources[2], LinkupSource)
-    assert response.sources[2].name == "baz"
-    assert response.sources[2].url == "https://baz.com"
-    assert response.sources[2].snippet == ""
+    ),
+    (
+        {
+            "query": "query",
+            "depth": "standard",
+            "output_type": "structured",
+            "structured_output_schema": Company,
+        },
+        {
+            "q": "query",
+            "depth": "standard",
+            "outputType": "structured",
+            "structuredOutputSchema": json.dumps(Company.model_json_schema()),
+            "includeImages": False,
+            "excludeDomains": [],
+            "includeDomains": [],
+            "fromDate": "",
+            "toDate": "",
+        },
+        b"""
+        {
+            "name": "Linkup",
+            "founders_names": ["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
+            "creation_date": "2024",
+            "website_url": "https://www.linkup.so/"
+        }
+        """,
+        Company(
+            name="Linkup",
+            founders_names=["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
+            creation_date="2024",
+            website_url="https://www.linkup.so/",
+        ),
+    ),
+    (
+        {
+            "query": "query",
+            "depth": "standard",
+            "output_type": "structured",
+            "structured_output_schema": json.dumps(Company.model_json_schema()),
+        },
+        {
+            "q": "query",
+            "depth": "standard",
+            "outputType": "structured",
+            "structuredOutputSchema": json.dumps(Company.model_json_schema()),
+            "includeImages": False,
+            "excludeDomains": [],
+            "includeDomains": [],
+            "fromDate": "",
+            "toDate": "",
+        },
+        b"""
+        {
+            "name": "Linkup",
+            "founders_names": ["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
+            "creation_date": "2024",
+            "website_url": "https://www.linkup.so/"
+        }
+        """,
+        dict(
+            name="Linkup",
+            founders_names=["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
+            creation_date="2024",
+            website_url="https://www.linkup.so/",
+        ),
+    ),
+]
 
 
 @pytest.mark.parametrize(
-    "structured_output_schema",
-    [Company, json.dumps(Company.model_json_schema())],
+    "search_kwargs, expected_request_params, mock_request_response_content, "
+    "expected_search_response",
+    test_search_parameters,
 )
-def test_search_structured_search(
+def test_search(
     mocker: MockerFixture,
     client: LinkupClient,
-    structured_output_schema: Union[type[BaseModel], str],
+    search_kwargs: dict[str, Any],
+    expected_request_params: dict[str, Any],
+    mock_request_response_content: bytes,
+    expected_search_response: Any,
 ) -> None:
-    mocker.patch(
+    request_mock = mocker.patch(
         "linkup.client.LinkupClient._request",
         return_value=Response(
             status_code=200,
-            content=b'{"name":"Linkup","founders_names":["Philippe Mizrahi","Denis Charrier",'
-            b'"Boris Toledano"],"creation_date":"2024","website_url":"","title":"Company"}',
+            content=mock_request_response_content,
         ),
     )
 
-    response: Any = client.search(
-        query="What is Linkup, the new French AI company?",
-        depth="standard",
-        output_type="structured",
-        structured_output_schema=structured_output_schema,
+    search_response: Any = client.search(**search_kwargs)
+    request_mock.assert_called_once_with(
+        method="POST",
+        url="/search",
+        json=expected_request_params,
+        timeout=None,
     )
-
-    if isinstance(structured_output_schema, str):
-        assert response == dict(
-            creation_date="2024",
-            founders_names=["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
-            name="Linkup",
-            title="Company",
-            website_url="",
-        )
-
-    else:
-        assert isinstance(response, Company)
-        assert response.name == "Linkup"
-        assert response.creation_date == "2024"
-        assert response.website_url == ""
-        assert response.founders_names == ["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"]
-
-
-def test_search_authorization_error(mocker: MockerFixture, client: LinkupClient) -> None:
-    mock_response = mocker.Mock()
-    mock_response.status_code = 403
-    mock_response.json.return_value = {
-        "statusCode": 403,
-        "error": {
-            "code": "FORBIDDEN",
-            "message": "Forbidden action",
-            "details": [],
-        },
-    }
-
-    mocker.patch(
-        "linkup.client.LinkupClient._request",
-        return_value=mock_response,
-    )
-
-    with pytest.raises(LinkupAuthenticationError):
-        client.search(
-            query="What is Linkup, the new French AI company?",
-            depth="standard",
-            output_type="searchResults",
-        )
-
-
-def test_search_authentication_error(mocker: MockerFixture, client: LinkupClient) -> None:
-    mock_response = mocker.Mock()
-    mock_response.status_code = 401
-    mock_response.json.return_value = {
-        "statusCode": 401,
-        "error": {
-            "code": "UNAUTHORIZED",
-            "message": "Unauthorized action",
-            "details": [],
-        },
-    }
-
-    mocker.patch(
-        "linkup.client.LinkupClient._request",
-        return_value=mock_response,
-    )
-
-    with pytest.raises(LinkupAuthenticationError):
-        client.search(
-            query="What is Linkup, the new French AI company?",
-            depth="standard",
-            output_type="searchResults",
-        )
-
-
-def test_search_insufficient_credit_error(mocker: MockerFixture, client: LinkupClient) -> None:
-    mock_response = mocker.Mock()
-    mock_response.status_code = 429
-    mock_response.json.return_value = {
-        "statusCode": 429,
-        "error": {
-            "code": "INSUFFICIENT_FUNDS_CREDITS",
-            "message": "You do not have enough credits to perform this request.",
-            "details": [],
-        },
-    }
-
-    mocker.patch(
-        "linkup.client.LinkupClient._request",
-        return_value=mock_response,
-    )
-
-    with pytest.raises(LinkupInsufficientCreditError):
-        client.search(query="foo", depth="standard", output_type="searchResults")
-
-
-def test_search_too_many_requests_error(mocker: MockerFixture, client: LinkupClient) -> None:
-    mock_response = mocker.Mock()
-    mock_response.status_code = 429
-    mock_response.json.return_value = {
-        "statusCode": 429,
-        "error": {
-            "code": "TOO_MANY_REQUESTS",
-            "message": "Too many requests.",
-            "details": [],
-        },
-    }
-
-    mocker.patch(
-        "linkup.client.LinkupClient._request",
-        return_value=mock_response,
-    )
-
-    with pytest.raises(LinkupTooManyRequestsError):
-        client.search(query="foo", depth="standard", output_type="searchResults")
-
-
-def test_search_error_429_unknown_code(mocker: MockerFixture, client: LinkupClient) -> None:
-    mock_response = mocker.Mock()
-    mock_response.status_code = 429
-    mock_response.json.return_value = {
-        "statusCode": 429,
-        "error": {
-            "code": "FOOBAR",
-            "message": "Foobar",
-            "details": [],
-        },
-    }
-
-    mocker.patch(
-        "linkup.client.LinkupClient._request",
-        return_value=mock_response,
-    )
-
-    with pytest.raises(LinkupUnknownError):
-        client.search(query="foo", depth="standard", output_type="searchResults")
-
-
-def test_search_structured_search_invalid_request(
-    mocker: MockerFixture,
-    client: LinkupClient,
-) -> None:
-    mock_response = mocker.Mock()
-    mock_response.status_code = 400
-    mock_response.json.return_value = {
-        "statusCode": 400,
-        "error": {
-            "code": "VALIDATION_ERROR",
-            "message": "Validation failed",
-            "details": [
-                {
-                    "field": "structuredOutputSchema",
-                    "message": "structuredOutputSchema must be valid JSON schema of type",
-                },
-            ],
-        },
-    }
-
-    mocker.patch("linkup.client.LinkupClient._request", return_value=mock_response)
-
-    with pytest.raises(LinkupInvalidRequestError):
-        client.search(
-            query="What is Linkup, the new French AI company?",
-            depth="standard",
-            output_type="structured",
-            # Schema corresponding to the Company class, without "type": "object"
-            structured_output_schema=json.dumps(
-                {
-                    "properties": {
-                        "name": {"title": "Name", "type": "string"},
-                        "creation_date": {"title": "Creation Date", "type": "string"},
-                        "website_url": {"title": "Website Url", "type": "string"},
-                        "founders_names": {
-                            "items": {"type": "string"},
-                            "title": "Founders Names",
-                            "type": "array",
-                        },
-                    },
-                    "required": ["name", "creation_date", "website_url", "founders_names"],
-                    "title": "Company",
-                }
-            ),
-        )
-
-
-def test_search_no_result_error(mocker: MockerFixture, client: LinkupClient) -> None:
-    mock_response = mocker.Mock()
-    mock_response.status_code = 400
-    mock_response.json.return_value = {
-        "statusCode": 400,
-        "error": {
-            "code": "SEARCH_QUERY_NO_RESULT",
-            "message": "The query did not yield any result",
-            "details": [],
-        },
-    }
-
-    mocker.patch(
-        "linkup.client.LinkupClient._request",
-        return_value=mock_response,
-    )
-    with pytest.raises(LinkupNoResultError):
-        client.search(query="foo", depth="standard", output_type="searchResults")
-
-
-def test_search_unknown_error(mocker: MockerFixture, client: LinkupClient) -> None:
-    mock_response = mocker.Mock()
-    mock_response.status_code = 500
-    mock_response.json.return_value = {
-        "statusCode": 500,
-        "error": {
-            "code": "INTERNAL_SERVER_ERROR",
-            "message": "Internal server error",
-            "details": [],
-        },
-    }
-
-    mocker.patch(
-        "linkup.client.LinkupClient._request",
-        return_value=mock_response,
-    )
-
-    with pytest.raises(LinkupUnknownError):
-        client.search(
-            query="What is Linkup, the new French AI company?",
-            depth="standard",
-            output_type="searchResults",
-        )
-
-
-@pytest.mark.asyncio
-async def test_async_search_search_results(mocker: MockerFixture, client: LinkupClient) -> None:
-    content = b"""
-    {
-      "results": [
-        {
-          "type": "text",
-          "name": "foo",
-          "url": "https://foo.bar/baz",
-          "content": "foo bar baz"
-        },
-        {
-          "type": "image",
-          "name": "foo",
-          "url": "https://foo.bar/baz"
-        }
-      ]
-    }
-    """
-
-    mocker.patch(
-        "linkup.client.LinkupClient._async_request",
-        return_value=Response(
-            status_code=200,
-            content=content,
-        ),
-    )
-
-    response: Any = await client.async_search(
-        query="foo", depth="standard", output_type="searchResults"
-    )
-
-    assert isinstance(response, LinkupSearchResults)
-    assert isinstance(response.results[0], LinkupSearchTextResult)
-    assert response.results[0].name == "foo"
-    assert response.results[0].url == "https://foo.bar/baz"
-    assert response.results[0].content == "foo bar baz"
-    assert isinstance(response.results[1], LinkupSearchImageResult)
-    assert response.results[1].name == "foo"
-    assert response.results[1].url == "https://foo.bar/baz"
-
-
-@pytest.mark.asyncio
-async def test_async_search_sourced_answer(mocker: MockerFixture, client: LinkupClient) -> None:
-    content = b"""
-    {
-      "answer": "foo bar baz",
-      "sources": [
-        {
-          "name": "foo",
-          "url": "https://foo.com",
-          "snippet": "lorem ipsum dolor sit amet"
-        },
-        {
-          "name": "bar",
-          "url": "https://bar.com",
-          "snippet": "consectetur adipiscing elit"
-        },
-        {
-          "name": "baz",
-          "url": "https://baz.com"
-        }
-      ]
-    }
-    """
-
-    mocker.patch(
-        "linkup.client.LinkupClient._async_request",
-        return_value=Response(
-            status_code=200,
-            content=content,
-        ),
-    )
-
-    response: Any = await client.async_search(
-        query="foo", depth="standard", output_type="sourcedAnswer"
-    )
-
-    assert isinstance(response, LinkupSourcedAnswer)
-    assert isinstance(response.sources[0], LinkupSource)
-    assert response.answer == "foo bar baz"
-    assert response.sources[0].name == "foo"
-    assert response.sources[0].url == "https://foo.com"
-    assert response.sources[0].snippet == "lorem ipsum dolor sit amet"
-    assert isinstance(response.sources[1], LinkupSource)
-    assert response.sources[1].name == "bar"
-    assert response.sources[1].url == "https://bar.com"
-    assert response.sources[1].snippet == "consectetur adipiscing elit"
-    assert isinstance(response.sources[2], LinkupSource)
-    assert response.sources[2].name == "baz"
-    assert response.sources[2].url == "https://baz.com"
-    assert response.sources[2].snippet == ""
+    assert search_response == expected_search_response
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "structured_output_schema",
-    [Company, json.dumps(Company.model_json_schema())],
+    "search_kwargs, expected_request_params, mock_request_response_content, "
+    "expected_search_response",
+    test_search_parameters,
 )
-async def test_async_search_structured_search(
+async def test_async_search(
     mocker: MockerFixture,
     client: LinkupClient,
-    structured_output_schema: Union[type[BaseModel], str],
+    search_kwargs: dict[str, Any],
+    expected_request_params: dict[str, Any],
+    mock_request_response_content: bytes,
+    expected_search_response: Any,
 ) -> None:
-    mocker.patch(
+    request_mock = mocker.patch(
         "linkup.client.LinkupClient._async_request",
         return_value=Response(
             status_code=200,
-            content=b'{"name":"Linkup","founders_names":["Philippe Mizrahi","Denis Charrier",'
-            b'"Boris Toledano"],"creation_date":"2024","website_url":"","title":"Company"}',
+            content=mock_request_response_content,
         ),
     )
 
-    response: Any = await client.async_search(
-        query="What is Linkup, the new French AI company?",
-        depth="standard",
-        output_type="structured",
-        structured_output_schema=structured_output_schema,
+    search_response: Any = await client.async_search(**search_kwargs)
+    request_mock.assert_called_once_with(
+        method="POST",
+        url="/search",
+        json=expected_request_params,
+        timeout=None,
     )
-
-    if isinstance(structured_output_schema, str):
-        assert response == dict(
-            creation_date="2024",
-            founders_names=["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
-            name="Linkup",
-            title="Company",
-            website_url="",
-        )
-
-    else:
-        assert isinstance(response, Company)
-        assert response.name == "Linkup"
-        assert response.creation_date == "2024"
-        assert response.website_url == ""
-        assert response.founders_names == ["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"]
+    assert search_response == expected_search_response
 
 
-@pytest.mark.asyncio
-async def test_async_search_authorization_error(
-    mocker: MockerFixture, client: LinkupClient
-) -> None:
-    mock_response = mocker.Mock()
-    mock_response.status_code = 403
-    mock_response.json.return_value = {
-        "statusCode": 403,
-        "error": {
-            "code": "FORBIDDEN",
-            "message": "Forbidden action",
-            "details": [],
-        },
-    }
-
-    mocker.patch(
-        "linkup.client.LinkupClient._async_request",
-        return_value=mock_response,
-    )
-
-    with pytest.raises(LinkupAuthenticationError):
-        await client.async_search(
-            query="What is Linkup, the new French AI company?",
-            depth="standard",
-            output_type="searchResults",
-        )
-
-
-@pytest.mark.asyncio
-async def test_async_search_authentication_error(
-    mocker: MockerFixture, client: LinkupClient
-) -> None:
-    mock_response = mocker.Mock()
-    mock_response.status_code = 401
-    mock_response.json.return_value = {
-        "statusCode": 401,
-        "error": {
-            "code": "UNAUTHORIZED",
-            "message": "Unauthorized action",
-            "details": [],
-        },
-    }
-
-    mocker.patch(
-        "linkup.client.LinkupClient._async_request",
-        return_value=mock_response,
-    )
-
-    with pytest.raises(LinkupAuthenticationError):
-        await client.async_search(
-            query="What is Linkup, the new French AI company?",
-            depth="standard",
-            output_type="searchResults",
-        )
-
-
-@pytest.mark.asyncio
-async def test_async_search_insufficient_credit_error(
-    mocker: MockerFixture, client: LinkupClient
-) -> None:
-    mock_response = mocker.Mock()
-    mock_response.status_code = 429
-    mock_response.json.return_value = {
-        "statusCode": 429,
-        "error": {
-            "code": "INSUFFICIENT_FUNDS_CREDITS",
-            "message": "You do not have enough credits to perform this request.",
-            "details": [],
-        },
-    }
-
-    mocker.patch(
-        "linkup.client.LinkupClient._async_request",
-        return_value=mock_response,
-    )
-    with pytest.raises(LinkupInsufficientCreditError):
-        await client.async_search(query="foo", depth="standard", output_type="searchResults")
-
-
-@pytest.mark.asyncio
-async def test_async_search_too_many_requests_error(
-    mocker: MockerFixture, client: LinkupClient
-) -> None:
-    mock_response = mocker.Mock()
-    mock_response.status_code = 429
-    mock_response.json.return_value = {
-        "statusCode": 429,
-        "error": {
-            "code": "TOO_MANY_REQUESTS",
-            "message": "Too many requests.",
-            "details": [],
-        },
-    }
-
-    mocker.patch(
-        "linkup.client.LinkupClient._async_request",
-        return_value=mock_response,
-    )
-    with pytest.raises(LinkupTooManyRequestsError):
-        await client.async_search(query="foo", depth="standard", output_type="searchResults")
-
-
-@pytest.mark.asyncio
-async def test_async_search_error_429_unknown_code(
-    mocker: MockerFixture, client: LinkupClient
-) -> None:
-    mock_response = mocker.Mock()
-    mock_response.status_code = 429
-    mock_response.json.return_value = {
-        "statusCode": 429,
-        "error": {
-            "code": "FOOBAR",
-            "message": "Foobar",
-            "details": [],
-        },
-    }
-
-    mocker.patch(
-        "linkup.client.LinkupClient._async_request",
-        return_value=mock_response,
-    )
-    with pytest.raises(LinkupUnknownError):
-        await client.async_search(query="foo", depth="standard", output_type="searchResults")
+test_search_error_parameters = [
+    (
+        403,
+        b"""
+        {
+            "error": {
+                "code": "FORBIDDEN",
+                "message": "Forbidden action",
+                "details": []
+            }
+        }
+        """,
+        LinkupAuthenticationError,
+    ),
+    (
+        401,
+        b"""
+        {
+            "error": {
+                "code": "UNAUTHORIZED",
+                "message": "Unauthorized action",
+                "details": []
+            }
+        }
+        """,
+        LinkupAuthenticationError,
+    ),
+    (
+        429,
+        b"""
+        {
+            "error": {
+                "code": "INSUFFICIENT_FUNDS_CREDITS",
+                "message": "You do not have enough credits to perform this request.",
+                "details": []
+            }
+        }
+        """,
+        LinkupInsufficientCreditError,
+    ),
+    (
+        429,
+        b"""
+        {
+            "error": {
+                "code": "TOO_MANY_REQUESTS",
+                "message": "Too many requests.",
+                "details": []
+            }
+        }
+        """,
+        LinkupTooManyRequestsError,
+    ),
+    (
+        429,
+        b"""
+        {
+            "error": {
+                "code": "FOOBAR",
+                "message": "Foobar",
+                "details": []
+            }
+        }
+        """,
+        LinkupUnknownError,
+    ),
+    (
+        400,
+        b"""
+        {
+            "error": {
+                "code": "VALIDATION_ERROR",
+                "message": "Validation failed",
+                "details": [
+                    {
+                        "field": "structuredOutputSchema",
+                        "message": "structuredOutputSchema must be valid JSON schema of type"
+                    }
+                ]
+            }
+        }
+        """,
+        LinkupInvalidRequestError,
+    ),
+    (
+        400,
+        b"""
+        {
+            "error": {
+                "code": "SEARCH_QUERY_NO_RESULT",
+                "message": "The query did not yield any result",
+                "details": []
+            }
+        }
+        """,
+        LinkupNoResultError,
+    ),
+    (
+        500,
+        b"""
+        {
+            "error": {
+                "code": "INTERNAL_SERVER_ERROR",
+                "message": "Internal server error",
+                "details": []
+            }
+        }
+        """,
+        LinkupUnknownError,
+    ),
+]
 
 
-@pytest.mark.asyncio
-async def test_async_search_structured_search_invalid_request(
+@pytest.mark.parametrize(
+    "mock_request_response_status_code, mock_request_response_content, expected_exception",
+    test_search_error_parameters,
+)
+def test_search_error(
     mocker: MockerFixture,
     client: LinkupClient,
+    mock_request_response_status_code: int,
+    mock_request_response_content: bytes,
+    expected_exception: Any,
 ) -> None:
-    mock_response = mocker.Mock()
-    mock_response.status_code = 400
-    mock_response.json.return_value = {
-        "statusCode": 400,
-        "error": {
-            "code": "VALIDATION_ERROR",
-            "message": "Validation failed",
-            "details": [
-                {
-                    "field": "structuredOutputSchema",
-                    "message": "structuredOutputSchema must be valid JSON schema of type",
-                },
-            ],
-        },
-    }
-
-    mocker.patch(
-        "linkup.client.LinkupClient._async_request",
-        return_value=mock_response,
+    request_mock = mocker.patch(
+        "linkup.client.LinkupClient._request",
+        return_value=Response(
+            status_code=mock_request_response_status_code,
+            content=mock_request_response_content,
+        ),
     )
 
-    with pytest.raises(LinkupInvalidRequestError):
-        await client.async_search(
-            query="What is Linkup, the new French AI company?",
-            depth="standard",
-            output_type="structured",
-            # Schema corresponding to the Company class, without "type": "object"
-            structured_output_schema=json.dumps(
-                {
-                    "properties": {
-                        "name": {"title": "Name", "type": "string"},
-                        "creation_date": {"title": "Creation Date", "type": "string"},
-                        "website_url": {"title": "Website Url", "type": "string"},
-                        "founders_names": {
-                            "items": {"type": "string"},
-                            "title": "Founders Names",
-                            "type": "array",
-                        },
-                    },
-                    "required": ["name", "creation_date", "website_url", "founders_names"],
-                    "title": "Company",
-                }
-            ),
-        )
+    with pytest.raises(expected_exception):
+        client.search(query="query", depth="standard", output_type="searchResults")
+    request_mock.assert_called_once()
 
 
 @pytest.mark.asyncio
-async def test_async_search_no_result_error(mocker: MockerFixture, client: LinkupClient) -> None:
-    mock_response = mocker.Mock()
-    mock_response.status_code = 400
-    mock_response.json.return_value = {
-        "statusCode": 400,
-        "error": {
-            "code": "SEARCH_QUERY_NO_RESULT",
-            "message": "The query did not yield any result",
-            "details": [],
-        },
-    }
-
-    mocker.patch(
+@pytest.mark.parametrize(
+    "mock_request_response_status_code, mock_request_response_content, expected_exception",
+    test_search_error_parameters,
+)
+async def test_async_search_error(
+    mocker: MockerFixture,
+    client: LinkupClient,
+    mock_request_response_status_code: int,
+    mock_request_response_content: bytes,
+    expected_exception: Any,
+) -> None:
+    request_mock = mocker.patch(
         "linkup.client.LinkupClient._async_request",
-        return_value=mock_response,
-    )
-    with pytest.raises(LinkupNoResultError):
-        await client.async_search(query="foo", depth="standard", output_type="searchResults")
-
-
-@pytest.mark.asyncio
-async def test_async_search_unknown_error(mocker: MockerFixture, client: LinkupClient) -> None:
-    mock_response = mocker.Mock()
-    mock_response.status_code = 500
-    mock_response.json.return_value = {
-        "statusCode": 500,
-        "error": {
-            "code": "INTERNAL_SERVER_ERROR",
-            "message": "Internal server error",
-            "details": [],
-        },
-    }
-
-    mocker.patch(
-        "linkup.client.LinkupClient._async_request",
-        return_value=mock_response,
+        return_value=Response(
+            status_code=mock_request_response_status_code,
+            content=mock_request_response_content,
+        ),
     )
 
-    with pytest.raises(LinkupUnknownError):
-        await client.async_search(
-            query="What is Linkup, the new French AI company?",
-            depth="standard",
-            output_type="searchResults",
-        )
+    with pytest.raises(expected_exception):
+        await client.async_search(query="query", depth="standard", output_type="searchResults")
+    request_mock.assert_called_once()
