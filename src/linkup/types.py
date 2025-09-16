@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Literal, Union
 
 from pydantic import BaseModel
 
@@ -14,7 +14,7 @@ class LinkupSearchTextResult(BaseModel):
         content: The text of the search result.
     """
 
-    type: str
+    type: Literal["text"]
     name: str
     url: str
     content: str
@@ -30,7 +30,7 @@ class LinkupSearchImageResult(BaseModel):
         url: The URL of the image result.
     """
 
-    type: str
+    type: Literal["image"]
     name: str
     url: str
 
@@ -53,12 +53,12 @@ class LinkupSource(BaseModel):
     Attributes:
         name: The name of the source.
         url: The URL of the source.
-        snippet: The text excerpt supporting the Linkup answer.
+        snippet: The text excerpt supporting the Linkup answer. Can be empty for image sources.
     """
 
     name: str
     url: str
-    snippet: str
+    snippet: str = ""
 
 
 class LinkupSourcedAnswer(BaseModel):
@@ -71,4 +71,4 @@ class LinkupSourcedAnswer(BaseModel):
     """
 
     answer: str
-    sources: list[Union[LinkupSource, LinkupSearchTextResult, LinkupSearchImageResult]]
+    sources: list[LinkupSource]
