@@ -2,6 +2,27 @@
 
 <!-- version list -->
 
+## v0.2.11 (2025-09-17)
+
+### Bug Fixes
+
+- From_ and to_date default values
+  ([`575e7c4`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/575e7c43bd6b255853139da1e81ebfaca6285ce4))
+
+### Chores
+
+- Add load_dotenv in example scripts
+  ([`e6babc9`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/e6babc998422d4544f7e53373435aa5bcb44f5f0))
+
+- Pass all parameters in search payload
+  ([`2319388`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/23193883dba53b049f565f1ca772c9e508aa6746))
+
+### Refactoring
+
+- Streamline tests and add more
+  ([`2d58d85`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/2d58d85881b74098a51cad27b93dbb4228cfc441))
+
+
 ## v0.2.10 (2025-09-16)
 
 ### Bug Fixes
