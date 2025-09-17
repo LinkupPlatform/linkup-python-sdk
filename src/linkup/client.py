@@ -57,6 +57,7 @@ class LinkupClient:
         to_date: Optional[date] = None,
         exclude_domains: Optional[list[str]] = None,
         include_domains: Optional[list[str]] = None,
+        include_inline_citations: Optional[bool] = None,
     ) -> Any:
         """Perform a web search using the Linkup API `search` endpoint.
 
@@ -82,6 +83,8 @@ class LinkupClient:
                 search results will not be filtered by date.
             exclude_domains: If you want to exclude specific domains from your search.
             include_domains: If you want the search to only return results from certain domains.
+            include_inline_citations: If output_type is "sourcedAnswer", indicate whether the
+                answer should include inline citations.
 
         Returns:
             The Linkup API search result. If output_type is "searchResults", the result will be a
@@ -109,6 +112,7 @@ class LinkupClient:
             to_date=to_date,
             exclude_domains=exclude_domains,
             include_domains=include_domains,
+            include_inline_citations=include_inline_citations,
         )
 
         response: httpx.Response = self._request(
@@ -137,6 +141,7 @@ class LinkupClient:
         to_date: Optional[date] = None,
         exclude_domains: Optional[list[str]] = None,
         include_domains: Optional[list[str]] = None,
+        include_inline_citations: Optional[bool] = None,
     ) -> Any:
         """Asynchronously perform a web search using the Linkup API `search` endpoint.
 
@@ -162,6 +167,8 @@ class LinkupClient:
                 search results will not be filtered by date.
             exclude_domains: If you want to exclude specific domains from your search.
             include_domains: If you want the search to only return results from certain domains.
+            include_inline_citations: If output_type is "sourcedAnswer", indicate whether the
+                answer should include inline citations.
 
         Returns:
             The Linkup API search result. If output_type is "searchResults", the result will be a
@@ -189,6 +196,7 @@ class LinkupClient:
             to_date=to_date,
             exclude_domains=exclude_domains,
             include_domains=include_domains,
+            include_inline_citations=include_inline_citations,
         )
 
         response: httpx.Response = await self._async_request(
@@ -410,6 +418,7 @@ class LinkupClient:
         to_date: Optional[date],
         exclude_domains: Optional[list[str]],
         include_domains: Optional[list[str]],
+        include_inline_citations: Optional[bool],
     ) -> dict[str, Union[str, bool, list[str]]]:
         params: dict[str, Union[str, bool, list[str]]] = dict(
             q=query,
@@ -437,6 +446,8 @@ class LinkupClient:
             params["excludeDomains"] = exclude_domains
         if include_domains is not None:
             params["includeDomains"] = include_domains
+        if include_inline_citations is not None:
+            params["includeInlineCitations"] = include_inline_citations
 
         return params
 

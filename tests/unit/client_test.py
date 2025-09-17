@@ -75,6 +75,7 @@ test_search_parameters = [
             "to_date": date(2023, 12, 31),
             "exclude_domains": ["excluded.com"],
             "include_domains": ["example.com", "example.org"],
+            "include_inline_citations": True,
         },
         {
             "q": "A long query.",
@@ -85,6 +86,7 @@ test_search_parameters = [
             "toDate": "2023-12-31",
             "excludeDomains": ["excluded.com"],
             "includeDomains": ["example.com", "example.org"],
+            "includeInlineCitations": True,
         },
         b'{"results": []}',
         LinkupSearchResults(results=[]),
