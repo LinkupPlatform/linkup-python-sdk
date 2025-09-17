@@ -4,10 +4,12 @@ The Linkup search can also be used to perform direct Question Answering, with ou
 along with the sources supporting it.
 """
 
+from dotenv import load_dotenv
 from rich import print
 
 from linkup import LinkupClient
 
+load_dotenv()
 client = LinkupClient()
 
 response = client.search(

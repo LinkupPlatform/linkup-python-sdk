@@ -34,6 +34,7 @@ dev = [
   "pytest-cov>=6.2.1",
   "pytest-mock>=3.14.1",
   "pytest>=8.4.1",
+  "python-dotenv>=1.1.1",
   "rich>=14.1.0",
 ]
 

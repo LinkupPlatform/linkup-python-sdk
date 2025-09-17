@@ -4,6 +4,7 @@ structure, based on a JSON schema or a pydantic.BaseModel. This can be used with
 documented schema to steer the Linkup search in any direction.
 """
 
+from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 from rich import print
 
@@ -19,6 +20,7 @@ class Events(BaseModel):
     events: list[Event] = Field(description="The list of events")
 
 
+load_dotenv()
 client = LinkupClient()
 
 response = client.search(
