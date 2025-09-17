@@ -42,8 +42,8 @@ test_search_parameters = [
             "includeImages": False,
             "excludeDomains": [],
             "includeDomains": [],
-            "fromDate": "",
-            "toDate": "",
+            "fromDate": None,
+            "toDate": "2000-01-01",
         },
         b"""
         {
@@ -109,8 +109,8 @@ test_search_parameters = [
             "includeImages": False,
             "excludeDomains": [],
             "includeDomains": [],
-            "fromDate": "",
-            "toDate": "",
+            "fromDate": None,
+            "toDate": "2000-01-01",
         },
         b"""
         {
@@ -158,8 +158,8 @@ test_search_parameters = [
             "includeImages": False,
             "excludeDomains": [],
             "includeDomains": [],
-            "fromDate": "",
-            "toDate": "",
+            "fromDate": None,
+            "toDate": "2000-01-01",
         },
         b"""
         {
@@ -191,8 +191,8 @@ test_search_parameters = [
             "includeImages": False,
             "excludeDomains": [],
             "includeDomains": [],
-            "fromDate": "",
-            "toDate": "",
+            "fromDate": None,
+            "toDate": "2000-01-01",
         },
         b"""
         {
@@ -225,6 +225,7 @@ def test_search(
     mock_request_response_content: bytes,
     expected_search_response: Any,
 ) -> None:
+    mocker.patch("linkup.client.date").today.return_value = date(2000, 1, 1)
     request_mock = mocker.patch(
         "linkup.client.LinkupClient._request",
         return_value=Response(
@@ -257,6 +258,7 @@ async def test_async_search(
     mock_request_response_content: bytes,
     expected_search_response: Any,
 ) -> None:
+    mocker.patch("linkup.client.date").today.return_value = date(2000, 1, 1)
     request_mock = mocker.patch(
         "linkup.client.LinkupClient._async_request",
         return_value=Response(

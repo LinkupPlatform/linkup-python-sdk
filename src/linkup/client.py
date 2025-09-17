@@ -96,7 +96,7 @@ class LinkupClient:
             LinkupInsufficientCreditError: If you have run out of credit.
             LinkupNoResultError: If the search query did not yield any result.
         """
-        params: dict[str, Union[str, bool, list[str]]] = self._get_search_params(
+        params: dict[str, Union[str, bool, list[str], None]] = self._get_search_params(
             query=query,
             depth=depth,
             output_type=output_type,
@@ -172,7 +172,7 @@ class LinkupClient:
             LinkupAuthenticationError: If the Linkup API key is invalid, or there is no more credit
                 available.
         """
-        params: dict[str, Union[str, bool, list[str]]] = self._get_search_params(
+        params: dict[str, Union[str, bool, list[str], None]] = self._get_search_params(
             query=query,
             depth=depth,
             output_type=output_type,
@@ -316,7 +316,7 @@ class LinkupClient:
         include_domains: Union[list[str], None],
         from_date: Union[date, None],
         to_date: Union[date, None],
-    ) -> dict[str, Union[str, bool, list[str]]]:
+    ) -> dict[str, Union[str, bool, list[str], None]]:
         structured_output_schema_param: str = ""
         if structured_output_schema is not None:
             if isinstance(structured_output_schema, str):
@@ -337,8 +337,8 @@ class LinkupClient:
             includeImages=include_images,
             excludeDomains=exclude_domains or [],
             includeDomains=include_domains or [],
-            fromDate=from_date.isoformat() if from_date is not None else "",
-            toDate=to_date.isoformat() if to_date is not None else "",
+            fromDate=from_date.isoformat() if from_date is not None else None,
+            toDate=to_date.isoformat() if to_date is not None else date.today().isoformat(),
         )
 
     def _validate_search_response(
