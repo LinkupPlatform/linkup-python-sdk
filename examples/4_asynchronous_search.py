@@ -7,10 +7,12 @@ duration.
 import asyncio
 import time
 
+from dotenv import load_dotenv
 from rich import print
 
 from linkup import LinkupClient
 
+load_dotenv()
 client = LinkupClient()
 
 queries: list[str] = [

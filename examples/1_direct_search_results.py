@@ -3,10 +3,12 @@ The Linkup search can output raw search results which can then be re-used in dif
 for instance in a RAG system, with the output_type parameter set to "searchResults".
 """
 
+from dotenv import load_dotenv
 from rich import print
 
 from linkup import LinkupClient
 
+load_dotenv()
 client = LinkupClient()
 
 response = client.search(
