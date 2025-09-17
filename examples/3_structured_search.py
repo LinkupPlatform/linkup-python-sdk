@@ -31,6 +31,7 @@ response = client.search(
     query="What are the 3 major events in the life of Abraham Lincoln?",
     depth="standard",  # or "deep"
     output_type="structured",
-    structured_output_schema=Events,
+    structured_output_schema=Events,  # or json.dumps(Events.model_json_schema())
+    include_sources=False,
 )
 print(response)
