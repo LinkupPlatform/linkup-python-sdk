@@ -1,7 +1,11 @@
-"""
+"""Example of asynchronous search.
+
 All Linkup entrypoints come with an asynchronous version. This snippet demonstrates how to run
 multiple asynchronous searches concurrently, which decreases by a lot the total computation
 duration.
+
+To use this script, copy the `.env.example` file at the root of the repository inside a `.env`, and
+fill the missing values, or pass a Linkup API key to the `LinkupClient` initialization.
 """
 
 import asyncio
