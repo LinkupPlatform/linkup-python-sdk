@@ -37,7 +37,7 @@ pip install linkup-sdk
    SDK.
 
    ```bash
-   export LINKUP_API_KEY='YOUR_LINKUP_API_KEY'
+   export LINKUP_API_KEY=<your-linkup-api-key>
    ```
 
    Option 2: Set the `LINKUP_API_KEY` environment variable directly within Python, using for
@@ -49,7 +49,7 @@ pip install linkup-sdk
    import os
    from linkup import LinkupClient
 
-   os.environ["LINKUP_API_KEY"] = "YOUR_LINKUP_API_KEY"
+   os.environ["LINKUP_API_KEY"] = "<your-linkup-api-key>"
    # or dotenv.load_dotenv()
    client = LinkupClient()
    ...
@@ -60,7 +60,7 @@ pip install linkup-sdk
    ```python
    from linkup import LinkupClient
 
-   client = LinkupClient(api_key="YOUR_LINKUP_API_KEY")
+   client = LinkupClient(api_key="<your-linkup-api-key>")
    ...
    ```
 
@@ -111,6 +111,10 @@ print(search_response.model_dump())
 # }
 ```
 
+Check the code or the
+[official documentation](https://docs.linkup.so/pages/documentation/api-reference/endpoint/post-search)
+for the detailed list of available parameters.
+
 #### 🪝 Fetch
 
 The `fetch` function can be used to retrieve the content of a given web page in a cleaned up
@@ -135,6 +139,10 @@ print(fetch_response.model_dump())
 #   raw_html="<!DOCTYPE html><html lang=\"en\"><head>...</head><body>...</body></html>"
 # }
 ```
+
+Check the code or the
+[official documentation](https://docs.linkup.so/pages/documentation/api-reference/endpoint/post-fetch)
+for the detailed list of available parameters.
 
 #### 📚 More Examples
 

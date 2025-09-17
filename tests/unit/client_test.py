@@ -35,17 +35,7 @@ class Company(BaseModel):
 test_search_parameters = [
     (
         {"query": "query", "depth": "standard", "output_type": "searchResults"},
-        {
-            "q": "query",
-            "depth": "standard",
-            "outputType": "searchResults",
-            "structuredOutputSchema": "",
-            "includeImages": False,
-            "excludeDomains": [],
-            "includeDomains": [],
-            "fromDate": None,
-            "toDate": "2000-01-01",
-        },
+        {"q": "query", "depth": "standard", "outputType": "searchResults"},
         b"""
         {
             "results": [
@@ -83,36 +73,25 @@ test_search_parameters = [
             "include_images": True,
             "from_date": date(2023, 1, 1),
             "to_date": date(2023, 12, 31),
-            "include_domains": ["example.com", "example.org"],
             "exclude_domains": ["excluded.com"],
+            "include_domains": ["example.com", "example.org"],
         },
         {
             "q": "A long query.",
             "depth": "deep",
             "outputType": "searchResults",
-            "structuredOutputSchema": "",
             "includeImages": True,
-            "excludeDomains": ["excluded.com"],
-            "includeDomains": ["example.com", "example.org"],
             "fromDate": "2023-01-01",
             "toDate": "2023-12-31",
+            "excludeDomains": ["excluded.com"],
+            "includeDomains": ["example.com", "example.org"],
         },
         b'{"results": []}',
         LinkupSearchResults(results=[]),
     ),
     (
         {"query": "query", "depth": "standard", "output_type": "sourcedAnswer"},
-        {
-            "q": "query",
-            "depth": "standard",
-            "outputType": "sourcedAnswer",
-            "structuredOutputSchema": "",
-            "includeImages": False,
-            "excludeDomains": [],
-            "includeDomains": [],
-            "fromDate": None,
-            "toDate": "2000-01-01",
-        },
+        {"q": "query", "depth": "standard", "outputType": "sourcedAnswer"},
         b"""
         {
             "answer": "foo bar baz",
@@ -156,11 +135,6 @@ test_search_parameters = [
             "depth": "standard",
             "outputType": "structured",
             "structuredOutputSchema": json.dumps(Company.model_json_schema()),
-            "includeImages": False,
-            "excludeDomains": [],
-            "includeDomains": [],
-            "fromDate": None,
-            "toDate": "2000-01-01",
         },
         b"""
         {
@@ -189,11 +163,6 @@ test_search_parameters = [
             "depth": "standard",
             "outputType": "structured",
             "structuredOutputSchema": json.dumps(Company.model_json_schema()),
-            "includeImages": False,
-            "excludeDomains": [],
-            "includeDomains": [],
-            "fromDate": None,
-            "toDate": "2000-01-01",
         },
         b"""
         {
@@ -443,19 +412,13 @@ async def test_async_search_error(
 test_fetch_parameters = [
     (
         {"url": "https://example.com"},
-        {"url": "https://example.com", "renderJs": False, "includeRawHtml": False},
+        {"url": "https://example.com"},
         b'{"markdown": "Some web page content"}',
         LinkupFetchResponse(markdown="Some web page content", raw_html=None),
     ),
     (
-        {"url": "https://example.com", "render_js": True},
-        {"url": "https://example.com", "renderJs": True, "includeRawHtml": False},
-        b'{"markdown": "#Some web page content"}',
-        LinkupFetchResponse(markdown="#Some web page content", raw_html=None),
-    ),
-    (
-        {"url": "https://example.com", "include_raw_html": True},
-        {"url": "https://example.com", "renderJs": False, "includeRawHtml": True},
+        {"url": "https://example.com", "include_raw_html": True, "render_js": True},
+        {"url": "https://example.com", "includeRawHtml": True, "renderJs": True},
         b'{"markdown": "#Some web page content", "rawHtml": "<html>...</html>"}',
         LinkupFetchResponse(markdown="#Some web page content", raw_html="<html>...</html>"),
     ),

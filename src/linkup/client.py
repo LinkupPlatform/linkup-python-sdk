@@ -20,16 +20,15 @@ from linkup.types import LinkupFetchResponse, LinkupSearchResults, LinkupSourced
 
 
 class LinkupClient:
-    """The Linkup Client class.
-
-    The LinkupClient class provides functions and other tools to interact with the Linkup API in
-    Python, making possible to perform search queries based on the Linkup API sources, that is the
-    web and the Linkup Premium Partner sources, using natural language.
+    """The Linkup Client class, providing functions to call the Linkup API endpoints using Python.
 
     Args:
         api_key: The API key for the Linkup API. If None, the API key will be read from the
             environment variable `LINKUP_API_KEY`.
-        base_url: The base URL for the Linkup API. In general, there's no need to change this.
+        base_url: The base URL for the Linkup API, for development purposes.
+
+    Raises:
+        ValueError: If the API key is not provided and not found in the environment variable.
     """
 
     __version__ = __version__
@@ -53,14 +52,17 @@ class LinkupClient:
         depth: Literal["standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[type[BaseModel], str, None] = None,
-        include_images: bool = False,
-        exclude_domains: Union[list[str], None] = None,
-        include_domains: Union[list[str], None] = None,
-        from_date: Union[date, None] = None,
-        to_date: Union[date, None] = None,
+        include_images: Optional[bool] = None,
+        from_date: Optional[date] = None,
+        to_date: Optional[date] = None,
+        exclude_domains: Optional[list[str]] = None,
+        include_domains: Optional[list[str]] = None,
     ) -> Any:
-        """
-        Search for a query in the Linkup API.
+        """Perform a web search using the Linkup API `search` endpoint.
+
+        All optional parameters will default to the Linkup API defaults when not provided. The
+        Linkup API defaults are available in the
+        [official documentation](https://docs.linkup.so/pages/documentation/api-reference/endpoint/post-search).
 
         Args:
             query: The search query.
@@ -74,12 +76,12 @@ class LinkupClient:
                 output. Supported formats are a pydantic.BaseModel or a string representing a
                 valid object JSON schema.
             include_images: Indicate whether images should be included during the search.
-            exclude_domains: If you want to exclude specific domains from your search.
-            include_domains: If you want the search to only return results from certain domains.
             from_date: The date from which the search results should be considered. If None, the
                 search results will not be filtered by date.
             to_date: The date until which the search results should be considered. If None, the
                 search results will not be filtered by date.
+            exclude_domains: If you want to exclude specific domains from your search.
+            include_domains: If you want the search to only return results from certain domains.
 
         Returns:
             The Linkup API search result. If output_type is "searchResults", the result will be a
@@ -97,16 +99,16 @@ class LinkupClient:
             LinkupInsufficientCreditError: If you have run out of credit.
             LinkupNoResultError: If the search query did not yield any result.
         """
-        params: dict[str, Union[str, bool, list[str], None]] = self._get_search_params(
+        params: dict[str, Union[str, bool, list[str]]] = self._get_search_params(
             query=query,
             depth=depth,
             output_type=output_type,
             structured_output_schema=structured_output_schema,
             include_images=include_images,
-            exclude_domains=exclude_domains,
-            include_domains=include_domains,
             from_date=from_date,
             to_date=to_date,
+            exclude_domains=exclude_domains,
+            include_domains=include_domains,
         )
 
         response: httpx.Response = self._request(
@@ -130,14 +132,17 @@ class LinkupClient:
         depth: Literal["standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[type[BaseModel], str, None] = None,
-        include_images: bool = False,
-        exclude_domains: Union[list[str], None] = None,
-        include_domains: Union[list[str], None] = None,
-        from_date: Union[date, None] = None,
-        to_date: Union[date, None] = None,
+        include_images: Optional[bool] = None,
+        from_date: Optional[date] = None,
+        to_date: Optional[date] = None,
+        exclude_domains: Optional[list[str]] = None,
+        include_domains: Optional[list[str]] = None,
     ) -> Any:
-        """
-        Asynchronously search for a query in the Linkup API.
+        """Asynchronously perform a web search using the Linkup API `search` endpoint.
+
+        All optional parameters will default to the Linkup API defaults when not provided. The
+        Linkup API defaults are available in the
+        [official documentation](https://docs.linkup.so/pages/documentation/api-reference/endpoint/post-search).
 
         Args:
             query: The search query.
@@ -151,12 +156,12 @@ class LinkupClient:
                 output. Supported formats are a pydantic.BaseModel or a string representing a
                 valid object JSON schema.
             include_images: Indicate whether images should be included during the search.
-            exclude_domains: If you want to exclude specific domains from your search.
-            include_domains: If you want the search to only return results from certain domains.
             from_date: The date from which the search results should be considered. If None, the
                 search results will not be filtered by date.
             to_date: The date until which the search results should be considered. If None, the
                 search results will not be filtered by date.
+            exclude_domains: If you want to exclude specific domains from your search.
+            include_domains: If you want the search to only return results from certain domains.
 
         Returns:
             The Linkup API search result. If output_type is "searchResults", the result will be a
@@ -170,19 +175,20 @@ class LinkupClient:
                 pydantic.BaseModel when output_type is "structured".
             LinkupInvalidRequestError: If structured_output_schema doesn't represent a valid object
                 JSON schema when output_type is "structured".
-            LinkupAuthenticationError: If the Linkup API key is invalid, or there is no more credit
-                available.
+            LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupInsufficientCreditError: If you have run out of credit.
+            LinkupNoResultError: If the search query did not yield any result.
         """
-        params: dict[str, Union[str, bool, list[str], None]] = self._get_search_params(
+        params: dict[str, Union[str, bool, list[str]]] = self._get_search_params(
             query=query,
             depth=depth,
             output_type=output_type,
             structured_output_schema=structured_output_schema,
             include_images=include_images,
-            exclude_domains=exclude_domains,
-            include_domains=include_domains,
             from_date=from_date,
             to_date=to_date,
+            exclude_domains=exclude_domains,
+            include_domains=include_domains,
         )
 
         response: httpx.Response = await self._async_request(
@@ -203,23 +209,31 @@ class LinkupClient:
     def fetch(
         self,
         url: str,
-        render_js: bool = False,
-        include_raw_html: bool = False,
+        include_raw_html: Optional[bool] = None,
+        render_js: Optional[bool] = None,
     ) -> LinkupFetchResponse:
-        """Fetch the content of a web page.
+        """Fetch the content of a web page using the Linkup API `fetch` endpoint.
+
+        All optional parameters will default to the Linkup API defaults when not provided. The
+        Linkup API defaults are available in the
+        [official documentation](https://docs.linkup.so/pages/documentation/api-reference/endpoint/post-fetch).
 
         Args:
             url: The URL of the web page to fetch.
-            render_js: Whether the API should render the JavaScript of the webpage.
             include_raw_html: Whether to include the raw HTML of the webpage in the response.
+            render_js: Whether the API should render the JavaScript of the webpage.
 
         Returns:
             The response of the web page fetch, containing the web page content.
+
+        Raises:
+            LinkupInvalidRequestError: If the provided URL is not valid.
+            LinkupFailedFetchError: If the provided URL is not found or can't be fetched.
         """
         params: dict[str, Union[str, bool]] = self._get_fetch_params(
             url=url,
-            render_js=render_js,
             include_raw_html=include_raw_html,
+            render_js=render_js,
         )
 
         response: httpx.Response = self._request(
@@ -236,23 +250,31 @@ class LinkupClient:
     async def async_fetch(
         self,
         url: str,
-        render_js: bool = False,
-        include_raw_html: bool = False,
+        include_raw_html: Optional[bool] = None,
+        render_js: Optional[bool] = None,
     ) -> LinkupFetchResponse:
-        """Asynchronously fetch the content of a web page.
+        """Asynchronously fetch the content of a web page using the Linkup API `fetch` endpoint.
+
+        All optional parameters will default to the Linkup API defaults when not provided. The
+        Linkup API defaults are available in the
+        [official documentation](https://docs.linkup.so/pages/documentation/api-reference/endpoint/post-fetch).
 
         Args:
             url: The URL of the web page to fetch.
-            render_js: Whether the API should render the JavaScript of the webpage.
             include_raw_html: Whether to include the raw HTML of the webpage in the response.
+            render_js: Whether the API should render the JavaScript of the webpage.
 
         Returns:
             The response of the web page fetch, containing the web page content.
+
+        Raises:
+            LinkupInvalidRequestError: If the provided URL is not valid.
+            LinkupFailedFetchError: If the provided URL is not found or can't be fetched.
         """
         params: dict[str, Union[str, bool]] = self._get_fetch_params(
             url=url,
-            render_js=render_js,
             include_raw_html=include_raw_html,
+            render_js=render_js,
         )
 
         response: httpx.Response = await self._async_request(
@@ -383,47 +405,55 @@ class LinkupClient:
         depth: Literal["standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[type[BaseModel], str, None],
-        include_images: bool,
-        exclude_domains: Union[list[str], None],
-        include_domains: Union[list[str], None],
-        from_date: Union[date, None],
-        to_date: Union[date, None],
-    ) -> dict[str, Union[str, bool, list[str], None]]:
-        structured_output_schema_param: str = ""
+        include_images: Optional[bool],
+        from_date: Optional[date],
+        to_date: Optional[date],
+        exclude_domains: Optional[list[str]],
+        include_domains: Optional[list[str]],
+    ) -> dict[str, Union[str, bool, list[str]]]:
+        params: dict[str, Union[str, bool, list[str]]] = dict(
+            q=query,
+            depth=depth,
+            outputType=output_type,
+        )
+
         if structured_output_schema is not None:
             if isinstance(structured_output_schema, str):
-                structured_output_schema_param = structured_output_schema
+                params["structuredOutputSchema"] = structured_output_schema
             elif issubclass(structured_output_schema, BaseModel):
                 json_schema: dict[str, Any] = structured_output_schema.model_json_schema()
-                structured_output_schema_param = json.dumps(json_schema)
+                params["structuredOutputSchema"] = json.dumps(json_schema)
             else:
                 raise TypeError(
                     f"Unexpected structured_output_schema type: '{type(structured_output_schema)}'"
                 )
+        if include_images is not None:
+            params["includeImages"] = include_images
+        if from_date is not None:
+            params["fromDate"] = from_date.isoformat()
+        if to_date is not None:
+            params["toDate"] = to_date.isoformat()
+        if exclude_domains is not None:
+            params["excludeDomains"] = exclude_domains
+        if include_domains is not None:
+            params["includeDomains"] = include_domains
 
-        return dict(
-            q=query,
-            depth=depth,
-            outputType=output_type,
-            structuredOutputSchema=structured_output_schema_param,
-            includeImages=include_images,
-            excludeDomains=exclude_domains or [],
-            includeDomains=include_domains or [],
-            fromDate=from_date.isoformat() if from_date is not None else None,
-            toDate=to_date.isoformat() if to_date is not None else date.today().isoformat(),
-        )
+        return params
 
     def _get_fetch_params(
         self,
         url: str,
-        render_js: bool,
-        include_raw_html: bool = False,
+        include_raw_html: Optional[bool],
+        render_js: Optional[bool],
     ) -> dict[str, Union[str, bool]]:
-        return dict(
-            url=url,
-            renderJs=render_js,
-            includeRawHtml=include_raw_html,
-        )
+        params: dict[str, Union[str, bool]] = {
+            "url": url,
+        }
+        if include_raw_html is not None:
+            params["includeRawHtml"] = include_raw_html
+        if render_js is not None:
+            params["renderJs"] = render_js
+        return params
 
     def _parse_search_response(
         self,

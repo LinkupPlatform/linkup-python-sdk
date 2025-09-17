@@ -4,8 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class LinkupSearchTextResult(BaseModel):
-    """
-    A text result from a Linkup search.
+    """A text result from a Linkup search.
 
     Attributes:
         type: The type of the search result, in this case "text".
@@ -21,8 +20,7 @@ class LinkupSearchTextResult(BaseModel):
 
 
 class LinkupSearchImageResult(BaseModel):
-    """
-    An image result from a Linkup search.
+    """An image result from a Linkup search.
 
     Attributes:
         type: The type of the search result, in this case "image".
@@ -36,8 +34,7 @@ class LinkupSearchImageResult(BaseModel):
 
 
 class LinkupSearchResults(BaseModel):
-    """
-    The results of the Linkup search.
+    """The results of the Linkup search.
 
     Attributes:
         results: The results of the Linkup search.
@@ -47,8 +44,7 @@ class LinkupSearchResults(BaseModel):
 
 
 class LinkupSource(BaseModel):
-    """
-    A source supporting a Linkup answer.
+    """A source supporting a Linkup answer.
 
     Attributes:
         name: The name of the source.
@@ -62,8 +58,7 @@ class LinkupSource(BaseModel):
 
 
 class LinkupSourcedAnswer(BaseModel):
-    """
-    A Linkup answer, with the sources supporting it.
+    """A Linkup answer, with the sources supporting it.
 
     Attributes:
         answer: The answer text.
@@ -75,8 +70,7 @@ class LinkupSourcedAnswer(BaseModel):
 
 
 class LinkupFetchResponse(BaseModel):
-    """
-    The response from a Linkup web page fetch.
+    """The response from a Linkup web page fetch.
 
     Attributes:
         markdown: The cleaned up markdown content.

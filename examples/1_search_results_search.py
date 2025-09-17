@@ -1,6 +1,10 @@
-"""
+"""Example of search results search.
+
 The Linkup search can output raw search results which can then be re-used in different use-cases,
-for instance in a RAG system, with the output_type parameter set to "searchResults".
+for instance in a RAG system, with the `output_type` parameter set to `searchResults`.
+
+To use this script, copy the `.env.example` file at the root of the repository inside a `.env`, and
+fill the missing values, or pass a Linkup API key to the `LinkupClient` initialization.
 """
 
 from dotenv import load_dotenv
