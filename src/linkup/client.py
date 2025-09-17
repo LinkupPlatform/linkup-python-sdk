@@ -16,7 +16,12 @@ from linkup.errors import (
     LinkupTooManyRequestsError,
     LinkupUnknownError,
 )
-from linkup.types import LinkupFetchResponse, LinkupSearchResults, LinkupSourcedAnswer
+from linkup.types import (
+    LinkupFetchResponse,
+    LinkupSearchResults,
+    LinkupSearchStructuredResponse,
+    LinkupSourcedAnswer,
+)
 
 
 class LinkupClient:
@@ -58,6 +63,7 @@ class LinkupClient:
         exclude_domains: Optional[list[str]] = None,
         include_domains: Optional[list[str]] = None,
         include_inline_citations: Optional[bool] = None,
+        include_sources: Optional[bool] = None,
     ) -> Any:
         """Perform a web search using the Linkup API `search` endpoint.
 
@@ -85,13 +91,18 @@ class LinkupClient:
             include_domains: If you want the search to only return results from certain domains.
             include_inline_citations: If output_type is "sourcedAnswer", indicate whether the
                 answer should include inline citations.
+            include_sources: If output_type is "structured", indicate whether the answer should
+                include sources. This will modify the schema of the structured response.
 
         Returns:
-            The Linkup API search result. If output_type is "searchResults", the result will be a
-                linkup.LinkupSearchResults. If output_type is "sourcedAnswer", the result will be a
-                linkup.LinkupSourcedAnswer. If output_type is "structured", the result will be
-                either an instance of the provided pydantic.BaseModel, or an arbitrary data
-                structure, following structured_output_schema.
+            The Linkup API search result, which can have different types based on the parameters:
+            - LinkupSearchResults if output_type is "searchResults"
+            - LinkupSourcedAnswer if output_type is "sourcedAnswer"
+            - the provided pydantic.BaseModel or an arbitrary data structure if output_type is
+              "structured" and include_sources is False
+            - LinkupSearchStructuredResponse with the provided pydantic.BaseModel or an arbitrary
+              data structure as data field, if output_type is "structured" and include_sources is
+              True
 
         Raises:
             TypeError: If structured_output_schema is not provided or is not a string or a
@@ -113,6 +124,7 @@ class LinkupClient:
             exclude_domains=exclude_domains,
             include_domains=include_domains,
             include_inline_citations=include_inline_citations,
+            include_sources=include_sources,
         )
 
         response: httpx.Response = self._request(
@@ -128,6 +140,7 @@ class LinkupClient:
             response=response,
             output_type=output_type,
             structured_output_schema=structured_output_schema,
+            include_sources=include_sources,
         )
 
     async def async_search(
@@ -142,6 +155,7 @@ class LinkupClient:
         exclude_domains: Optional[list[str]] = None,
         include_domains: Optional[list[str]] = None,
         include_inline_citations: Optional[bool] = None,
+        include_sources: Optional[bool] = None,
     ) -> Any:
         """Asynchronously perform a web search using the Linkup API `search` endpoint.
 
@@ -169,13 +183,18 @@ class LinkupClient:
             include_domains: If you want the search to only return results from certain domains.
             include_inline_citations: If output_type is "sourcedAnswer", indicate whether the
                 answer should include inline citations.
+            include_sources: If output_type is "structured", indicate whether the answer should
+                include sources. This will modify the schema of the structured response.
 
         Returns:
-            The Linkup API search result. If output_type is "searchResults", the result will be a
-                linkup.LinkupSearchResults. If output_type is "sourcedAnswer", the result will be a
-                linkup.LinkupSourcedAnswer. If output_type is "structured", the result will be
-                either an instance of the provided pydantic.BaseModel, or an arbitrary data
-                structure, following structured_output_schema.
+            The Linkup API search result, which can have different types based on the parameters:
+            - LinkupSearchResults if output_type is "searchResults"
+            - LinkupSourcedAnswer if output_type is "sourcedAnswer"
+            - the provided pydantic.BaseModel or an arbitrary data structure if output_type is
+              "structured" and include_sources is False
+            - LinkupSearchStructuredResponse with the provided pydantic.BaseModel or an arbitrary
+              data structure as data field, if output_type is "structured" and include_sources is
+              True
 
         Raises:
             TypeError: If structured_output_schema is not provided or is not a string or a
@@ -197,6 +216,7 @@ class LinkupClient:
             exclude_domains=exclude_domains,
             include_domains=include_domains,
             include_inline_citations=include_inline_citations,
+            include_sources=include_sources,
         )
 
         response: httpx.Response = await self._async_request(
@@ -212,6 +232,7 @@ class LinkupClient:
             response=response,
             output_type=output_type,
             structured_output_schema=structured_output_schema,
+            include_sources=include_sources,
         )
 
     def fetch(
@@ -419,6 +440,7 @@ class LinkupClient:
         exclude_domains: Optional[list[str]],
         include_domains: Optional[list[str]],
         include_inline_citations: Optional[bool],
+        include_sources: Optional[bool],
     ) -> dict[str, Union[str, bool, list[str]]]:
         params: dict[str, Union[str, bool, list[str]]] = dict(
             q=query,
@@ -448,6 +470,8 @@ class LinkupClient:
             params["includeDomains"] = include_domains
         if include_inline_citations is not None:
             params["includeInlineCitations"] = include_inline_citations
+        if include_sources is not None:
+            params["includeSources"] = include_sources
 
         return params
 
@@ -471,23 +495,35 @@ class LinkupClient:
         response: httpx.Response,
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: Union[type[BaseModel], str, None],
+        include_sources: Optional[bool],
     ) -> Any:
         response_data: Any = response.json()
-        output_base_model: Optional[type[BaseModel]] = None
         if output_type == "searchResults":
-            output_base_model = LinkupSearchResults
+            return LinkupSearchResults.model_validate(response_data)
         elif output_type == "sourcedAnswer":
-            output_base_model = LinkupSourcedAnswer
-        elif (
-            output_type == "structured"
-            and not isinstance(structured_output_schema, (str, type(None)))
-            and issubclass(structured_output_schema, BaseModel)
-        ):
-            output_base_model = structured_output_schema
-
-        if output_base_model is None:
+            return LinkupSourcedAnswer.model_validate(response_data)
+        elif output_type == "structured":
+            if structured_output_schema is None:
+                raise ValueError(
+                    "structured_output_schema must be provided when output_type is 'structured'"
+                )
+            # HACK: we assume that `include_sources` will default to False, since the API output can
+            # be arbitrary so we can't guess if it includes sources or not
+            if include_sources:
+                if not isinstance(structured_output_schema, str) and issubclass(
+                    structured_output_schema, BaseModel
+                ):
+                    response_data["data"] = structured_output_schema.model_validate(
+                        response_data["data"]
+                    )
+                return LinkupSearchStructuredResponse.model_validate(response_data)
+            if not isinstance(structured_output_schema, str) and issubclass(
+                structured_output_schema, BaseModel
+            ):
+                return structured_output_schema.model_validate(response_data)
             return response_data
-        return output_base_model.model_validate(response_data)
+        else:
+            raise ValueError(f"Unexpected output_type value: '{output_type}'")
 
     def _parse_fetch_response(self, response: httpx.Response) -> LinkupFetchResponse:
         return LinkupFetchResponse.model_validate(response.json())
