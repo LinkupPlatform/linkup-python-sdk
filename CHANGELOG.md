@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.3.0 (2025-09-17)
+
+### Features
+
+- Fetch endpoint
+  ([`efdebdb`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/efdebdbda787542e7b38e5058e455c7d694db5df))
+
+
 ## v0.2.11 (2025-09-17)
 
 ### Bug Fixes
