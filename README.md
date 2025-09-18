@@ -5,8 +5,13 @@
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/linkup-sdk)
 [![Discord](https://img.shields.io/discord/1303713168916348959?color=7289da&logo=discord&logoColor=white)](https://discord.gg/9q9mCYJa86)
 
-A [Python SDK](https://docs.linkup.so/pages/sdk/python/python) for the
-[Linkup API](https://www.linkup.so/), allowing easy integration with Linkup's services. 🐍
+A Python SDK for the [Linkup API](https://www.linkup.so/), allowing easy integration with Linkup's
+services in any Python application. 🐍
+
+Checkout the official
+[API documentation](https://docs.linkup.so/pages/documentation/get-started/introduction) and
+[SDK documentation](https://docs.linkup.so/pages/sdk/python/python) for additional details on how to
+benefit from Linkup services to the full extent. 📝
 
 ## 🌟 Features
 
