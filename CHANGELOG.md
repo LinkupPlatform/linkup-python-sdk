@@ -2,6 +2,17 @@
 
 <!-- version list -->
 
+## v0.4.0 (2025-09-18)
+
+### Bug Fixes
+
+- Specify minimal version of main requirements
+  ([`9aaf6ae`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/9aaf6ae1319e47fc70b05091967d661a11820b73))
+
+- Use API parameters order and defaults
+  ([`5958298`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/595829815bfe54c3f71f75484dce56e03eb99e64))
+
+
 ## v0.3.0 (2025-09-17)
 
 ### Features
