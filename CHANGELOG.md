@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.5.0 (2025-09-18)
+
+### Features
+
+- Include_inline_citations search parameter
+  ([`bd1e7fc`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/bd1e7fc0f91a832bb62813f41474e5948715249d))
+
+
 ## v0.4.0 (2025-09-18)
 
 ### Bug Fixes
