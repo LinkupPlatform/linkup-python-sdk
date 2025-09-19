@@ -20,5 +20,6 @@ response = client.search(
     query="What are the 3 major events in the life of Abraham Lincoln ?",
     depth="standard",  # or "deep"
     output_type="sourcedAnswer",
+    include_inline_citations=False,
 )
 print(response)

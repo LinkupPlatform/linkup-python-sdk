@@ -1,4 +1,4 @@
-from typing import Literal, Optional, Union
+from typing import Any, Literal, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -67,6 +67,18 @@ class LinkupSourcedAnswer(BaseModel):
 
     answer: str
     sources: list[LinkupSource]
+
+
+class LinkupSearchStructuredResponse(BaseModel):
+    """A Linkup `search` structured response, with the sources supporting it.
+
+    Attributes:
+        data: The answer data, either as a Pydantic model or an arbitrary JSON structure.
+        sources: The sources supporting the answer.
+    """
+
+    data: Any
+    sources: list[Union[LinkupSearchTextResult, LinkupSearchImageResult]]
 
 
 class LinkupFetchResponse(BaseModel):

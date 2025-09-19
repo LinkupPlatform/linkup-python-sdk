@@ -22,7 +22,12 @@ from linkup.errors import (
     LinkupNoResultError,
     LinkupTooManyRequestsError,
 )
-from linkup.types import LinkupFetchResponse, LinkupSearchImageResult, LinkupSearchTextResult
+from linkup.types import (
+    LinkupFetchResponse,
+    LinkupSearchImageResult,
+    LinkupSearchStructuredResponse,
+    LinkupSearchTextResult,
+)
 
 
 class Company(BaseModel):
@@ -179,6 +184,110 @@ test_search_parameters = [
             founders_names=["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
             creation_date="2024",
             website_url="https://www.linkup.so/",
+        ),
+    ),
+    (
+        {
+            "query": "query",
+            "depth": "standard",
+            "output_type": "structured",
+            "structured_output_schema": Company,
+            "include_sources": True,
+        },
+        {
+            "q": "query",
+            "depth": "standard",
+            "outputType": "structured",
+            "structuredOutputSchema": json.dumps(Company.model_json_schema()),
+            "includeSources": True,
+        },
+        b"""
+        {
+            "data": {
+                "name": "Linkup",
+                "founders_names": ["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
+                "creation_date": "2024",
+                "website_url": "https://www.linkup.so/"
+            },
+            "sources": [
+                {
+                    "type": "text",
+                    "name": "foo",
+                    "url": "https://foo.com",
+                    "content": "lorem ipsum dolor sit amet"
+                },
+                {"type": "image", "name": "bar", "url": "https://bar.com"}
+            ]
+        }
+        """,
+        LinkupSearchStructuredResponse(
+            data=Company(
+                name="Linkup",
+                founders_names=["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
+                creation_date="2024",
+                website_url="https://www.linkup.so/",
+            ),
+            sources=[
+                LinkupSearchTextResult(
+                    type="text",
+                    name="foo",
+                    url="https://foo.com",
+                    content="lorem ipsum dolor sit amet",
+                ),
+                LinkupSearchImageResult(type="image", name="bar", url="https://bar.com"),
+            ],
+        ),
+    ),
+    (
+        {
+            "query": "query",
+            "depth": "standard",
+            "output_type": "structured",
+            "structured_output_schema": json.dumps(Company.model_json_schema()),
+            "include_sources": True,
+        },
+        {
+            "q": "query",
+            "depth": "standard",
+            "outputType": "structured",
+            "structuredOutputSchema": json.dumps(Company.model_json_schema()),
+            "includeSources": True,
+        },
+        b"""
+        {
+            "data": {
+                "name": "Linkup",
+                "founders_names": ["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
+                "creation_date": "2024",
+                "website_url": "https://www.linkup.so/"
+            },
+            "sources": [
+                {
+                    "type": "text",
+                    "name": "foo",
+                    "url": "https://foo.com",
+                    "content": "lorem ipsum dolor sit amet"
+                },
+                {"type": "image", "name": "bar", "url": "https://bar.com"}
+            ]
+        }
+        """,
+        LinkupSearchStructuredResponse(
+            data=dict(
+                name="Linkup",
+                founders_names=["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
+                creation_date="2024",
+                website_url="https://www.linkup.so/",
+            ),
+            sources=[
+                LinkupSearchTextResult(
+                    type="text",
+                    name="foo",
+                    url="https://foo.com",
+                    content="lorem ipsum dolor sit amet",
+                ),
+                LinkupSearchImageResult(type="image", name="bar", url="https://bar.com"),
+            ],
         ),
     ),
 ]
