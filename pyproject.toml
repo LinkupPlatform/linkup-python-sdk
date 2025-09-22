@@ -6,7 +6,7 @@ license = "MIT"
 name = "linkup-sdk"
 readme = "README.md"
 requires-python = ">=3.9"
-version = "0.5.0"
+version = "0.6.0"
 
 classifiers = [
   "Intended Audience :: Developers",

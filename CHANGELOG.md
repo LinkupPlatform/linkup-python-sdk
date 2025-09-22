@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v0.6.0 (2025-09-22)
+
+### Documentation
+
+- Add links to the documentation
+  ([`73673bb`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/73673bb1ad84e44ac98a683a1d3eedb9425244f4))
+
+### Features
+
+- Include_sources parameter
+  ([`64fd4c5`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/64fd4c58508f447f6cbdda80e76d43a065c11df5))
+
+
 ## v0.5.0 (2025-09-18)
 
 ### Features
