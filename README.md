@@ -17,8 +17,8 @@ benefit from Linkup services to the full extent. 📝
 
 - ✅ **Simple and intuitive API client.**
 - 🔍 **Support all Linkup entrypoints and parameters.**
-- ⚡ **Supports synchronous and asynchronous requests.**
-- 🔒 **Handles authentication and request management.**
+- ⚡ **Support synchronous and asynchronous calls.**
+- 🔒 **Handle authentication and request management.**
 
 ## 📦 Installation
 
@@ -90,8 +90,9 @@ The `search` function also supports three output types:
   user-defined schema
 
 ```python
-from linkup import LinkupClient, LinkupSourcedAnswer
 from typing import Any
+
+from linkup import LinkupClient, LinkupSourcedAnswer
 
 client = LinkupClient()  # API key can be read from the environment variable or passed as an argument
 search_response: Any = client.search(
@@ -149,7 +150,46 @@ Check the code or the
 [official documentation](https://docs.linkup.so/pages/documentation/api-reference/endpoint/post-fetch)
 for the detailed list of available parameters.
 
+#### ⌛ Asynchronous Calls
+
+All the Linkup main functions come with an asynchronous counterpart, with the same behavior and the
+same name prefixed by `async_` (e.g. `async_search` for `search`). This should be favored in
+production use cases to avoid blocking the main thread while waiting for the Linkup API to respond.
+This makes possible to call the Linkup API several times concurrently for instance.
+
+```python
+import asyncio
+from typing import Any
+
+from linkup import LinkupClient, LinkupSourcedAnswer
+
+async def main() -> None:
+    client = LinkupClient()  # API key can be read from the environment variable or passed as an argument
+    search_response: Any = await client.async_search(
+        query="What are the 3 major events in the life of Abraham Lincoln?",
+        depth="deep",  # "standard" or "deep"
+        output_type="sourcedAnswer",  # "searchResults" or "sourcedAnswer" or "structured"
+        structured_output_schema=None,  # must be filled if output_type is "structured"
+    )
+    assert isinstance(search_response, LinkupSourcedAnswer)
+    print(search_response.model_dump())
+
+asyncio.run(main())
+# Response:
+# {
+#   answer="The three major events in the life of Abraham Lincoln are: 1. ...",
+#   sources=[
+#     {
+#       "name": "HISTORY",
+#       "url": "https://www.history.com/topics/us-presidents/abraham-lincoln",
+#       "snippet": "Abraham Lincoln - Facts & Summary - HISTORY ..."
+#     },
+#     ...
+#   ]
+# }
+```
+
 #### 📚 More Examples
 
 See the `examples/` directory for more examples and documentation, for instance on how to use Linkup
-entrypoints using asynchronous functions.
+entrypoints using asynchronous functions to call the Linkup API several times concurrenly.
