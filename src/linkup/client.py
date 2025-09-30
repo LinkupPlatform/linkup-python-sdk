@@ -1,3 +1,5 @@
+"""Linkup client, the entrypoint for Linkup functions."""
+
 import json
 import os
 from datetime import date
