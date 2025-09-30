@@ -1,3 +1,6 @@
+"""Linkup custom errors."""
+
+
 class LinkupInvalidRequestError(Exception):
     """Invalid request error, raised when the Linkup API returns a 400 status code.
 

@@ -55,10 +55,14 @@ line-length = 100
 target-version = "py39"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "S", "UP"]
+extend-ignore = ["D107"]
+pydocstyle = { convention = "google" }
+select = ["D", "E", "F", "I", "S", "UP"]
 
 [tool.ruff.lint.extend-per-file-ignores]
-"tests/**/*_test.py" = ["S101"]
+"examples/*.py" = ["D"]
+"src/linkup/__init__.py" = ["D104"]
+"tests/**/*test.py" = ["D", "S101"]
 
 [build-system]
 build-backend = "hatchling.build"
