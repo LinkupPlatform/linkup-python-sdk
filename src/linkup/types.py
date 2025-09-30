@@ -1,3 +1,5 @@
+"""Input and output types for Linkup functions."""
+
 from typing import Any, Literal, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field
