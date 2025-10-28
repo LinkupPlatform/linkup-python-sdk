@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.7.0 (2025-10-28)
+
+### Features
+
+- **fetch**: Add extract_images parameter
+  ([`4204d7e`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/4204d7ea49f7ab0e1e44ac5b8f32c9964ff3935d))
+
+
 ## v0.6.0 (2025-09-22)
 
 ### Documentation
