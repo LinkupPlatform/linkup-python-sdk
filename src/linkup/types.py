@@ -81,15 +81,29 @@ class LinkupSearchStructuredResponse(BaseModel):
     sources: list[Union[LinkupSearchTextResult, LinkupSearchImageResult]]
 
 
+class LinkupFetchImageExtraction(BaseModel):
+    """An image extraction from a Linkup web page fetch.
+
+    Attributes:
+        alt: The alt text of the image.
+        url: The URL of the image.
+    """
+
+    alt: str
+    url: str
+
+
 class LinkupFetchResponse(BaseModel):
     """The response from a Linkup web page fetch.
 
     Attributes:
         markdown: The cleaned up markdown content.
         raw_html: The optional raw HTML content.
+        images: The optional list of image URLs.
     """
 
     model_config = ConfigDict(populate_by_name=True)
 
     markdown: str
     raw_html: Optional[str] = Field(default=None, validation_alias="rawHtml")
+    images: Optional[list[LinkupFetchImageExtraction]] = Field(default=None)

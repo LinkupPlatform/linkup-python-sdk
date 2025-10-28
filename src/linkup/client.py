@@ -240,6 +240,7 @@ class LinkupClient:
         url: str,
         include_raw_html: Optional[bool] = None,
         render_js: Optional[bool] = None,
+        extract_images: Optional[bool] = None,
     ) -> LinkupFetchResponse:
         """Fetch the content of a web page using the Linkup API `fetch` endpoint.
 
@@ -251,6 +252,8 @@ class LinkupClient:
             url: The URL of the web page to fetch.
             include_raw_html: Whether to include the raw HTML of the webpage in the response.
             render_js: Whether the API should render the JavaScript of the webpage.
+            extract_images: Whether the API should extract images from the webpage and return them
+                in the response.
 
         Returns:
             The response of the web page fetch, containing the web page content.
@@ -263,6 +266,7 @@ class LinkupClient:
             url=url,
             include_raw_html=include_raw_html,
             render_js=render_js,
+            extract_images=extract_images,
         )
 
         response: httpx.Response = self._request(
@@ -281,6 +285,7 @@ class LinkupClient:
         url: str,
         include_raw_html: Optional[bool] = None,
         render_js: Optional[bool] = None,
+        extract_images: Optional[bool] = None,
     ) -> LinkupFetchResponse:
         """Asynchronously fetch the content of a web page using the Linkup API `fetch` endpoint.
 
@@ -292,6 +297,8 @@ class LinkupClient:
             url: The URL of the web page to fetch.
             include_raw_html: Whether to include the raw HTML of the webpage in the response.
             render_js: Whether the API should render the JavaScript of the webpage.
+            extract_images: Whether the API should extract images from the webpage and return them
+                in the response.
 
         Returns:
             The response of the web page fetch, containing the web page content.
@@ -304,6 +311,7 @@ class LinkupClient:
             url=url,
             include_raw_html=include_raw_html,
             render_js=render_js,
+            extract_images=extract_images,
         )
 
         response: httpx.Response = await self._async_request(
@@ -480,6 +488,7 @@ class LinkupClient:
         url: str,
         include_raw_html: Optional[bool],
         render_js: Optional[bool],
+        extract_images: Optional[bool],
     ) -> dict[str, Union[str, bool]]:
         params: dict[str, Union[str, bool]] = {
             "url": url,
@@ -488,6 +497,8 @@ class LinkupClient:
             params["includeRawHtml"] = include_raw_html
         if render_js is not None:
             params["renderJs"] = render_js
+        if extract_images is not None:
+            params["extractImages"] = extract_images
         return params
 
     def _parse_search_response(
