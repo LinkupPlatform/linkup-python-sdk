@@ -103,18 +103,22 @@ search_response: Any = client.search(
 )
 assert isinstance(search_response, LinkupSourcedAnswer)
 print(search_response.model_dump())
-# Response:
-# {
-#   answer="The three major events in the life of Abraham Lincoln are: 1. ...",
-#   sources=[
-#     {
-#       "name": "HISTORY",
-#       "url": "https://www.history.com/topics/us-presidents/abraham-lincoln",
-#       "snippet": "Abraham Lincoln - Facts & Summary - HISTORY ..."
-#     },
-#     ...
-#   ]
-# }
+```
+
+Which prints:
+
+```bash
+{
+  answer="The three major events in the life of Abraham Lincoln are: 1. ...",
+  sources=[
+    {
+      "name": "HISTORY",
+      "url": "https://www.history.com/topics/us-presidents/abraham-lincoln",
+      "snippet": "Abraham Lincoln - Facts & Summary - HISTORY ..."
+    },
+    ...
+  ]
+}
 ```
 
 Check the code or the
@@ -139,11 +143,15 @@ fetch_response: LinkupFetchResponse = client.fetch(
     include_raw_html=True,
 )
 print(fetch_response.model_dump())
-# Response:
-# {
-#   markdown="Get started for free, no credit card required...",
-#   raw_html="<!DOCTYPE html><html lang=\"en\"><head>...</head><body>...</body></html>"
-# }
+```
+
+Which prints:
+
+```bash
+{
+  markdown="Get started for free, no credit card required...",
+  raw_html="<!DOCTYPE html><html lang=\"en\"><head>...</head><body>...</body></html>"
+}
 ```
 
 Check the code or the
@@ -175,18 +183,22 @@ async def main() -> None:
     print(search_response.model_dump())
 
 asyncio.run(main())
-# Response:
-# {
-#   answer="The three major events in the life of Abraham Lincoln are: 1. ...",
-#   sources=[
-#     {
-#       "name": "HISTORY",
-#       "url": "https://www.history.com/topics/us-presidents/abraham-lincoln",
-#       "snippet": "Abraham Lincoln - Facts & Summary - HISTORY ..."
-#     },
-#     ...
-#   ]
-# }
+```
+
+Which prints:
+
+```bash
+{
+  answer="The three major events in the life of Abraham Lincoln are: 1. ...",
+  sources=[
+    {
+      "name": "HISTORY",
+      "url": "https://www.history.com/topics/us-presidents/abraham-lincoln",
+      "snippet": "Abraham Lincoln - Facts & Summary - HISTORY ..."
+    },
+    ...
+  ]
+}
 ```
 
 #### 📚 More Examples
