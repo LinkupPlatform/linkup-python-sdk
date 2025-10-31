@@ -6,7 +6,7 @@ from datetime import date
 from typing import Any, Literal, Optional, Union
 
 import httpx
-from pydantic import BaseModel
+from pydantic import BaseModel, SecretStr
 
 from ._errors import (
     LinkupAuthenticationError,
@@ -42,16 +42,18 @@ class LinkupClient:
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
+        api_key: Union[str, SecretStr, None] = None,
         base_url: str = "https://api.linkup.so/v1",
     ) -> None:
         if api_key is None:
             api_key = os.getenv("LINKUP_API_KEY")
         if not api_key:
             raise ValueError("The Linkup API key was not provided")
+        if isinstance(api_key, str):
+            api_key = SecretStr(api_key)
 
-        self._api_key = api_key
-        self._base_url = base_url
+        self._api_key: SecretStr = api_key
+        self._base_url: str = base_url
 
     def search(
         self,
@@ -332,7 +334,7 @@ class LinkupClient:
 
     def _headers(self) -> dict[str, str]:  # pragma: no cover
         return {
-            "Authorization": f"Bearer {self._api_key}",
+            "Authorization": f"Bearer {self._api_key.get_secret_value()}",
             "User-Agent": self._user_agent(),
         }
 
