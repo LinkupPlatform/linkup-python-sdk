@@ -2,6 +2,36 @@
 
 <!-- version list -->
 
+## v0.8.0 (2025-10-31)
+
+### Chores
+
+- Enforce new ruff lint rules
+  ([`e851c63`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/e851c63bd3df1920e55b42c0152059e54c40a266))
+
+- Make internal modules private
+  ([`b0fdff5`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/b0fdff59c5547b892b17cb0a49f4ae1a4d9f73ce))
+
+- Use simple _ for private variables
+  ([`cdcba7f`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/cdcba7f69f29b85f2d6ca7b1478754c714328563))
+
+### Documentation
+
+- Add pycodestyle checks
+  ([`562883b`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/562883bf4ca1ba3f0029154497138d5de90192dc))
+
+- Improve README examples readability
+  ([`d00e631`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/d00e6311bcb583a5410e0157f665fe8be5be7bca))
+
+- Mention async functions in README
+  ([`f7fff79`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/f7fff790c78b6cffa73c25755d51745e699653d1))
+
+### Features
+
+- Accept API key as pydantic.SecretStr
+  ([`1c34bf3`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/1c34bf34776e59117cf4b849c1c8445d988f7c96))
+
+
 ## v0.7.0 (2025-10-28)
 
 ### Features
