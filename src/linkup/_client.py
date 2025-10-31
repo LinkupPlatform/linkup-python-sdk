@@ -50,8 +50,8 @@ class LinkupClient:
         if not api_key:
             raise ValueError("The Linkup API key was not provided")
 
-        self.__api_key = api_key
-        self.__base_url = base_url
+        self._api_key = api_key
+        self._base_url = base_url
 
     def search(
         self,
@@ -332,7 +332,7 @@ class LinkupClient:
 
     def _headers(self) -> dict[str, str]:  # pragma: no cover
         return {
-            "Authorization": f"Bearer {self.__api_key}",
+            "Authorization": f"Bearer {self._api_key}",
             "User-Agent": self._user_agent(),
         }
 
@@ -342,7 +342,7 @@ class LinkupClient:
         url: str,
         **kwargs: Any,
     ) -> httpx.Response:  # pragma: no cover
-        with httpx.Client(base_url=self.__base_url, headers=self._headers()) as client:
+        with httpx.Client(base_url=self._base_url, headers=self._headers()) as client:
             return client.request(
                 method=method,
                 url=url,
@@ -355,7 +355,7 @@ class LinkupClient:
         url: str,
         **kwargs: Any,
     ) -> httpx.Response:  # pragma: no cover
-        async with httpx.AsyncClient(base_url=self.__base_url, headers=self._headers()) as client:
+        async with httpx.AsyncClient(base_url=self._base_url, headers=self._headers()) as client:
             return await client.request(
                 method=method,
                 url=url,
