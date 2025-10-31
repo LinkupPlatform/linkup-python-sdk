@@ -179,12 +179,12 @@ test_search_parameters = [
             "website_url": "https://www.linkup.so/"
         }
         """,
-        dict(
-            name="Linkup",
-            founders_names=["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
-            creation_date="2024",
-            website_url="https://www.linkup.so/",
-        ),
+        {
+            "name": "Linkup",
+            "founders_names": ["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
+            "creation_date": "2024",
+            "website_url": "https://www.linkup.so/",
+        },
     ),
     (
         {
@@ -273,12 +273,12 @@ test_search_parameters = [
         }
         """,
         LinkupSearchStructuredResponse(
-            data=dict(
-                name="Linkup",
-                founders_names=["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
-                creation_date="2024",
-                website_url="https://www.linkup.so/",
-            ),
+            data={
+                "name": "Linkup",
+                "founders_names": ["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
+                "creation_date": "2024",
+                "website_url": "https://www.linkup.so/",
+            },
             sources=[
                 LinkupSearchTextResult(
                     type="text",
