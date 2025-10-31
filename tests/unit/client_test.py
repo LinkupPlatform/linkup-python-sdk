@@ -10,23 +10,19 @@ from pytest_mock import MockerFixture
 from linkup import (
     LinkupAuthenticationError,
     LinkupClient,
-    LinkupInvalidRequestError,
-    LinkupSearchResults,
-    LinkupSource,
-    LinkupSourcedAnswer,
-    LinkupUnknownError,
-)
-from linkup.errors import (
     LinkupFailedFetchError,
-    LinkupInsufficientCreditError,
-    LinkupNoResultError,
-    LinkupTooManyRequestsError,
-)
-from linkup.types import (
     LinkupFetchResponse,
+    LinkupInsufficientCreditError,
+    LinkupInvalidRequestError,
+    LinkupNoResultError,
     LinkupSearchImageResult,
+    LinkupSearchResults,
     LinkupSearchStructuredResponse,
     LinkupSearchTextResult,
+    LinkupSource,
+    LinkupSourcedAnswer,
+    LinkupTooManyRequestsError,
+    LinkupUnknownError,
 )
 
 
@@ -306,9 +302,9 @@ def test_search(
     mock_request_response_content: bytes,
     expected_search_response: Any,
 ) -> None:
-    mocker.patch("linkup.client.date").today.return_value = date(2000, 1, 1)
+    mocker.patch("linkup._client.date").today.return_value = date(2000, 1, 1)
     request_mock = mocker.patch(
-        "linkup.client.LinkupClient._request",
+        "linkup._client.LinkupClient._request",
         return_value=Response(
             status_code=200,
             content=mock_request_response_content,
@@ -339,9 +335,9 @@ async def test_async_search(
     mock_request_response_content: bytes,
     expected_search_response: Any,
 ) -> None:
-    mocker.patch("linkup.client.date").today.return_value = date(2000, 1, 1)
+    mocker.patch("linkup._client.date").today.return_value = date(2000, 1, 1)
     request_mock = mocker.patch(
-        "linkup.client.LinkupClient._async_request",
+        "linkup._client.LinkupClient._async_request",
         return_value=Response(
             status_code=200,
             content=mock_request_response_content,
@@ -483,7 +479,7 @@ def test_search_error(
     expected_exception: Any,
 ) -> None:
     request_mock = mocker.patch(
-        "linkup.client.LinkupClient._request",
+        "linkup._client.LinkupClient._request",
         return_value=Response(
             status_code=mock_request_response_status_code,
             content=mock_request_response_content,
@@ -508,7 +504,7 @@ async def test_async_search_error(
     expected_exception: Any,
 ) -> None:
     request_mock = mocker.patch(
-        "linkup.client.LinkupClient._async_request",
+        "linkup._client.LinkupClient._async_request",
         return_value=Response(
             status_code=mock_request_response_status_code,
             content=mock_request_response_content,
@@ -549,7 +545,7 @@ def test_fetch(
     expected_fetch_response: Any,
 ) -> None:
     request_mock = mocker.patch(
-        "linkup.client.LinkupClient._request",
+        "linkup._client.LinkupClient._request",
         return_value=Response(
             status_code=200,
             content=mock_request_response_content,
@@ -580,7 +576,7 @@ async def test_async_fetch(
     expected_fetch_response: Any,
 ) -> None:
     request_mock = mocker.patch(
-        "linkup.client.LinkupClient._async_request",
+        "linkup._client.LinkupClient._async_request",
         return_value=Response(
             status_code=200,
             content=mock_request_response_content,
@@ -644,7 +640,7 @@ def test_fetch_error(
     expected_exception: Any,
 ) -> None:
     request_mock = mocker.patch(
-        "linkup.client.LinkupClient._request",
+        "linkup._client.LinkupClient._request",
         return_value=Response(
             status_code=mock_request_response_status_code,
             content=mock_request_response_content,
@@ -669,7 +665,7 @@ async def test_async_fetch_error(
     expected_exception: Any,
 ) -> None:
     request_mock = mocker.patch(
-        "linkup.client.LinkupClient._async_request",
+        "linkup._client.LinkupClient._async_request",
         return_value=Response(
             status_code=mock_request_response_status_code,
             content=mock_request_response_content,
