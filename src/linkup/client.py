@@ -391,52 +391,49 @@ class LinkupClient:
                         "The provided URL might not be found or can't be fetched.\n"
                         f"Original error message: {error_msg}."
                     )
-                else:
-                    raise LinkupInvalidRequestError(
-                        "The Linkup API returned an invalid request error (400). Make sure the "
-                        "parameters you used are valid (correct values, types, mandatory "
-                        "parameters, etc.) and you are using the latest version of the Python "
-                        "SDK.\n"
-                        f"Original error message: {error_msg}."
-                    )
-            elif response.status_code == 401:
+                raise LinkupInvalidRequestError(
+                    "The Linkup API returned an invalid request error (400). Make sure the "
+                    "parameters you used are valid (correct values, types, mandatory "
+                    "parameters, etc.) and you are using the latest version of the Python "
+                    "SDK.\n"
+                    f"Original error message: {error_msg}."
+                )
+            if response.status_code == 401:
                 raise LinkupAuthenticationError(
                     "The Linkup API returned an authentication error (401). Make sure your API "
                     "key is valid.\n"
                     f"Original error message: {error_msg}."
                 )
-            elif response.status_code == 403:
+            if response.status_code == 403:
                 raise LinkupAuthenticationError(
                     "The Linkup API returned an authorization error (403). Make sure your API "
                     "key is valid.\n"
                     f"Original error message: {error_msg}."
                 )
-            elif response.status_code == 429:
+            if response.status_code == 429:
                 if code == "INSUFFICIENT_FUNDS_CREDITS":
                     raise LinkupInsufficientCreditError(
                         "The Linkup API returned an insufficient credit error (429). Make sure "
                         "you haven't exhausted your credits.\n"
                         f"Original error message: {error_msg}."
                     )
-                elif code == "TOO_MANY_REQUESTS":
+                if code == "TOO_MANY_REQUESTS":
                     raise LinkupTooManyRequestsError(
                         "The Linkup API returned a too many requests error (429). Make sure "
                         "you not sending too many requests at a time.\n"
                         f"Original error message: {error_msg}."
                     )
-                else:
-                    raise LinkupUnknownError(
-                        "The Linkup API returned an invalid request error (429). Make sure the "
-                        "parameters you used are valid (correct values, types, mandatory "
-                        "parameters, etc.) and you are using the latest version of the Python "
-                        "SDK.\n"
-                        f"Original error message: {error_msg}."
-                    )
-            else:
                 raise LinkupUnknownError(
-                    f"The Linkup API returned an unknown error ({response.status_code}).\n"
-                    f"Original error message: ({error_msg})."
+                    "The Linkup API returned an invalid request error (429). Make sure the "
+                    "parameters you used are valid (correct values, types, mandatory "
+                    "parameters, etc.) and you are using the latest version of the Python "
+                    "SDK.\n"
+                    f"Original error message: {error_msg}."
                 )
+            raise LinkupUnknownError(
+                f"The Linkup API returned an unknown error ({response.status_code}).\n"
+                f"Original error message: ({error_msg})."
+            )
 
     def _get_search_params(
         self,
@@ -452,11 +449,11 @@ class LinkupClient:
         include_inline_citations: Optional[bool],
         include_sources: Optional[bool],
     ) -> dict[str, Union[str, bool, list[str]]]:
-        params: dict[str, Union[str, bool, list[str]]] = dict(
-            q=query,
-            depth=depth,
-            outputType=output_type,
-        )
+        params: dict[str, Union[str, bool, list[str]]] = {
+            "q": query,
+            "depth": depth,
+            "outputType": output_type,
+        }
 
         if structured_output_schema is not None:
             if isinstance(structured_output_schema, str):
@@ -513,9 +510,9 @@ class LinkupClient:
         response_data: Any = response.json()
         if output_type == "searchResults":
             return LinkupSearchResults.model_validate(response_data)
-        elif output_type == "sourcedAnswer":
+        if output_type == "sourcedAnswer":
             return LinkupSourcedAnswer.model_validate(response_data)
-        elif output_type == "structured":
+        if output_type == "structured":
             if structured_output_schema is None:
                 raise ValueError(
                     "structured_output_schema must be provided when output_type is 'structured'"
@@ -535,8 +532,7 @@ class LinkupClient:
             ):
                 return structured_output_schema.model_validate(response_data)
             return response_data
-        else:
-            raise ValueError(f"Unexpected output_type value: '{output_type}'")
+        raise ValueError(f"Unexpected output_type value: '{output_type}'")
 
     def _parse_fetch_response(self, response: httpx.Response) -> LinkupFetchResponse:
         return LinkupFetchResponse.model_validate(response.json())
