@@ -1,6 +1,5 @@
-from ._version import __version__
-from .client import LinkupClient
-from .errors import (
+from ._client import LinkupClient
+from ._errors import (
     LinkupAuthenticationError,
     LinkupFailedFetchError,
     LinkupInsufficientCreditError,
@@ -9,7 +8,7 @@ from .errors import (
     LinkupTooManyRequestsError,
     LinkupUnknownError,
 )
-from .types import (
+from ._types import (
     LinkupFetchResponse,
     LinkupSearchImageResult,
     LinkupSearchResults,
@@ -18,6 +17,7 @@ from .types import (
     LinkupSource,
     LinkupSourcedAnswer,
 )
+from ._version import __version__
 
 __all__ = [
     "LinkupAuthenticationError",

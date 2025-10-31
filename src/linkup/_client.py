@@ -8,8 +8,7 @@ from typing import Any, Literal, Optional, Union
 import httpx
 from pydantic import BaseModel
 
-from linkup._version import __version__
-from linkup.errors import (
+from ._errors import (
     LinkupAuthenticationError,
     LinkupFailedFetchError,
     LinkupInsufficientCreditError,
@@ -18,12 +17,13 @@ from linkup.errors import (
     LinkupTooManyRequestsError,
     LinkupUnknownError,
 )
-from linkup.types import (
+from ._types import (
     LinkupFetchResponse,
     LinkupSearchResults,
     LinkupSearchStructuredResponse,
     LinkupSourcedAnswer,
 )
+from ._version import __version__
 
 
 class LinkupClient:
