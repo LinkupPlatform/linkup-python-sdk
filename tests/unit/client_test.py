@@ -532,8 +532,18 @@ test_fetch_parameters = [
         LinkupFetchResponse(markdown="Some web page content", raw_html=None),
     ),
     (
-        {"url": "https://example.com", "include_raw_html": True, "render_js": True},
-        {"url": "https://example.com", "includeRawHtml": True, "renderJs": True},
+        {
+            "url": "https://example.com",
+            "include_raw_html": True,
+            "render_js": True,
+            "extract_images": True,
+        },
+        {
+            "url": "https://example.com",
+            "includeRawHtml": True,
+            "renderJs": True,
+            "extractImages": True,
+        },
         b'{"markdown": "#Some web page content", "rawHtml": "<html>...</html>"}',
         LinkupFetchResponse(markdown="#Some web page content", raw_html="<html>...</html>"),
     ),
