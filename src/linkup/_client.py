@@ -68,6 +68,7 @@ class LinkupClient:
         to_date: date | None = None,
         exclude_domains: list[str] | None = None,
         include_domains: list[str] | None = None,
+        max_results: int | None = None,
         include_inline_citations: bool | None = None,
         include_sources: bool | None = None,
     ) -> Any:  # noqa: ANN401
@@ -95,6 +96,7 @@ class LinkupClient:
                 search results will not be filtered by date.
             exclude_domains: If you want to exclude specific domains from your search.
             include_domains: If you want the search to only return results from certain domains.
+            max_results: The maximum number of results to return.
             include_inline_citations: If output_type is "sourcedAnswer", indicate whether the
                 answer should include inline citations.
             include_sources: If output_type is "structured", indicate whether the answer should
@@ -119,7 +121,7 @@ class LinkupClient:
             LinkupInsufficientCreditError: If you have run out of credit.
             LinkupNoResultError: If the search query did not yield any result.
         """
-        params: dict[str, str | bool | list[str]] = self._get_search_params(
+        params: dict[str, str | bool | int | list[str]] = self._get_search_params(
             query=query,
             depth=depth,
             output_type=output_type,
@@ -129,6 +131,7 @@ class LinkupClient:
             to_date=to_date,
             exclude_domains=exclude_domains,
             include_domains=include_domains,
+            max_results=max_results,
             include_inline_citations=include_inline_citations,
             include_sources=include_sources,
         )
@@ -160,6 +163,7 @@ class LinkupClient:
         to_date: date | None = None,
         exclude_domains: list[str] | None = None,
         include_domains: list[str] | None = None,
+        max_results: int | None = None,
         include_inline_citations: bool | None = None,
         include_sources: bool | None = None,
     ) -> Any:  # noqa: ANN401
@@ -187,6 +191,7 @@ class LinkupClient:
                 search results will not be filtered by date.
             exclude_domains: If you want to exclude specific domains from your search.
             include_domains: If you want the search to only return results from certain domains.
+            max_results: The maximum number of results to return.
             include_inline_citations: If output_type is "sourcedAnswer", indicate whether the
                 answer should include inline citations.
             include_sources: If output_type is "structured", indicate whether the answer should
@@ -211,7 +216,7 @@ class LinkupClient:
             LinkupInsufficientCreditError: If you have run out of credit.
             LinkupNoResultError: If the search query did not yield any result.
         """
-        params: dict[str, str | bool | list[str]] = self._get_search_params(
+        params: dict[str, str | bool | int | list[str]] = self._get_search_params(
             query=query,
             depth=depth,
             output_type=output_type,
@@ -221,6 +226,7 @@ class LinkupClient:
             to_date=to_date,
             exclude_domains=exclude_domains,
             include_domains=include_domains,
+            max_results=max_results,
             include_inline_citations=include_inline_citations,
             include_sources=include_sources,
         )
@@ -450,10 +456,11 @@ class LinkupClient:
         to_date: date | None,
         exclude_domains: list[str] | None,
         include_domains: list[str] | None,
+        max_results: int | None,
         include_inline_citations: bool | None,
         include_sources: bool | None,
-    ) -> dict[str, str | bool | list[str]]:
-        params: dict[str, str | bool | list[str]] = {
+    ) -> dict[str, str | bool | int | list[str]]:
+        params: dict[str, str | bool | int | list[str]] = {
             "q": query,
             "depth": depth,
             "outputType": output_type,
@@ -479,6 +486,8 @@ class LinkupClient:
             params["excludeDomains"] = exclude_domains
         if include_domains is not None:
             params["includeDomains"] = include_domains
+        if max_results is not None:
+            params["maxResults"] = max_results
         if include_inline_citations is not None:
             params["includeInlineCitations"] = include_inline_citations
         if include_sources is not None:

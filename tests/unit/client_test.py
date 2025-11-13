@@ -76,7 +76,9 @@ test_search_parameters = [
             "to_date": date(2023, 12, 31),
             "exclude_domains": ["excluded.com"],
             "include_domains": ["example.com", "example.org"],
+            "max_results": 10,
             "include_inline_citations": True,
+            "include_sources": True,
         },
         {
             "q": "A long query.",
@@ -87,7 +89,9 @@ test_search_parameters = [
             "toDate": "2023-12-31",
             "excludeDomains": ["excluded.com"],
             "includeDomains": ["example.com", "example.org"],
+            "maxResults": 10,
             "includeInlineCitations": True,
+            "includeSources": True,
         },
         b'{"results": []}',
         LinkupSearchResults(results=[]),
@@ -223,58 +227,6 @@ test_search_parameters = [
                 creation_date="2024",
                 website_url="https://www.linkup.so/",
             ),
-            sources=[
-                LinkupSearchTextResult(
-                    type="text",
-                    name="foo",
-                    url="https://foo.com",
-                    content="lorem ipsum dolor sit amet",
-                ),
-                LinkupSearchImageResult(type="image", name="bar", url="https://bar.com"),
-            ],
-        ),
-    ),
-    (
-        {
-            "query": "query",
-            "depth": "standard",
-            "output_type": "structured",
-            "structured_output_schema": json.dumps(Company.model_json_schema()),
-            "include_sources": True,
-        },
-        {
-            "q": "query",
-            "depth": "standard",
-            "outputType": "structured",
-            "structuredOutputSchema": json.dumps(Company.model_json_schema()),
-            "includeSources": True,
-        },
-        b"""
-        {
-            "data": {
-                "name": "Linkup",
-                "founders_names": ["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
-                "creation_date": "2024",
-                "website_url": "https://www.linkup.so/"
-            },
-            "sources": [
-                {
-                    "type": "text",
-                    "name": "foo",
-                    "url": "https://foo.com",
-                    "content": "lorem ipsum dolor sit amet"
-                },
-                {"type": "image", "name": "bar", "url": "https://bar.com"}
-            ]
-        }
-        """,
-        LinkupSearchStructuredResponse(
-            data={
-                "name": "Linkup",
-                "founders_names": ["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
-                "creation_date": "2024",
-                "website_url": "https://www.linkup.so/",
-            },
             sources=[
                 LinkupSearchTextResult(
                     type="text",
