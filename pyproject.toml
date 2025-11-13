@@ -57,23 +57,22 @@ target-version = "py39"
 [tool.ruff.lint]
 extend-ignore = ["D107"]
 pydocstyle = { convention = "google" }
-# TODO: enable commented out rules and fix errors
 select = [
-  # "A", # flake8-builtins: avoid shadowing built-in names
-  # "ANN", # flake8-annotations: check for missing type annotations
+  "A", # flake8-builtins: avoid shadowing built-in names
+  "ANN", # flake8-annotations: check for missing type annotations
   "ASYNC", # flake8-async: enforce best practices for async code
   "B", # flake8-bugbear: find likely bugs and design problems in your program
   "C4", # flake8-comprehensions: enforce best practices for list/set/dict comprehensions
   "D", # pydocstyle: check compliance with docstring conventions
   "E", # pycodestyle errors: check for PEP 8 style convention errors
   "F", # pyflakes: check for Python source file errors
-  # "FA", # flake8-future-annotations: enforce usage of future annotations when relevant
+  "FA", # flake8-future-annotations: enforce usage of future annotations when relevant
   "I", # isort: enforce import sorting
   "ICN", # flake8-import-conventions: enforce general import conventions
   "ISC", # flake8-implicit-str-concat: check for invalid implicit or explicit string concatenation
   "N", # pep8-naming: check for naming convention violations
   "PERF", # perflint: check for performance anti-patterns
-  # "PT", # flake8-pytest-style: check common style issues and inconsistencies in pytest-based tests
+  "PT", # flake8-pytest-style: check common style issues and inconsistencies in pytest-based tests
   "PTH", # flake8-use-pathlib: enforce usage of pathlib for path manipulations instead of os.path
   "Q", # flake8-quotes: enforce consistent string quote usage
   "RET", # flake8-return: enforce best practices for return statements

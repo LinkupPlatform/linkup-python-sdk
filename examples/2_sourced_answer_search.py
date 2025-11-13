@@ -8,8 +8,8 @@ To use this script, copy the `.env.example` file at the root of the repository i
 fill the missing values, or pass a Linkup API key to the `LinkupClient` initialization.
 """
 
+import rich
 from dotenv import load_dotenv
-from rich import print
 
 from linkup import LinkupClient
 
@@ -22,4 +22,4 @@ response = client.search(
     output_type="sourcedAnswer",
     include_inline_citations=False,
 )
-print(response)
+rich.print(response)
