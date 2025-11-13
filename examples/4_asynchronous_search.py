@@ -11,8 +11,8 @@ fill the missing values, or pass a Linkup API key to the `LinkupClient` initiali
 import asyncio
 import time
 
+import rich
 from dotenv import load_dotenv
-from rich import print
 
 from linkup import LinkupClient
 
@@ -35,7 +35,7 @@ async def search(idx: int, query: str) -> None:
         output_type="searchResults",  # or "sourcedAnswer" or "structured"
     )
     print(f"{idx + 1}: {time.time() - t0:.3f}s")
-    print(response)
+    rich.print(response)
     print("-" * 100)
 
 

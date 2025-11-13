@@ -1,5 +1,7 @@
 """Input and output types for Linkup functions."""
 
+# ruff: noqa: FA100 (pydantic models don't play well with future annotations)
+
 from typing import Any, Literal, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field

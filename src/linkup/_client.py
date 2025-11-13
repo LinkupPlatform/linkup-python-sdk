@@ -1,9 +1,11 @@
 """Linkup client, the entrypoint for Linkup functions."""
 
+from __future__ import annotations
+
 import json
 import os
-from datetime import date
-from typing import Any, Literal, Optional, Union
+from datetime import date  # noqa: TC003 (`date` is used in test mocks)
+from typing import Any, Literal
 
 import httpx
 from pydantic import BaseModel, SecretStr
@@ -42,7 +44,7 @@ class LinkupClient:
 
     def __init__(
         self,
-        api_key: Union[str, SecretStr, None] = None,
+        api_key: str | SecretStr | None = None,
         base_url: str = "https://api.linkup.so/v1",
     ) -> None:
         if api_key is None:
@@ -60,15 +62,15 @@ class LinkupClient:
         query: str,
         depth: Literal["standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
-        structured_output_schema: Union[type[BaseModel], str, None] = None,
-        include_images: Optional[bool] = None,
-        from_date: Optional[date] = None,
-        to_date: Optional[date] = None,
-        exclude_domains: Optional[list[str]] = None,
-        include_domains: Optional[list[str]] = None,
-        include_inline_citations: Optional[bool] = None,
-        include_sources: Optional[bool] = None,
-    ) -> Any:
+        structured_output_schema: type[BaseModel] | str | None = None,
+        include_images: bool | None = None,
+        from_date: date | None = None,
+        to_date: date | None = None,
+        exclude_domains: list[str] | None = None,
+        include_domains: list[str] | None = None,
+        include_inline_citations: bool | None = None,
+        include_sources: bool | None = None,
+    ) -> Any:  # noqa: ANN401
         """Perform a web search using the Linkup API `search` endpoint.
 
         All optional parameters will default to the Linkup API defaults when not provided. The
@@ -117,7 +119,7 @@ class LinkupClient:
             LinkupInsufficientCreditError: If you have run out of credit.
             LinkupNoResultError: If the search query did not yield any result.
         """
-        params: dict[str, Union[str, bool, list[str]]] = self._get_search_params(
+        params: dict[str, str | bool | list[str]] = self._get_search_params(
             query=query,
             depth=depth,
             output_type=output_type,
@@ -152,15 +154,15 @@ class LinkupClient:
         query: str,
         depth: Literal["standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
-        structured_output_schema: Union[type[BaseModel], str, None] = None,
-        include_images: Optional[bool] = None,
-        from_date: Optional[date] = None,
-        to_date: Optional[date] = None,
-        exclude_domains: Optional[list[str]] = None,
-        include_domains: Optional[list[str]] = None,
-        include_inline_citations: Optional[bool] = None,
-        include_sources: Optional[bool] = None,
-    ) -> Any:
+        structured_output_schema: type[BaseModel] | str | None = None,
+        include_images: bool | None = None,
+        from_date: date | None = None,
+        to_date: date | None = None,
+        exclude_domains: list[str] | None = None,
+        include_domains: list[str] | None = None,
+        include_inline_citations: bool | None = None,
+        include_sources: bool | None = None,
+    ) -> Any:  # noqa: ANN401
         """Asynchronously perform a web search using the Linkup API `search` endpoint.
 
         All optional parameters will default to the Linkup API defaults when not provided. The
@@ -209,7 +211,7 @@ class LinkupClient:
             LinkupInsufficientCreditError: If you have run out of credit.
             LinkupNoResultError: If the search query did not yield any result.
         """
-        params: dict[str, Union[str, bool, list[str]]] = self._get_search_params(
+        params: dict[str, str | bool | list[str]] = self._get_search_params(
             query=query,
             depth=depth,
             output_type=output_type,
@@ -242,9 +244,9 @@ class LinkupClient:
     def fetch(
         self,
         url: str,
-        include_raw_html: Optional[bool] = None,
-        render_js: Optional[bool] = None,
-        extract_images: Optional[bool] = None,
+        include_raw_html: bool | None = None,
+        render_js: bool | None = None,
+        extract_images: bool | None = None,
     ) -> LinkupFetchResponse:
         """Fetch the content of a web page using the Linkup API `fetch` endpoint.
 
@@ -266,7 +268,7 @@ class LinkupClient:
             LinkupInvalidRequestError: If the provided URL is not valid.
             LinkupFailedFetchError: If the provided URL is not found or can't be fetched.
         """
-        params: dict[str, Union[str, bool]] = self._get_fetch_params(
+        params: dict[str, str | bool] = self._get_fetch_params(
             url=url,
             include_raw_html=include_raw_html,
             render_js=render_js,
@@ -287,9 +289,9 @@ class LinkupClient:
     async def async_fetch(
         self,
         url: str,
-        include_raw_html: Optional[bool] = None,
-        render_js: Optional[bool] = None,
-        extract_images: Optional[bool] = None,
+        include_raw_html: bool | None = None,
+        render_js: bool | None = None,
+        extract_images: bool | None = None,
     ) -> LinkupFetchResponse:
         """Asynchronously fetch the content of a web page using the Linkup API `fetch` endpoint.
 
@@ -311,7 +313,7 @@ class LinkupClient:
             LinkupInvalidRequestError: If the provided URL is not valid.
             LinkupFailedFetchError: If the provided URL is not found or can't be fetched.
         """
-        params: dict[str, Union[str, bool]] = self._get_fetch_params(
+        params: dict[str, str | bool] = self._get_fetch_params(
             url=url,
             include_raw_html=include_raw_html,
             render_js=render_js,
@@ -342,7 +344,7 @@ class LinkupClient:
         self,
         method: str,
         url: str,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> httpx.Response:  # pragma: no cover
         with httpx.Client(base_url=self._base_url, headers=self._headers()) as client:
             return client.request(
@@ -355,7 +357,7 @@ class LinkupClient:
         self,
         method: str,
         url: str,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> httpx.Response:  # pragma: no cover
         async with httpx.AsyncClient(base_url=self._base_url, headers=self._headers()) as client:
             return await client.request(
@@ -442,16 +444,16 @@ class LinkupClient:
         query: str,
         depth: Literal["standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
-        structured_output_schema: Union[type[BaseModel], str, None],
-        include_images: Optional[bool],
-        from_date: Optional[date],
-        to_date: Optional[date],
-        exclude_domains: Optional[list[str]],
-        include_domains: Optional[list[str]],
-        include_inline_citations: Optional[bool],
-        include_sources: Optional[bool],
-    ) -> dict[str, Union[str, bool, list[str]]]:
-        params: dict[str, Union[str, bool, list[str]]] = {
+        structured_output_schema: type[BaseModel] | str | None,
+        include_images: bool | None,
+        from_date: date | None,
+        to_date: date | None,
+        exclude_domains: list[str] | None,
+        include_domains: list[str] | None,
+        include_inline_citations: bool | None,
+        include_sources: bool | None,
+    ) -> dict[str, str | bool | list[str]]:
+        params: dict[str, str | bool | list[str]] = {
             "q": query,
             "depth": depth,
             "outputType": output_type,
@@ -487,11 +489,11 @@ class LinkupClient:
     def _get_fetch_params(
         self,
         url: str,
-        include_raw_html: Optional[bool],
-        render_js: Optional[bool],
-        extract_images: Optional[bool],
-    ) -> dict[str, Union[str, bool]]:
-        params: dict[str, Union[str, bool]] = {
+        include_raw_html: bool | None,
+        render_js: bool | None,
+        extract_images: bool | None,
+    ) -> dict[str, str | bool]:
+        params: dict[str, str | bool] = {
             "url": url,
         }
         if include_raw_html is not None:
@@ -506,9 +508,9 @@ class LinkupClient:
         self,
         response: httpx.Response,
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
-        structured_output_schema: Union[type[BaseModel], str, None],
-        include_sources: Optional[bool],
-    ) -> Any:
+        structured_output_schema: type[BaseModel] | str | None,
+        include_sources: bool | None,
+    ) -> Any:  # noqa: ANN401
         response_data: Any = response.json()
         if output_type == "searchResults":
             return LinkupSearchResults.model_validate(response_data)

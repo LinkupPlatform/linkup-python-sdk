@@ -290,8 +290,12 @@ test_search_parameters = [
 
 
 @pytest.mark.parametrize(
-    "search_kwargs, expected_request_params, mock_request_response_content, "
-    "expected_search_response",
+    (
+        "search_kwargs",
+        "expected_request_params",
+        "mock_request_response_content",
+        "expected_search_response",
+    ),
     test_search_parameters,
 )
 def test_search(
@@ -300,7 +304,7 @@ def test_search(
     search_kwargs: dict[str, Any],
     expected_request_params: dict[str, Any],
     mock_request_response_content: bytes,
-    expected_search_response: Any,
+    expected_search_response: Any,  # noqa: ANN401
 ) -> None:
     mocker.patch("linkup._client.date").today.return_value = date(2000, 1, 1)
     request_mock = mocker.patch(
@@ -323,8 +327,12 @@ def test_search(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "search_kwargs, expected_request_params, mock_request_response_content, "
-    "expected_search_response",
+    (
+        "search_kwargs",
+        "expected_request_params",
+        "mock_request_response_content",
+        "expected_search_response",
+    ),
     test_search_parameters,
 )
 async def test_async_search(
@@ -333,7 +341,7 @@ async def test_async_search(
     search_kwargs: dict[str, Any],
     expected_request_params: dict[str, Any],
     mock_request_response_content: bytes,
-    expected_search_response: Any,
+    expected_search_response: Any,  # noqa: ANN401
 ) -> None:
     mocker.patch("linkup._client.date").today.return_value = date(2000, 1, 1)
     request_mock = mocker.patch(
@@ -468,7 +476,7 @@ test_search_error_parameters = [
 
 
 @pytest.mark.parametrize(
-    "mock_request_response_status_code, mock_request_response_content, expected_exception",
+    ("mock_request_response_status_code", "mock_request_response_content", "expected_exception"),
     test_search_error_parameters,
 )
 def test_search_error(
@@ -476,7 +484,7 @@ def test_search_error(
     client: LinkupClient,
     mock_request_response_status_code: int,
     mock_request_response_content: bytes,
-    expected_exception: Any,
+    expected_exception: type[Exception],
 ) -> None:
     request_mock = mocker.patch(
         "linkup._client.LinkupClient._request",
@@ -493,7 +501,7 @@ def test_search_error(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "mock_request_response_status_code, mock_request_response_content, expected_exception",
+    ("mock_request_response_status_code", "mock_request_response_content", "expected_exception"),
     test_search_error_parameters,
 )
 async def test_async_search_error(
@@ -501,7 +509,7 @@ async def test_async_search_error(
     client: LinkupClient,
     mock_request_response_status_code: int,
     mock_request_response_content: bytes,
-    expected_exception: Any,
+    expected_exception: type[Exception],
 ) -> None:
     request_mock = mocker.patch(
         "linkup._client.LinkupClient._async_request",
@@ -533,7 +541,12 @@ test_fetch_parameters = [
 
 
 @pytest.mark.parametrize(
-    "fetch_kwargs, expected_request_params, mock_request_response_content, expected_fetch_response",
+    (
+        "fetch_kwargs",
+        "expected_request_params",
+        "mock_request_response_content",
+        "expected_fetch_response",
+    ),
     test_fetch_parameters,
 )
 def test_fetch(
@@ -542,7 +555,7 @@ def test_fetch(
     fetch_kwargs: dict[str, Any],
     expected_request_params: dict[str, Any],
     mock_request_response_content: bytes,
-    expected_fetch_response: Any,
+    expected_fetch_response: LinkupFetchResponse,
 ) -> None:
     request_mock = mocker.patch(
         "linkup._client.LinkupClient._request",
@@ -552,7 +565,7 @@ def test_fetch(
         ),
     )
 
-    fetch_response: Any = client.fetch(**fetch_kwargs)
+    fetch_response: LinkupFetchResponse = client.fetch(**fetch_kwargs)
     request_mock.assert_called_once_with(
         method="POST",
         url="/fetch",
@@ -564,7 +577,12 @@ def test_fetch(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "fetch_kwargs, expected_request_params, mock_request_response_content, expected_fetch_response",
+    (
+        "fetch_kwargs",
+        "expected_request_params",
+        "mock_request_response_content",
+        "expected_fetch_response",
+    ),
     test_fetch_parameters,
 )
 async def test_async_fetch(
@@ -573,7 +591,7 @@ async def test_async_fetch(
     fetch_kwargs: dict[str, Any],
     expected_request_params: dict[str, Any],
     mock_request_response_content: bytes,
-    expected_fetch_response: Any,
+    expected_fetch_response: LinkupFetchResponse,
 ) -> None:
     request_mock = mocker.patch(
         "linkup._client.LinkupClient._async_request",
@@ -583,7 +601,7 @@ async def test_async_fetch(
         ),
     )
 
-    fetch_response: Any = await client.async_fetch(**fetch_kwargs)
+    fetch_response: LinkupFetchResponse = await client.async_fetch(**fetch_kwargs)
     request_mock.assert_called_once_with(
         method="POST",
         url="/fetch",
@@ -629,7 +647,7 @@ test_fetch_error_parameters = [
 
 
 @pytest.mark.parametrize(
-    "mock_request_response_status_code, mock_request_response_content, expected_exception",
+    ("mock_request_response_status_code", "mock_request_response_content", "expected_exception"),
     test_fetch_error_parameters,
 )
 def test_fetch_error(
@@ -637,7 +655,7 @@ def test_fetch_error(
     client: LinkupClient,
     mock_request_response_status_code: int,
     mock_request_response_content: bytes,
-    expected_exception: Any,
+    expected_exception: type[Exception],
 ) -> None:
     request_mock = mocker.patch(
         "linkup._client.LinkupClient._request",
@@ -654,7 +672,7 @@ def test_fetch_error(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "mock_request_response_status_code, mock_request_response_content, expected_exception",
+    ("mock_request_response_status_code", "mock_request_response_content", "expected_exception"),
     test_fetch_error_parameters,
 )
 async def test_async_fetch_error(
@@ -662,7 +680,7 @@ async def test_async_fetch_error(
     client: LinkupClient,
     mock_request_response_status_code: int,
     mock_request_response_content: bytes,
-    expected_exception: Any,
+    expected_exception: type[Exception],
 ) -> None:
     request_mock = mocker.patch(
         "linkup._client.LinkupClient._async_request",

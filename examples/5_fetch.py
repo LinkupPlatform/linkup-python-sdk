@@ -6,8 +6,8 @@ To use this script, copy the `.env.example` file at the root of the repository i
 fill the missing values, or pass a Linkup API key to the `LinkupClient` initialization.
 """
 
+import rich
 from dotenv import load_dotenv
-from rich import print
 
 from linkup import LinkupClient
 
@@ -17,4 +17,4 @@ client = LinkupClient()
 response = client.fetch(
     url="https://docs.linkup.so",
 )
-print(response)
+rich.print(response)

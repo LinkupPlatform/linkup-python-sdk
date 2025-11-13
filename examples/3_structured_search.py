@@ -8,9 +8,9 @@ To use this script, copy the `.env.example` file at the root of the repository i
 fill the missing values, or pass a Linkup API key to the `LinkupClient` initialization.
 """
 
+import rich
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
-from rich import print
 
 from linkup import LinkupClient
 
@@ -34,4 +34,4 @@ response = client.search(
     structured_output_schema=Events,  # or json.dumps(Events.model_json_schema())
     include_sources=False,
 )
-print(response)
+rich.print(response)
