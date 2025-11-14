@@ -2,6 +2,22 @@
 
 <!-- version list -->
 
+## v0.9.0 (2025-11-14)
+
+### Chores
+
+- Complete test coverage
+  ([`c44b3d0`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/c44b3d064a72a70b25eea9d9c4c832cce6b10431))
+
+- Enable all lint rules
+  ([`1ac1768`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/1ac17681b220c6105878f0e36dd1139695d4017a))
+
+### Features
+
+- Max_results parameter
+  ([`be65c19`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/be65c19a02a8e69f6d984eb48e820ec19e739931))
+
+
 ## v0.8.0 (2025-10-31)
 
 ### Chores
