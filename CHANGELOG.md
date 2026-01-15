@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.9.1 (2026-01-15)
+
+### Bug Fixes
+
+- Add hardcoded package version fallback
+  ([`77d6e0a`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/77d6e0a61c3cb78da8dbd2c9dcf64d16c235499f))
+
+
 ## v0.9.0 (2025-11-14)
 
 ### Chores
