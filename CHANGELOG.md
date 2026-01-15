@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.10.0 (2026-01-15)
+
+### Features
+
+- **search**: Add support for favicon
+  ([`2f9632d`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/2f9632d56d750818af85a0c7d08afd057d10bfa2))
+
+
 ## v0.9.1 (2026-01-15)
 
 ### Bug Fixes
