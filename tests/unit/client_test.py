@@ -44,7 +44,8 @@ test_search_parameters = [
                     "type": "text",
                     "name": "foo",
                     "url": "https://foo.com",
-                    "content": "lorem ipsum dolor sit amet"
+                    "content": "lorem ipsum dolor sit amet",
+                    "favicon": "https://foo.com/favicon.ico"
                 },
                 {"type": "image", "name": "bar", "url": "https://bar.com"}
             ]
@@ -57,6 +58,7 @@ test_search_parameters = [
                     name="foo",
                     url="https://foo.com",
                     content="lorem ipsum dolor sit amet",
+                    favicon="https://foo.com/favicon.ico",
                 ),
                 LinkupSearchImageResult(
                     type="image",

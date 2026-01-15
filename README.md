@@ -114,7 +114,8 @@ Which prints:
     {
       "name": "HISTORY",
       "url": "https://www.history.com/topics/us-presidents/abraham-lincoln",
-      "snippet": "Abraham Lincoln - Facts & Summary - HISTORY ..."
+      "snippet": "Abraham Lincoln - Facts & Summary - HISTORY ...",
+      "favicon": "https://www.history.com/favicon.ico",
     },
     ...
   ]
@@ -195,6 +196,7 @@ Which prints:
       "name": "HISTORY",
       "url": "https://www.history.com/topics/us-presidents/abraham-lincoln",
       "snippet": "Abraham Lincoln - Facts & Summary - HISTORY ..."
+      "favicon": "https://www.history.com/favicon.ico",
     },
     ...
   ]
