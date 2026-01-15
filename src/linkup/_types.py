@@ -15,12 +15,14 @@ class LinkupSearchTextResult(BaseModel):
         name: The name of the search result.
         url: The URL of the search result.
         content: The text of the search result.
+        favicon: The favicon URL of the search result, if available.
     """
 
     type: Literal["text"]
     name: str
     url: str
     content: str
+    favicon: str = ""
 
 
 class LinkupSearchImageResult(BaseModel):
@@ -54,11 +56,13 @@ class LinkupSource(BaseModel):
         name: The name of the source.
         url: The URL of the source.
         snippet: The text excerpt supporting the Linkup answer. Can be empty for image sources.
+        favicon: The favicon URL of the source, if available.
     """
 
     name: str
     url: str
     snippet: str = ""
+    favicon: str = ""
 
 
 class LinkupSourcedAnswer(BaseModel):
