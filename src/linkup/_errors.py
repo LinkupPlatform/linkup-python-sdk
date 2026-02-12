@@ -57,6 +57,15 @@ class LinkupFailedFetchError(Exception):
     pass
 
 
+class LinkupTimeoutError(Exception):
+    """Timeout error, raised when the HTTP request to the Linkup API times out.
+
+    It is raised when a timeout is specified and the request exceeds the given duration.
+    """
+
+    pass
+
+
 class LinkupUnknownError(Exception):
     """Unknown error, raised when the Linkup API returns an unknown status code."""
 

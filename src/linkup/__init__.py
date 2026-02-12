@@ -5,6 +5,7 @@ from ._errors import (
     LinkupInsufficientCreditError,
     LinkupInvalidRequestError,
     LinkupNoResultError,
+    LinkupTimeoutError,
     LinkupTooManyRequestsError,
     LinkupUnknownError,
 )
@@ -33,6 +34,7 @@ __all__ = [
     "LinkupSearchTextResult",
     "LinkupSource",
     "LinkupSourcedAnswer",
+    "LinkupTimeoutError",
     "LinkupTooManyRequestsError",
     "LinkupUnknownError",
     "__version__",
