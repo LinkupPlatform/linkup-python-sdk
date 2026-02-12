@@ -100,6 +100,7 @@ search_response: Any = client.search(
     depth="deep",  # "standard" or "deep"
     output_type="sourcedAnswer",  # "searchResults" or "sourcedAnswer" or "structured"
     structured_output_schema=None,  # must be filled if output_type is "structured"
+    timeout=30,  # optional timeout in seconds, defaults to None (no timeout)
 )
 assert isinstance(search_response, LinkupSourcedAnswer)
 print(search_response.model_dump())
@@ -142,6 +143,7 @@ fetch_response: LinkupFetchResponse = client.fetch(
     url="https://docs.linkup.so",
     render_js=False,
     include_raw_html=True,
+    timeout=15,  # optional timeout in seconds, defaults to None (no timeout)
 )
 print(fetch_response.model_dump())
 ```
@@ -179,6 +181,7 @@ async def main() -> None:
         depth="deep",  # "standard" or "deep"
         output_type="sourcedAnswer",  # "searchResults" or "sourcedAnswer" or "structured"
         structured_output_schema=None,  # must be filled if output_type is "structured"
+        timeout=30,  # optional timeout in seconds, defaults to None (no timeout)
     )
     assert isinstance(search_response, LinkupSourcedAnswer)
     print(search_response.model_dump())
