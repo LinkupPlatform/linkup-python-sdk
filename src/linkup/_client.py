@@ -16,6 +16,7 @@ from ._errors import (
     LinkupInsufficientCreditError,
     LinkupInvalidRequestError,
     LinkupNoResultError,
+    LinkupTimeoutError,
     LinkupTooManyRequestsError,
     LinkupUnknownError,
 )
@@ -71,6 +72,7 @@ class LinkupClient:
         max_results: int | None = None,
         include_inline_citations: bool | None = None,
         include_sources: bool | None = None,
+        timeout: float | None = None,
     ) -> Any:  # noqa: ANN401
         """Perform a web search using the Linkup API `search` endpoint.
 
@@ -101,6 +103,8 @@ class LinkupClient:
                 answer should include inline citations.
             include_sources: If output_type is "structured", indicate whether the answer should
                 include sources. This will modify the schema of the structured response.
+            timeout: The timeout for the HTTP request, in seconds. If None, the request will have
+                no timeout.
 
         Returns:
             The Linkup API search result, which can have different types based on the parameters:
@@ -120,6 +124,7 @@ class LinkupClient:
             LinkupAuthenticationError: If the Linkup API key is invalid.
             LinkupInsufficientCreditError: If you have run out of credit.
             LinkupNoResultError: If the search query did not yield any result.
+            LinkupTimeoutError: If the request times out.
         """
         params: dict[str, str | bool | int | list[str]] = self._get_search_params(
             query=query,
@@ -136,12 +141,17 @@ class LinkupClient:
             include_sources=include_sources,
         )
 
-        response: httpx.Response = self._request(
-            method="POST",
-            url="/search",
-            json=params,
-            timeout=None,
-        )
+        try:
+            response: httpx.Response = self._request(
+                method="POST",
+                url="/search",
+                json=params,
+                timeout=timeout,
+            )
+        except httpx.TimeoutException as e:
+            raise LinkupTimeoutError(
+                "The request to the Linkup API timed out. Try increasing the timeout value."
+            ) from e
         if response.status_code != 200:
             self._raise_linkup_error(response=response)
 
@@ -166,6 +176,7 @@ class LinkupClient:
         max_results: int | None = None,
         include_inline_citations: bool | None = None,
         include_sources: bool | None = None,
+        timeout: float | None = None,
     ) -> Any:  # noqa: ANN401
         """Asynchronously perform a web search using the Linkup API `search` endpoint.
 
@@ -196,6 +207,8 @@ class LinkupClient:
                 answer should include inline citations.
             include_sources: If output_type is "structured", indicate whether the answer should
                 include sources. This will modify the schema of the structured response.
+            timeout: The timeout for the HTTP request, in seconds. If None, the request will have
+                no timeout.
 
         Returns:
             The Linkup API search result, which can have different types based on the parameters:
@@ -215,6 +228,7 @@ class LinkupClient:
             LinkupAuthenticationError: If the Linkup API key is invalid.
             LinkupInsufficientCreditError: If you have run out of credit.
             LinkupNoResultError: If the search query did not yield any result.
+            LinkupTimeoutError: If the request times out.
         """
         params: dict[str, str | bool | int | list[str]] = self._get_search_params(
             query=query,
@@ -231,12 +245,17 @@ class LinkupClient:
             include_sources=include_sources,
         )
 
-        response: httpx.Response = await self._async_request(
-            method="POST",
-            url="/search",
-            json=params,
-            timeout=None,
-        )
+        try:
+            response: httpx.Response = await self._async_request(
+                method="POST",
+                url="/search",
+                json=params,
+                timeout=timeout,
+            )
+        except httpx.TimeoutException as e:
+            raise LinkupTimeoutError(
+                "The request to the Linkup API timed out. Try increasing the timeout value."
+            ) from e
         if response.status_code != 200:
             self._raise_linkup_error(response=response)
 
@@ -253,6 +272,7 @@ class LinkupClient:
         include_raw_html: bool | None = None,
         render_js: bool | None = None,
         extract_images: bool | None = None,
+        timeout: float | None = None,
     ) -> LinkupFetchResponse:
         """Fetch the content of a web page using the Linkup API `fetch` endpoint.
 
@@ -266,6 +286,8 @@ class LinkupClient:
             render_js: Whether the API should render the JavaScript of the webpage.
             extract_images: Whether the API should extract images from the webpage and return them
                 in the response.
+            timeout: The timeout for the HTTP request, in seconds. If None, the request will have
+                no timeout.
 
         Returns:
             The response of the web page fetch, containing the web page content.
@@ -273,6 +295,7 @@ class LinkupClient:
         Raises:
             LinkupInvalidRequestError: If the provided URL is not valid.
             LinkupFailedFetchError: If the provided URL is not found or can't be fetched.
+            LinkupTimeoutError: If the request times out.
         """
         params: dict[str, str | bool] = self._get_fetch_params(
             url=url,
@@ -281,12 +304,17 @@ class LinkupClient:
             extract_images=extract_images,
         )
 
-        response: httpx.Response = self._request(
-            method="POST",
-            url="/fetch",
-            json=params,
-            timeout=None,
-        )
+        try:
+            response: httpx.Response = self._request(
+                method="POST",
+                url="/fetch",
+                json=params,
+                timeout=timeout,
+            )
+        except httpx.TimeoutException as e:
+            raise LinkupTimeoutError(
+                "The request to the Linkup API timed out. Try increasing the timeout value."
+            ) from e
         if response.status_code != 200:
             self._raise_linkup_error(response=response)
 
@@ -298,6 +326,7 @@ class LinkupClient:
         include_raw_html: bool | None = None,
         render_js: bool | None = None,
         extract_images: bool | None = None,
+        timeout: float | None = None,
     ) -> LinkupFetchResponse:
         """Asynchronously fetch the content of a web page using the Linkup API `fetch` endpoint.
 
@@ -311,6 +340,8 @@ class LinkupClient:
             render_js: Whether the API should render the JavaScript of the webpage.
             extract_images: Whether the API should extract images from the webpage and return them
                 in the response.
+            timeout: The timeout for the HTTP request, in seconds. If None, the request will have
+                no timeout.
 
         Returns:
             The response of the web page fetch, containing the web page content.
@@ -318,6 +349,7 @@ class LinkupClient:
         Raises:
             LinkupInvalidRequestError: If the provided URL is not valid.
             LinkupFailedFetchError: If the provided URL is not found or can't be fetched.
+            LinkupTimeoutError: If the request times out.
         """
         params: dict[str, str | bool] = self._get_fetch_params(
             url=url,
@@ -326,12 +358,17 @@ class LinkupClient:
             extract_images=extract_images,
         )
 
-        response: httpx.Response = await self._async_request(
-            method="POST",
-            url="/fetch",
-            json=params,
-            timeout=None,
-        )
+        try:
+            response: httpx.Response = await self._async_request(
+                method="POST",
+                url="/fetch",
+                json=params,
+                timeout=timeout,
+            )
+        except httpx.TimeoutException as e:
+            raise LinkupTimeoutError(
+                "The request to the Linkup API timed out. Try increasing the timeout value."
+            ) from e
         if response.status_code != 200:
             self._raise_linkup_error(response=response)
 

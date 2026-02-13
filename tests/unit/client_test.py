@@ -2,6 +2,7 @@ import json
 from datetime import date
 from typing import Any
 
+import httpx
 import pytest
 from httpx import Response
 from pydantic import BaseModel
@@ -21,6 +22,7 @@ from linkup import (
     LinkupSearchTextResult,
     LinkupSource,
     LinkupSourcedAnswer,
+    LinkupTimeoutError,
     LinkupTooManyRequestsError,
     LinkupUnknownError,
 )
@@ -95,6 +97,17 @@ test_search_parameters = [
             "includeInlineCitations": True,
             "includeSources": True,
         },
+        b'{"results": []}',
+        LinkupSearchResults(results=[]),
+    ),
+    (
+        {
+            "query": "query with timeout",
+            "depth": "standard",
+            "output_type": "searchResults",
+            "timeout": 30.0,
+        },
+        {"q": "query with timeout", "depth": "standard", "outputType": "searchResults"},
         b'{"results": []}',
         LinkupSearchResults(results=[]),
     ),
@@ -270,11 +283,12 @@ def test_search(
     )
 
     search_response: Any = client.search(**search_kwargs)
+    expected_timeout = search_kwargs.get("timeout", None)
     request_mock.assert_called_once_with(
         method="POST",
         url="/search",
         json=expected_request_params,
-        timeout=None,
+        timeout=expected_timeout,
     )
     assert search_response == expected_search_response
 
@@ -307,11 +321,12 @@ async def test_async_search(
     )
 
     search_response: Any = await client.async_search(**search_kwargs)
+    expected_timeout = search_kwargs.get("timeout", None)
     request_mock.assert_called_once_with(
         method="POST",
         url="/search",
         json=expected_request_params,
-        timeout=None,
+        timeout=expected_timeout,
     )
     assert search_response == expected_search_response
 
@@ -478,6 +493,35 @@ async def test_async_search_error(
     request_mock.assert_called_once()
 
 
+def test_search_timeout(
+    mocker: MockerFixture,
+    client: LinkupClient,
+) -> None:
+    mocker.patch(
+        "linkup._client.LinkupClient._request",
+        side_effect=httpx.ReadTimeout("Request timed out"),
+    )
+
+    with pytest.raises(LinkupTimeoutError):
+        client.search(query="query", depth="standard", output_type="searchResults", timeout=1.0)
+
+
+@pytest.mark.asyncio
+async def test_async_search_timeout(
+    mocker: MockerFixture,
+    client: LinkupClient,
+) -> None:
+    mocker.patch(
+        "linkup._client.LinkupClient._async_request",
+        side_effect=httpx.ReadTimeout("Request timed out"),
+    )
+
+    with pytest.raises(LinkupTimeoutError):
+        await client.async_search(
+            query="query", depth="standard", output_type="searchResults", timeout=1.0
+        )
+
+
 test_fetch_parameters = [
     (
         {"url": "https://example.com"},
@@ -500,6 +544,12 @@ test_fetch_parameters = [
         },
         b'{"markdown": "#Some web page content", "rawHtml": "<html>...</html>"}',
         LinkupFetchResponse(markdown="#Some web page content", raw_html="<html>...</html>"),
+    ),
+    (
+        {"url": "https://example.com", "timeout": 15.0},
+        {"url": "https://example.com"},
+        b'{"markdown": "Some web page content"}',
+        LinkupFetchResponse(markdown="Some web page content", raw_html=None),
     ),
 ]
 
@@ -530,11 +580,12 @@ def test_fetch(
     )
 
     fetch_response: LinkupFetchResponse = client.fetch(**fetch_kwargs)
+    expected_timeout = fetch_kwargs.get("timeout", None)
     request_mock.assert_called_once_with(
         method="POST",
         url="/fetch",
         json=expected_request_params,
-        timeout=None,
+        timeout=expected_timeout,
     )
     assert fetch_response == expected_fetch_response
 
@@ -566,11 +617,12 @@ async def test_async_fetch(
     )
 
     fetch_response: LinkupFetchResponse = await client.async_fetch(**fetch_kwargs)
+    expected_timeout = fetch_kwargs.get("timeout", None)
     request_mock.assert_called_once_with(
         method="POST",
         url="/fetch",
         json=expected_request_params,
-        timeout=None,
+        timeout=expected_timeout,
     )
     assert fetch_response == expected_fetch_response
 
@@ -657,3 +709,30 @@ async def test_async_fetch_error(
     with pytest.raises(expected_exception):
         await client.async_fetch(url="https://example.com")
     request_mock.assert_called_once()
+
+
+def test_fetch_timeout(
+    mocker: MockerFixture,
+    client: LinkupClient,
+) -> None:
+    mocker.patch(
+        "linkup._client.LinkupClient._request",
+        side_effect=httpx.ReadTimeout("Request timed out"),
+    )
+
+    with pytest.raises(LinkupTimeoutError):
+        client.fetch(url="https://example.com", timeout=1.0)
+
+
+@pytest.mark.asyncio
+async def test_async_fetch_timeout(
+    mocker: MockerFixture,
+    client: LinkupClient,
+) -> None:
+    mocker.patch(
+        "linkup._client.LinkupClient._async_request",
+        side_effect=httpx.ReadTimeout("Request timed out"),
+    )
+
+    with pytest.raises(LinkupTimeoutError):
+        await client.async_fetch(url="https://example.com", timeout=1.0)
