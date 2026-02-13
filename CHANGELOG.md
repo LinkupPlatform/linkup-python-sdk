@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.11.0 (2026-02-13)
+
+### Features
+
+- `timeout` parameter ([#61](https://github.com/LinkupPlatform/linkup-python-sdk/pull/61),
+  [`9283a56`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/9283a5631d1a09c48291767df34be0980261b18b))
+
+
 ## v0.10.0 (2026-01-15)
 
 ### Features
