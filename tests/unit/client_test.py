@@ -275,7 +275,7 @@ def test_search(
 ) -> None:
     mocker.patch("linkup._client.date").today.return_value = date(2000, 1, 1)
     request_mock = mocker.patch(
-        "linkup._client.LinkupClient._request",
+        "httpx.Client.request",
         return_value=Response(
             status_code=200,
             content=mock_request_response_content,
@@ -313,7 +313,7 @@ async def test_async_search(
 ) -> None:
     mocker.patch("linkup._client.date").today.return_value = date(2000, 1, 1)
     request_mock = mocker.patch(
-        "linkup._client.LinkupClient._async_request",
+        "httpx.AsyncClient.request",
         return_value=Response(
             status_code=200,
             content=mock_request_response_content,
@@ -456,7 +456,7 @@ def test_search_error(
     expected_exception: type[Exception],
 ) -> None:
     request_mock = mocker.patch(
-        "linkup._client.LinkupClient._request",
+        "httpx.Client.request",
         return_value=Response(
             status_code=mock_request_response_status_code,
             content=mock_request_response_content,
@@ -481,7 +481,7 @@ async def test_async_search_error(
     expected_exception: type[Exception],
 ) -> None:
     request_mock = mocker.patch(
-        "linkup._client.LinkupClient._async_request",
+        "httpx.AsyncClient.request",
         return_value=Response(
             status_code=mock_request_response_status_code,
             content=mock_request_response_content,
@@ -498,7 +498,7 @@ def test_search_timeout(
     client: LinkupClient,
 ) -> None:
     mocker.patch(
-        "linkup._client.LinkupClient._request",
+        "httpx.Client.request",
         side_effect=httpx.ReadTimeout("Request timed out"),
     )
 
@@ -512,7 +512,7 @@ async def test_async_search_timeout(
     client: LinkupClient,
 ) -> None:
     mocker.patch(
-        "linkup._client.LinkupClient._async_request",
+        "httpx.AsyncClient.request",
         side_effect=httpx.ReadTimeout("Request timed out"),
     )
 
@@ -572,7 +572,7 @@ def test_fetch(
     expected_fetch_response: LinkupFetchResponse,
 ) -> None:
     request_mock = mocker.patch(
-        "linkup._client.LinkupClient._request",
+        "httpx.Client.request",
         return_value=Response(
             status_code=200,
             content=mock_request_response_content,
@@ -609,7 +609,7 @@ async def test_async_fetch(
     expected_fetch_response: LinkupFetchResponse,
 ) -> None:
     request_mock = mocker.patch(
-        "linkup._client.LinkupClient._async_request",
+        "httpx.AsyncClient.request",
         return_value=Response(
             status_code=200,
             content=mock_request_response_content,
@@ -674,7 +674,7 @@ def test_fetch_error(
     expected_exception: type[Exception],
 ) -> None:
     request_mock = mocker.patch(
-        "linkup._client.LinkupClient._request",
+        "httpx.Client.request",
         return_value=Response(
             status_code=mock_request_response_status_code,
             content=mock_request_response_content,
@@ -699,7 +699,7 @@ async def test_async_fetch_error(
     expected_exception: type[Exception],
 ) -> None:
     request_mock = mocker.patch(
-        "linkup._client.LinkupClient._async_request",
+        "httpx.AsyncClient.request",
         return_value=Response(
             status_code=mock_request_response_status_code,
             content=mock_request_response_content,
@@ -716,7 +716,7 @@ def test_fetch_timeout(
     client: LinkupClient,
 ) -> None:
     mocker.patch(
-        "linkup._client.LinkupClient._request",
+        "httpx.Client.request",
         side_effect=httpx.ReadTimeout("Request timed out"),
     )
 
@@ -730,7 +730,7 @@ async def test_async_fetch_timeout(
     client: LinkupClient,
 ) -> None:
     mocker.patch(
-        "linkup._client.LinkupClient._async_request",
+        "httpx.AsyncClient.request",
         side_effect=httpx.ReadTimeout("Request timed out"),
     )
 
