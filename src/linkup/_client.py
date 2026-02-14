@@ -141,19 +141,12 @@ class LinkupClient:
             include_sources=include_sources,
         )
 
-        try:
-            response: httpx.Response = self._request(
-                method="POST",
-                url="/search",
-                json=params,
-                timeout=timeout,
-            )
-        except httpx.TimeoutException as e:
-            raise LinkupTimeoutError(
-                "The request to the Linkup API timed out. Try increasing the timeout value."
-            ) from e
-        if response.status_code != 200:
-            self._raise_linkup_error(response=response)
+        response: httpx.Response = self._request(
+            method="POST",
+            url="/search",
+            json=params,
+            timeout=timeout,
+        )
 
         return self._parse_search_response(
             response=response,
@@ -245,19 +238,12 @@ class LinkupClient:
             include_sources=include_sources,
         )
 
-        try:
-            response: httpx.Response = await self._async_request(
-                method="POST",
-                url="/search",
-                json=params,
-                timeout=timeout,
-            )
-        except httpx.TimeoutException as e:
-            raise LinkupTimeoutError(
-                "The request to the Linkup API timed out. Try increasing the timeout value."
-            ) from e
-        if response.status_code != 200:
-            self._raise_linkup_error(response=response)
+        response: httpx.Response = await self._async_request(
+            method="POST",
+            url="/search",
+            json=params,
+            timeout=timeout,
+        )
 
         return self._parse_search_response(
             response=response,
@@ -304,19 +290,12 @@ class LinkupClient:
             extract_images=extract_images,
         )
 
-        try:
-            response: httpx.Response = self._request(
-                method="POST",
-                url="/fetch",
-                json=params,
-                timeout=timeout,
-            )
-        except httpx.TimeoutException as e:
-            raise LinkupTimeoutError(
-                "The request to the Linkup API timed out. Try increasing the timeout value."
-            ) from e
-        if response.status_code != 200:
-            self._raise_linkup_error(response=response)
+        response: httpx.Response = self._request(
+            method="POST",
+            url="/fetch",
+            json=params,
+            timeout=timeout,
+        )
 
         return self._parse_fetch_response(response=response)
 
@@ -358,19 +337,12 @@ class LinkupClient:
             extract_images=extract_images,
         )
 
-        try:
-            response: httpx.Response = await self._async_request(
-                method="POST",
-                url="/fetch",
-                json=params,
-                timeout=timeout,
-            )
-        except httpx.TimeoutException as e:
-            raise LinkupTimeoutError(
-                "The request to the Linkup API timed out. Try increasing the timeout value."
-            ) from e
-        if response.status_code != 200:
-            self._raise_linkup_error(response=response)
+        response: httpx.Response = await self._async_request(
+            method="POST",
+            url="/fetch",
+            json=params,
+            timeout=timeout,
+        )
 
         return self._parse_fetch_response(response=response)
 
@@ -387,27 +359,51 @@ class LinkupClient:
         self,
         method: str,
         url: str,
-        **kwargs: Any,  # noqa: ANN401
-    ) -> httpx.Response:  # pragma: no cover
-        with httpx.Client(base_url=self._base_url, headers=self._headers()) as client:
-            return client.request(
-                method=method,
-                url=url,
-                **kwargs,
-            )
+        *,
+        json: dict[str, Any],
+        timeout: float | None,
+    ) -> httpx.Response:
+        try:
+            with httpx.Client(base_url=self._base_url, headers=self._headers()) as client:
+                response: httpx.Response = client.request(
+                    method=method,
+                    url=url,
+                    json=json,
+                    timeout=timeout,
+                )
+        except httpx.TimeoutException as e:
+            raise LinkupTimeoutError(
+                "The request to the Linkup API timed out. Try increasing the timeout value."
+            ) from e
+        if response.status_code != 200:
+            self._raise_linkup_error(response=response)
+        return response
 
     async def _async_request(
         self,
         method: str,
         url: str,
-        **kwargs: Any,  # noqa: ANN401
-    ) -> httpx.Response:  # pragma: no cover
-        async with httpx.AsyncClient(base_url=self._base_url, headers=self._headers()) as client:
-            return await client.request(
-                method=method,
-                url=url,
-                **kwargs,
-            )
+        *,
+        json: dict[str, Any],
+        timeout: float | None,
+    ) -> httpx.Response:
+        try:
+            async with httpx.AsyncClient(
+                base_url=self._base_url, headers=self._headers()
+            ) as client:
+                response: httpx.Response = await client.request(
+                    method=method,
+                    url=url,
+                    json=json,
+                    timeout=timeout,
+                )
+        except httpx.TimeoutException as e:
+            raise LinkupTimeoutError(
+                "The request to the Linkup API timed out. Try increasing the timeout value."
+            ) from e
+        if response.status_code != 200:
+            self._raise_linkup_error(response=response)
+        return response
 
     def _raise_linkup_error(self, response: httpx.Response) -> None:
         error_data = response.json()
