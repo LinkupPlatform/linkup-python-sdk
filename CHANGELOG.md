@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v0.12.0 (2026-02-16)
+
+### Chores
+
+- Update Python and uv versions [skip release]
+  ([`2b7aef2`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/2b7aef2049fb24123ce3ff547a1d34507a19840e))
+
+### Refactoring
+
+- Move error handling inside request methods
+  ([`33ac495`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/33ac49550f3740d0977045da394fc5aab45de482))
+
+
 ## v0.11.0 (2026-02-13)
 
 ### Features
