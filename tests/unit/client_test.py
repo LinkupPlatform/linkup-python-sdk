@@ -13,6 +13,8 @@ from linkup import (
     LinkupClient,
     LinkupFailedFetchError,
     LinkupFetchResponse,
+    LinkupFetchResponseTooLargeError,
+    LinkupFetchUrlIsFileError,
     LinkupInsufficientCreditError,
     LinkupInvalidRequestError,
     LinkupNoResultError,
@@ -26,7 +28,6 @@ from linkup import (
     LinkupTooManyRequestsError,
     LinkupUnknownError,
 )
-from linkup._errors import LinkupFetchResponseTooLargeError, LinkupFetchUrlIsFileError
 
 
 class Company(BaseModel):
