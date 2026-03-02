@@ -13,6 +13,8 @@ from linkup import (
     LinkupClient,
     LinkupFailedFetchError,
     LinkupFetchResponse,
+    LinkupFetchResponseTooLargeError,
+    LinkupFetchUrlIsFileError,
     LinkupInsufficientCreditError,
     LinkupInvalidRequestError,
     LinkupNoResultError,
@@ -658,6 +660,32 @@ test_fetch_error_parameters = [
         }
         """,
         LinkupInvalidRequestError,
+    ),
+    (
+        400,
+        b"""
+        {
+            "error": {
+                "code": "FETCH_RESPONSE_TOO_LARGE",
+                "message": "The fetched response is too large",
+                "details": []
+            }
+        }
+        """,
+        LinkupFetchResponseTooLargeError,
+    ),
+    (
+        400,
+        b"""
+        {
+            "error": {
+                "code": "FETCH_URL_IS_FILE",
+                "message": "The URL points to a file rather than a webpage",
+                "details": []
+            }
+        }
+        """,
+        LinkupFetchUrlIsFileError,
     ),
 ]
 

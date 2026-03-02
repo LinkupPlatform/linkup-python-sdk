@@ -57,6 +57,25 @@ class LinkupFailedFetchError(Exception):
     pass
 
 
+class LinkupFetchResponseTooLargeError(Exception):
+    """Fetch response too large error, raised when the Linkup API search returns a 400 status code.
+
+    It is returned when the Linkup API can't return the full response because it is too large.
+    """
+
+    pass
+
+
+class LinkupFetchUrlIsFileError(Exception):
+    """Fetch URL is file error, raised when the Linkup API search returns a 400 status code.
+
+    It is returned when the Linkup API can't fetch the URL because it points to a file and not
+    a web page.
+    """
+
+    pass
+
+
 class LinkupTimeoutError(Exception):
     """Timeout error, raised when the HTTP request to the Linkup API times out.
 

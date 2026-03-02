@@ -2,6 +2,8 @@ from ._client import LinkupClient
 from ._errors import (
     LinkupAuthenticationError,
     LinkupFailedFetchError,
+    LinkupFetchResponseTooLargeError,
+    LinkupFetchUrlIsFileError,
     LinkupInsufficientCreditError,
     LinkupInvalidRequestError,
     LinkupNoResultError,
@@ -25,6 +27,8 @@ __all__ = [
     "LinkupClient",
     "LinkupFailedFetchError",
     "LinkupFetchResponse",
+    "LinkupFetchResponseTooLargeError",
+    "LinkupFetchUrlIsFileError",
     "LinkupInsufficientCreditError",
     "LinkupInvalidRequestError",
     "LinkupNoResultError",

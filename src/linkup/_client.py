@@ -13,6 +13,8 @@ from pydantic import BaseModel, SecretStr
 from ._errors import (
     LinkupAuthenticationError,
     LinkupFailedFetchError,
+    LinkupFetchResponseTooLargeError,
+    LinkupFetchUrlIsFileError,
     LinkupInsufficientCreditError,
     LinkupInvalidRequestError,
     LinkupNoResultError,
@@ -281,6 +283,8 @@ class LinkupClient:
         Raises:
             LinkupInvalidRequestError: If the provided URL is not valid.
             LinkupFailedFetchError: If the provided URL is not found or can't be fetched.
+            LinkupFetchResponseTooLargeError: If the fetch response is too large.
+            LinkupFetchUrlIsFileError: If the provided URL points to a file and not a web page.
             LinkupTimeoutError: If the request times out.
         """
         params: dict[str, str | bool] = self._get_fetch_params(
@@ -328,6 +332,8 @@ class LinkupClient:
         Raises:
             LinkupInvalidRequestError: If the provided URL is not valid.
             LinkupFailedFetchError: If the provided URL is not found or can't be fetched.
+            LinkupFetchResponseTooLargeError: If the fetch response is too large.
+            LinkupFetchUrlIsFileError: If the provided URL points to a file and not a web page.
             LinkupTimeoutError: If the request times out.
         """
         params: dict[str, str | bool] = self._get_fetch_params(
@@ -432,6 +438,18 @@ class LinkupClient:
                     raise LinkupFailedFetchError(
                         "The Linkup API returned a fetch error (400). "
                         "The provided URL might not be found or can't be fetched.\n"
+                        f"Original error message: {error_msg}."
+                    )
+                if code == "FETCH_RESPONSE_TOO_LARGE":
+                    raise LinkupFetchResponseTooLargeError(
+                        "The Linkup API returned a fetch response too large error (400). "
+                        "The provided URL's response is too large to be processed.\n"
+                        f"Original error message: {error_msg}."
+                    )
+                if code == "FETCH_URL_IS_FILE":
+                    raise LinkupFetchUrlIsFileError(
+                        "The Linkup API returned a fetch URL is file error (400). "
+                        "The provided URL points to a file and not a web page.\n"
                         f"Original error message: {error_msg}."
                     )
                 raise LinkupInvalidRequestError(
