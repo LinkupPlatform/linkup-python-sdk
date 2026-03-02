@@ -26,6 +26,7 @@ from linkup import (
     LinkupTooManyRequestsError,
     LinkupUnknownError,
 )
+from linkup._errors import LinkupFetchResponseTooLargeError, LinkupFetchUrlIsFileError
 
 
 class Company(BaseModel):
@@ -658,6 +659,32 @@ test_fetch_error_parameters = [
         }
         """,
         LinkupInvalidRequestError,
+    ),
+    (
+        400,
+        b"""
+        {
+            "error": {
+                "code": "FETCH_RESPONSE_TOO_LARGE",
+                "message": "The fetched response is too large",
+                "details": []
+            }
+        }
+        """,
+        LinkupFetchResponseTooLargeError,
+    ),
+    (
+        400,
+        b"""
+        {
+            "error": {
+                "code": "FETCH_URL_IS_FILE",
+                "message": "The URL points to a file rather than a webpage",
+                "details": []
+            }
+        }
+        """,
+        LinkupFetchUrlIsFileError,
     ),
 ]
 
