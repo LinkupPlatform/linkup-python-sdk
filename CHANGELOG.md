@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v0.13.0 (2026-03-02)
+
+### Features
+
+- **fetch**: Add new fetch errors
+  ([#63](https://github.com/LinkupPlatform/linkup-python-sdk/pull/63),
+  [`d81127f`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/d81127fecae8c32d687e6d7b4f7e3a578c4ef58a))
+
+
 ## v0.12.0 (2026-02-16)
 
 ### Chores
