@@ -5,7 +5,7 @@ keywords = ["api", "client", "linkup", "sdk", "search"]
 license = "MIT"
 name = "linkup-sdk"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<4.0"
 version = "0.13.0"
 
 classifiers = [
