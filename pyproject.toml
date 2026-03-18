@@ -19,6 +19,7 @@ dependencies = ["httpx>=0.23.0", "pydantic>=2.0.0"]
 
 [project.optional-dependencies]
 build = ["uv>=0.10.0,<0.11.0"] # For python-semantic-release build command, used in GitHub actions
+x402 = ["x402[httpx,evm]>=2.0.0"]
 
 [project.urls]
 Documentation = "https://github.com/LinkupPlatform/linkup-python-sdk#readme"
@@ -36,9 +37,12 @@ dev = [
   "pytest>=8.4.1",
   "python-dotenv>=1.1.1",
   "rich>=14.1.0",
+  "ruff>=0.15.6",
+  "x402[httpx,evm]>=2.0.0",
 ]
 
 [tool.mypy]
+mypy_path = "typings"
 strict = true
 warn_unreachable = true
 
@@ -89,7 +93,9 @@ select = [
 [tool.ruff.lint.extend-per-file-ignores]
 "examples/*.py" = ["D"]
 "src/linkup/__init__.py" = ["D104"]
+"src/linkup/x402/__init__.py" = ["D104"]
 "tests/**/*test.py" = ["D", "S101"]
+"tests/unit/x402/__init__.py" = ["D104"]
 
 [build-system]
 build-backend = "hatchling.build"
