@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import os
 from datetime import date  # noqa: TC003 (`date` is used in test mocks)
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 import httpx
 from pydantic import BaseModel, SecretStr
@@ -18,6 +18,7 @@ from ._errors import (
     LinkupInsufficientCreditError,
     LinkupInvalidRequestError,
     LinkupNoResultError,
+    LinkupPaymentRequiredError,
     LinkupTimeoutError,
     LinkupTooManyRequestsError,
     LinkupUnknownError,
@@ -30,6 +31,9 @@ from ._types import (
 )
 from ._version import __version__
 
+if TYPE_CHECKING:
+    from .x402 import LinkupX402Signer
+
 
 class LinkupClient:
     """The Linkup Client class, providing functions to call the Linkup API endpoints using Python.
@@ -38,9 +42,13 @@ class LinkupClient:
         api_key: The API key for the Linkup API. If None, the API key will be read from the
             environment variable `LINKUP_API_KEY`.
         base_url: The base URL for the Linkup API, for development purposes.
+        x402_signer: An optional x402 signer for payment-gated endpoints. If provided, the
+            client will attempt to handle 402 responses automatically. Cannot be used together
+            with api_key.
 
     Raises:
         ValueError: If the API key is not provided and not found in the environment variable.
+        ValueError: If both api_key and x402_signer are provided.
     """
 
     __version__ = __version__
@@ -49,15 +57,24 @@ class LinkupClient:
         self,
         api_key: str | SecretStr | None = None,
         base_url: str = "https://api.linkup.so/v1",
+        x402_signer: LinkupX402Signer | None = None,
     ) -> None:
-        if api_key is None:
-            api_key = os.getenv("LINKUP_API_KEY")
-        if not api_key:
-            raise ValueError("The Linkup API key was not provided")
-        if isinstance(api_key, str):
-            api_key = SecretStr(api_key)
+        if api_key is not None and x402_signer is not None:
+            raise ValueError("Cannot provide both api_key and x402_signer")
 
-        self._api_key: SecretStr = api_key
+        self._x402_signer: LinkupX402Signer | None = x402_signer
+
+        if x402_signer is not None:
+            self._api_key: SecretStr | None = None
+        else:
+            if api_key is None:
+                api_key = os.getenv("LINKUP_API_KEY")
+            if not api_key:
+                raise ValueError("The Linkup API key was not provided")
+            if isinstance(api_key, str):
+                api_key = SecretStr(api_key)
+            self._api_key = api_key
+
         self._base_url: str = base_url
 
     def search(
@@ -356,10 +373,10 @@ class LinkupClient:
         return f"Linkup-Python/{self.__version__}"
 
     def _headers(self) -> dict[str, str]:  # pragma: no cover
-        return {
-            "Authorization": f"Bearer {self._api_key.get_secret_value()}",
-            "User-Agent": self._user_agent(),
-        }
+        headers: dict[str, str] = {"User-Agent": self._user_agent()}
+        if self._api_key is not None:
+            headers["Authorization"] = f"Bearer {self._api_key.get_secret_value()}"
+        return headers
 
     def _request(
         self,
@@ -377,6 +394,15 @@ class LinkupClient:
                     json=json,
                     timeout=timeout,
                 )
+                if response.status_code == 402 and self._x402_signer is not None:
+                    return self._handle_x402_payment(
+                        client=client,
+                        response=response,
+                        method=method,
+                        url=url,
+                        json=json,
+                        timeout=timeout,
+                    )
         except httpx.TimeoutException as e:
             raise LinkupTimeoutError(
                 "The request to the Linkup API timed out. Try increasing the timeout value."
@@ -403,6 +429,15 @@ class LinkupClient:
                     json=json,
                     timeout=timeout,
                 )
+                if response.status_code == 402 and self._x402_signer is not None:
+                    return await self._async_handle_x402_payment(
+                        client=client,
+                        response=response,
+                        method=method,
+                        url=url,
+                        json=json,
+                        timeout=timeout,
+                    )
         except httpx.TimeoutException as e:
             raise LinkupTimeoutError(
                 "The request to the Linkup API timed out. Try increasing the timeout value."
@@ -410,6 +445,82 @@ class LinkupClient:
         if response.status_code != 200:
             self._raise_linkup_error(response=response)
         return response
+
+    def _handle_x402_payment(
+        self,
+        client: httpx.Client,
+        response: httpx.Response,
+        method: str,
+        url: str,
+        json: dict[str, Any],
+        timeout: float | None,
+    ) -> httpx.Response:
+        if self._x402_signer is None:
+            raise RuntimeError("x402 signer is not configured")
+
+        try:
+            payment_headers = self._x402_signer.create_payment_headers(
+                response_headers=dict(response.headers),
+                response_body=response.content,
+            )
+        except Exception as e:
+            raise LinkupPaymentRequiredError(
+                "The Linkup API returned a payment required error (402). "
+                "x402 payment signing failed.\n"
+                f"Original error: {e}."
+            ) from e
+
+        merged_headers = {**self._headers(), **payment_headers}
+        retry_response: httpx.Response = client.request(
+            method=method,
+            url=url,
+            json=json,
+            timeout=timeout,
+            headers=merged_headers,
+        )
+
+        if retry_response.status_code != 200:
+            self._raise_linkup_error(response=retry_response)
+
+        return retry_response
+
+    async def _async_handle_x402_payment(
+        self,
+        client: httpx.AsyncClient,
+        response: httpx.Response,
+        method: str,
+        url: str,
+        json: dict[str, Any],
+        timeout: float | None,
+    ) -> httpx.Response:
+        if self._x402_signer is None:
+            raise RuntimeError("x402 signer is not configured")
+
+        try:
+            payment_headers = await self._x402_signer.async_create_payment_headers(
+                response_headers=dict(response.headers),
+                response_body=response.content,
+            )
+        except Exception as e:
+            raise LinkupPaymentRequiredError(
+                "The Linkup API returned a payment required error (402). "
+                "x402 payment signing failed.\n"
+                f"Original error: {e}."
+            ) from e
+
+        merged_headers = {**self._headers(), **payment_headers}
+        retry_response: httpx.Response = await client.request(
+            method=method,
+            url=url,
+            json=json,
+            timeout=timeout,
+            headers=merged_headers,
+        )
+
+        if retry_response.status_code != 200:
+            self._raise_linkup_error(response=retry_response)
+
+        return retry_response
 
     def _raise_linkup_error(self, response: httpx.Response) -> None:
         error_data = response.json()
@@ -427,6 +538,12 @@ class LinkupClient:
                         field_message = detail.get("message", "")
                         error_msg += f" {field}: {field_message}"
 
+            if response.status_code == 402:
+                raise LinkupPaymentRequiredError(
+                    "The Linkup API returned a payment required error (402). "
+                    "This endpoint requires x402 payment.\n"
+                    f"Original error message: {error_msg}."
+                )
             if response.status_code == 400:
                 if code == "SEARCH_QUERY_NO_RESULT":
                     raise LinkupNoResultError(
