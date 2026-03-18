@@ -19,6 +19,7 @@ benefit from Linkup services to the full extent. 📝
 - 🔍 **Support all Linkup entrypoints and parameters.**
 - ⚡ **Support synchronous and asynchronous calls.**
 - 🔒 **Handle authentication and request management.**
+- 💳 **Built-in x402 payment protocol support for on-chain payments.**
 
 ## 📦 Installation
 
@@ -26,6 +27,12 @@ Simply install the Linkup Python SDK as any Python package, for instance using `
 
 ```bash
 pip install linkup-sdk
+```
+
+To use the x402 payment protocol (on-chain payments via EVM), install the optional x402 extras:
+
+```bash
+pip install linkup-sdk[x402]
 ```
 
 ## 🛠️ Usage
@@ -201,6 +208,27 @@ Which prints:
     ...
   ]
 }
+```
+
+#### 💳 x402 Payment Protocol
+
+The SDK supports the [x402 payment protocol](https://www.x402.org/), allowing clients to
+automatically handle HTTP 402 responses by signing and retrying requests with on-chain payments.
+This can be used as an alternative to API key authentication.
+
+```python
+from linkup import LinkupClient
+from linkup.x402 import create_x402_signer
+
+signer = create_x402_signer(private_key="0x...")
+client = LinkupClient(x402_signer=signer)
+
+result = client.search(
+    query="What is x402?",
+    depth="standard",
+    output_type="sourcedAnswer",
+)
+print(result.answer)
 ```
 
 #### 📚 More Examples
