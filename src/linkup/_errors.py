@@ -29,6 +29,16 @@ class LinkupAuthenticationError(Exception):
     pass
 
 
+class LinkupPaymentRequiredError(Exception):
+    """Payment required error, raised when the Linkup API returns a 402 status code.
+
+    It is returned when the endpoint requires x402 payment and either no signer is
+    configured, or the payment attempt failed.
+    """
+
+    pass
+
+
 class LinkupInsufficientCreditError(Exception):
     """Insufficient credit error, raised when the Linkup API returns a 429 status code.
 
