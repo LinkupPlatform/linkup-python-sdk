@@ -23,8 +23,11 @@ class LinkupX402Signer(Protocol):
     ) -> dict[str, str]: ...  # pragma: no cover
 
 
+_NETWORK = "eip155:8453"
+
+
 class _DefaultX402Signer:
-    def __init__(self, account: LocalAccount, network: str) -> None:
+    def __init__(self, account: LocalAccount) -> None:
         try:
             from x402 import x402Client, x402ClientSync
             from x402.http import x402HTTPClient, x402HTTPClientSync
@@ -39,11 +42,11 @@ class _DefaultX402Signer:
         signer = EthAccountSigner(account)
 
         sync_client = x402ClientSync()
-        register_exact_evm_client(sync_client, signer, networks=network)
+        register_exact_evm_client(sync_client, signer, networks=_NETWORK)
         self._sync_http_client = x402HTTPClientSync(sync_client)
 
         async_client = x402Client()
-        register_exact_evm_client(async_client, signer, networks=network)
+        register_exact_evm_client(async_client, signer, networks=_NETWORK)
         self._async_http_client = x402HTTPClient(async_client)
 
     def create_payment_headers(
@@ -69,13 +72,11 @@ class _DefaultX402Signer:
 
 def create_x402_signer(
     account: LocalAccount,
-    network: str = "eip155:8453",
 ) -> _DefaultX402Signer:
     """Create an x402 signer using the x402 Python package with EVM (Base chain).
 
     Args:
         account: An eth_account LocalAccount instance used to sign payments.
-        network: The CAIP-2 network identifier. Only Base mainnet ("eip155:8453") is supported.
 
     Returns:
         A signer instance that implements the LinkupX402Signer protocol.
@@ -83,4 +84,4 @@ def create_x402_signer(
     Raises:
         ImportError: If the x402 optional dependencies are not installed.
     """
-    return _DefaultX402Signer(account=account, network=network)
+    return _DefaultX402Signer(account=account)

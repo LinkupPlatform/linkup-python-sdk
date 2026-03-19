@@ -9,7 +9,6 @@ from linkup.x402._signer import LinkupX402Signer, _DefaultX402Signer, create_x40
 
 
 def _setup_x402_mocks(monkeypatch: pytest.MonkeyPatch) -> dict[str, MagicMock]:
-    """Set up mock modules for x402 dependencies and return key mocks."""
     mock_account = MagicMock()
 
     mock_signer_instance = MagicMock()
@@ -27,7 +26,6 @@ def _setup_x402_mocks(monkeypatch: pytest.MonkeyPatch) -> dict[str, MagicMock]:
 
     mock_register = MagicMock()
 
-    # Create mock modules
     mock_x402 = ModuleType("x402")
     mock_x402.x402Client = mock_async_x402_client_class  # type: ignore[attr-defined]
     mock_x402.x402ClientSync = mock_sync_x402_client_class  # type: ignore[attr-defined]
