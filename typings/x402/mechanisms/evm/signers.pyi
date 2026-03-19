@@ -1,6 +1,0 @@
-from eth_account.signers.local import LocalAccount
-
-class EthAccountSigner:
-    def __init__(self, account: LocalAccount) -> None: ...
-    @property
-    def address(self) -> str: ...

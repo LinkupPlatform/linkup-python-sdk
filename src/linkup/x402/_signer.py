@@ -69,7 +69,7 @@ class _DefaultX402Signer:
 
 def create_x402_signer(
     account: LocalAccount,
-    network: str = "eip155:84532",
+    network: str = "eip155:8453",
 ) -> _DefaultX402Signer:
     """Create an x402 signer using the x402 Python package with EVM (Base chain).
 

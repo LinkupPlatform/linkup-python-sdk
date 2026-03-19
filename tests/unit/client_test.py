@@ -781,8 +781,6 @@ async def test_async_fetch_timeout(
         await client.async_fetch(url="https://example.com", timeout=1.0)
 
 
-# --- x402 constructor tests ---
-
 _402_BODY = b'{"error": {"code": "PAYMENT_REQUIRED", "message": "Pay", "details": []}}'
 
 _402_BODY_FULL = (
@@ -838,9 +836,6 @@ def test_client_x402_no_auth_header(
         },
         timeout=None,
     )
-
-
-# --- x402 402 retry tests (sync) ---
 
 
 def test_x402_retry_sync(
@@ -942,9 +937,6 @@ def test_402_without_signer(
 
     with pytest.raises(LinkupPaymentRequiredError):
         client.search(query="query", depth="standard", output_type="searchResults")
-
-
-# --- x402 402 retry tests (async) ---
 
 
 @pytest.mark.asyncio
