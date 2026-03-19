@@ -213,14 +213,32 @@ Which prints:
 #### 💳 x402 Payment Protocol
 
 The SDK supports the [x402 payment protocol](https://www.x402.org/), allowing clients to
-automatically handle HTTP 402 responses by signing and retrying requests with on-chain payments.
-This can be used as an alternative to API key authentication.
+automatically handle HTTP 402 responses by signing and retrying requests with on-chain payments via
+[EVM](https://ethereum.org/en/developers/docs/evm/)-compatible networks (currently Base). This can
+be used as an alternative to API key authentication.
+
+Create an `eth_account` `LocalAccount` compatible with Base (Ethereum):
+
+```python
+from eth_account import Account
+
+account = Account.from_key("<YOUR WALLET PRIVATE KEY>")
+```
+
+```python
+from eth_account import Account
+
+Account.enable_unaudited_hdwallet_features()
+account = Account.from_mnemonic("<YOUR MNEMONIC PHRASE>")
+```
+
+Then pass it to `create_x402_signer` and use the Linkup client:
 
 ```python
 from linkup import LinkupClient
 from linkup.x402 import create_x402_signer
 
-signer = create_x402_signer(private_key="0x...")
+signer = create_x402_signer(account)
 client = LinkupClient(x402_signer=signer)
 
 result = client.search(

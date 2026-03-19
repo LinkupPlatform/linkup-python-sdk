@@ -11,8 +11,6 @@ from linkup.x402._signer import LinkupX402Signer, _DefaultX402Signer, create_x40
 def _setup_x402_mocks(monkeypatch: pytest.MonkeyPatch) -> dict[str, MagicMock]:
     """Set up mock modules for x402 dependencies and return key mocks."""
     mock_account = MagicMock()
-    mock_account_class = MagicMock()
-    mock_account_class.from_key.return_value = mock_account
 
     mock_signer_instance = MagicMock()
     mock_evm_signer_class = MagicMock(return_value=mock_signer_instance)
@@ -30,9 +28,6 @@ def _setup_x402_mocks(monkeypatch: pytest.MonkeyPatch) -> dict[str, MagicMock]:
     mock_register = MagicMock()
 
     # Create mock modules
-    mock_eth_account = ModuleType("eth_account")
-    mock_eth_account.Account = mock_account_class  # type: ignore[attr-defined]
-
     mock_x402 = ModuleType("x402")
     mock_x402.x402Client = mock_async_x402_client_class  # type: ignore[attr-defined]
     mock_x402.x402ClientSync = mock_sync_x402_client_class  # type: ignore[attr-defined]
@@ -50,7 +45,6 @@ def _setup_x402_mocks(monkeypatch: pytest.MonkeyPatch) -> dict[str, MagicMock]:
     mock_x402_exact_register.register_exact_evm_client = mock_register  # type: ignore[attr-defined]
 
     modules = {
-        "eth_account": mock_eth_account,
         "x402": mock_x402,
         "x402.http": mock_x402_http,
         "x402.mechanisms": mock_x402_mechanisms,
@@ -62,7 +56,6 @@ def _setup_x402_mocks(monkeypatch: pytest.MonkeyPatch) -> dict[str, MagicMock]:
         monkeypatch.setitem(sys.modules, name, mod)
 
     return {
-        "account_class": mock_account_class,
         "account": mock_account,
         "evm_signer_class": mock_evm_signer_class,
         "signer_instance": mock_signer_instance,
@@ -79,9 +72,8 @@ def _setup_x402_mocks(monkeypatch: pytest.MonkeyPatch) -> dict[str, MagicMock]:
 def test_create_x402_signer(monkeypatch: pytest.MonkeyPatch) -> None:
     mocks = _setup_x402_mocks(monkeypatch)
 
-    signer = create_x402_signer("0xprivatekey")
+    signer = create_x402_signer(mocks["account"])
 
-    mocks["account_class"].from_key.assert_called_once_with("0xprivatekey")
     mocks["evm_signer_class"].assert_called_once_with(mocks["account"])
     assert mocks["register"].call_count == 2  # sync + async
     mocks["sync_http_class"].assert_called_once()
@@ -91,7 +83,6 @@ def test_create_x402_signer(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_create_x402_signer_missing_deps(monkeypatch: pytest.MonkeyPatch) -> None:
     blocked = (
-        "eth_account",
         "x402",
         "x402.http",
         "x402.mechanisms.evm",
@@ -110,7 +101,7 @@ def test_create_x402_signer_missing_deps(monkeypatch: pytest.MonkeyPatch) -> Non
     monkeypatch.setattr(builtins, "__import__", mock_import)
 
     with pytest.raises(ImportError, match="x402 optional dependencies"):
-        create_x402_signer("0xprivatekey")
+        create_x402_signer(MagicMock())
 
 
 def test_default_signer_create_payment_headers(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -120,7 +111,7 @@ def test_default_signer_create_payment_headers(monkeypatch: pytest.MonkeyPatch) 
         MagicMock(),
     )
 
-    signer = create_x402_signer("0xprivatekey")
+    signer = create_x402_signer(mocks["account"])
     headers = signer.create_payment_headers(
         response_headers={"X-Payment-Required": "true"},
         response_body=b"payment details",
@@ -141,7 +132,7 @@ async def test_default_signer_async_create_payment_headers(
         return_value=({"X-Payment": "signed"}, MagicMock())
     )
 
-    signer = create_x402_signer("0xprivatekey")
+    signer = create_x402_signer(mocks["account"])
     headers = await signer.async_create_payment_headers(
         response_headers={"X-Payment-Required": "true"},
         response_body=b"payment details",

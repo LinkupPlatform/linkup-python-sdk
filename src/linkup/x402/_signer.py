@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
+
+if TYPE_CHECKING:
+    from eth_account.signers.local import LocalAccount
 
 
 @runtime_checkable
@@ -21,9 +24,8 @@ class LinkupX402Signer(Protocol):
 
 
 class _DefaultX402Signer:
-    def __init__(self, private_key: str, network: str) -> None:
+    def __init__(self, account: LocalAccount, network: str) -> None:
         try:
-            from eth_account import Account
             from x402 import x402Client, x402ClientSync
             from x402.http import x402HTTPClient, x402HTTPClientSync
             from x402.mechanisms.evm import EthAccountSigner
@@ -34,7 +36,6 @@ class _DefaultX402Signer:
                 "Install them with: pip install 'linkup-sdk[x402]'"
             ) from e
 
-        account = Account.from_key(private_key)
         signer = EthAccountSigner(account)
 
         sync_client = x402ClientSync()
@@ -67,13 +68,13 @@ class _DefaultX402Signer:
 
 
 def create_x402_signer(
-    private_key: str,
-    network: str = "eip155:8453",
+    account: LocalAccount,
+    network: str = "eip155:84532",
 ) -> _DefaultX402Signer:
     """Create an x402 signer using the x402 Python package with EVM (Base chain).
 
     Args:
-        private_key: The EVM private key used to sign payments.
+        account: An eth_account LocalAccount instance used to sign payments.
         network: The CAIP-2 network identifier. Only Base mainnet ("eip155:8453") is supported.
 
     Returns:
@@ -82,4 +83,4 @@ def create_x402_signer(
     Raises:
         ImportError: If the x402 optional dependencies are not installed.
     """
-    return _DefaultX402Signer(private_key=private_key, network=network)
+    return _DefaultX402Signer(account=account, network=network)
