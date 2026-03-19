@@ -1,6 +1,7 @@
 import json
 from datetime import date
 from typing import Any
+from unittest.mock import AsyncMock, MagicMock
 
 import httpx
 import pytest
@@ -18,6 +19,7 @@ from linkup import (
     LinkupInsufficientCreditError,
     LinkupInvalidRequestError,
     LinkupNoResultError,
+    LinkupPaymentRequiredError,
     LinkupSearchImageResult,
     LinkupSearchResults,
     LinkupSearchStructuredResponse,
@@ -334,6 +336,19 @@ async def test_async_search(
 
 
 test_search_error_parameters = [
+    (
+        402,
+        b"""
+        {
+            "error": {
+                "code": "PAYMENT_REQUIRED",
+                "message": "Payment required",
+                "details": []
+            }
+        }
+        """,
+        LinkupPaymentRequiredError,
+    ),
     (
         403,
         b"""
@@ -764,3 +779,266 @@ async def test_async_fetch_timeout(
 
     with pytest.raises(LinkupTimeoutError):
         await client.async_fetch(url="https://example.com", timeout=1.0)
+
+
+_402_BODY = b'{"error": {"code": "PAYMENT_REQUIRED", "message": "Pay", "details": []}}'
+
+_402_BODY_FULL = (
+    b'{"error": {"code": "PAYMENT_REQUIRED", "message": "Payment required", "details": []}}'
+)
+
+_500_BODY = b'{"error": {"code": "INTERNAL_SERVER_ERROR", "message": "Error", "details": []}}'
+
+
+def test_client_x402_signer(mock_x402_signer: MagicMock) -> None:
+    client = LinkupClient(x402_signer=mock_x402_signer)
+    assert client._x402_signer is mock_x402_signer  # noqa: SLF001
+    assert client._api_key is None  # noqa: SLF001
+
+
+def test_client_both_api_key_and_x402_signer_raises(
+    mock_x402_signer: MagicMock,
+) -> None:
+    with pytest.raises(ValueError, match="Cannot provide both"):
+        LinkupClient(api_key="test-key", x402_signer=mock_x402_signer)
+
+
+def test_client_x402_no_auth_header(
+    mocker: MockerFixture,
+    x402_client: LinkupClient,
+    mock_x402_signer: MagicMock,
+) -> None:
+    mock_x402_signer.create_payment_headers.return_value = {
+        "X-Payment": "signed",
+    }
+    request_mock = mocker.patch(
+        "httpx.Client.request",
+        side_effect=[
+            Response(
+                status_code=402,
+                content=_402_BODY,
+                headers={"X-Payment-Required": "true"},
+            ),
+            Response(status_code=200, content=b'{"results": []}'),
+        ],
+    )
+
+    x402_client.search(query="query", depth="standard", output_type="searchResults")
+
+    first_call_args = request_mock.call_args_list[0]
+    assert first_call_args == mocker.call(
+        method="POST",
+        url="/search",
+        json={
+            "q": "query",
+            "depth": "standard",
+            "outputType": "searchResults",
+        },
+        timeout=None,
+    )
+
+
+def test_x402_retry_sync(
+    mocker: MockerFixture,
+    x402_client: LinkupClient,
+    mock_x402_signer: MagicMock,
+) -> None:
+    mock_x402_signer.create_payment_headers.return_value = {
+        "X-Payment": "signed",
+    }
+    request_mock = mocker.patch(
+        "httpx.Client.request",
+        side_effect=[
+            Response(
+                status_code=402,
+                content=_402_BODY,
+                headers={"X-Payment-Required": "true"},
+            ),
+            Response(status_code=200, content=b'{"results": []}'),
+        ],
+    )
+
+    result = x402_client.search(query="query", depth="standard", output_type="searchResults")
+    assert result.results == []
+    mock_x402_signer.create_payment_headers.assert_called_once()
+
+    # Verify the retry call merges payment headers with base headers
+    retry_call = request_mock.call_args_list[1]
+    assert retry_call == mocker.call(
+        method="POST",
+        url="/search",
+        json={
+            "q": "query",
+            "depth": "standard",
+            "outputType": "searchResults",
+        },
+        timeout=None,
+        headers={
+            "User-Agent": f"Linkup-Python/{x402_client.__version__}",
+            "X-Payment": "signed",
+        },
+    )
+
+
+def test_x402_retry_failure_sync(
+    mocker: MockerFixture,
+    x402_client: LinkupClient,
+    mock_x402_signer: MagicMock,
+) -> None:
+    mock_x402_signer.create_payment_headers.return_value = {
+        "X-Payment": "signed",
+    }
+    mocker.patch(
+        "httpx.Client.request",
+        side_effect=[
+            Response(
+                status_code=402,
+                content=_402_BODY,
+                headers={"X-Payment-Required": "true"},
+            ),
+            Response(status_code=500, content=_500_BODY),
+        ],
+    )
+
+    with pytest.raises(LinkupUnknownError):
+        x402_client.search(query="query", depth="standard", output_type="searchResults")
+
+
+def test_x402_signer_error_sync(
+    mocker: MockerFixture,
+    x402_client: LinkupClient,
+    mock_x402_signer: MagicMock,
+) -> None:
+    mock_x402_signer.create_payment_headers.side_effect = RuntimeError("signing failed")
+    mocker.patch(
+        "httpx.Client.request",
+        return_value=Response(
+            status_code=402,
+            content=_402_BODY,
+            headers={"X-Payment-Required": "true"},
+        ),
+    )
+
+    with pytest.raises(LinkupPaymentRequiredError, match="signing failed"):
+        x402_client.search(query="query", depth="standard", output_type="searchResults")
+
+
+def test_402_without_signer(
+    mocker: MockerFixture,
+    client: LinkupClient,
+) -> None:
+    mocker.patch(
+        "httpx.Client.request",
+        return_value=Response(
+            status_code=402,
+            content=_402_BODY_FULL,
+        ),
+    )
+
+    with pytest.raises(LinkupPaymentRequiredError):
+        client.search(query="query", depth="standard", output_type="searchResults")
+
+
+@pytest.mark.asyncio
+async def test_x402_retry_async(
+    mocker: MockerFixture,
+    x402_client: LinkupClient,
+    mock_x402_signer: MagicMock,
+) -> None:
+    mock_x402_signer.async_create_payment_headers = AsyncMock(return_value={"X-Payment": "signed"})
+    request_mock = mocker.patch(
+        "httpx.AsyncClient.request",
+        side_effect=[
+            Response(
+                status_code=402,
+                content=_402_BODY,
+                headers={"X-Payment-Required": "true"},
+            ),
+            Response(status_code=200, content=b'{"results": []}'),
+        ],
+    )
+
+    result = await x402_client.async_search(
+        query="query", depth="standard", output_type="searchResults"
+    )
+    assert result.results == []
+    mock_x402_signer.async_create_payment_headers.assert_called_once()
+
+    # Verify the retry call merges payment headers with base headers
+    retry_call = request_mock.call_args_list[1]
+    assert retry_call == mocker.call(
+        method="POST",
+        url="/search",
+        json={
+            "q": "query",
+            "depth": "standard",
+            "outputType": "searchResults",
+        },
+        timeout=None,
+        headers={
+            "User-Agent": f"Linkup-Python/{x402_client.__version__}",
+            "X-Payment": "signed",
+        },
+    )
+
+
+@pytest.mark.asyncio
+async def test_x402_retry_failure_async(
+    mocker: MockerFixture,
+    x402_client: LinkupClient,
+    mock_x402_signer: MagicMock,
+) -> None:
+    mock_x402_signer.async_create_payment_headers = AsyncMock(return_value={"X-Payment": "signed"})
+    mocker.patch(
+        "httpx.AsyncClient.request",
+        side_effect=[
+            Response(
+                status_code=402,
+                content=_402_BODY,
+                headers={"X-Payment-Required": "true"},
+            ),
+            Response(status_code=500, content=_500_BODY),
+        ],
+    )
+
+    with pytest.raises(LinkupUnknownError):
+        await x402_client.async_search(query="query", depth="standard", output_type="searchResults")
+
+
+@pytest.mark.asyncio
+async def test_x402_signer_error_async(
+    mocker: MockerFixture,
+    x402_client: LinkupClient,
+    mock_x402_signer: MagicMock,
+) -> None:
+    mock_x402_signer.async_create_payment_headers = AsyncMock(
+        side_effect=RuntimeError("signing failed")
+    )
+    mocker.patch(
+        "httpx.AsyncClient.request",
+        return_value=Response(
+            status_code=402,
+            content=_402_BODY,
+            headers={"X-Payment-Required": "true"},
+        ),
+    )
+
+    with pytest.raises(LinkupPaymentRequiredError, match="signing failed"):
+        await x402_client.async_search(query="query", depth="standard", output_type="searchResults")
+
+
+@pytest.mark.asyncio
+async def test_402_without_signer_async(
+    mocker: MockerFixture,
+    client: LinkupClient,
+) -> None:
+    mocker.patch(
+        "httpx.AsyncClient.request",
+        return_value=Response(
+            status_code=402,
+            content=_402_BODY_FULL,
+        ),
+    )
+
+    with pytest.raises(LinkupPaymentRequiredError):
+        await client.async_search(query="query", depth="standard", output_type="searchResults")
