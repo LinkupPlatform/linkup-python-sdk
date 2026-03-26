@@ -30,7 +30,7 @@ Tracker = "https://github.com/LinkupPlatform/linkup-python-sdk/issues"
 [dependency-groups]
 dev = [
   "mypy>=1.16.1",
-  "pre-commit>=4.2.0",
+  "prek>=0.3.5",
   "pytest-asyncio>=1.0.0",
   "pytest-cov>=6.2.1",
   "pytest-mock>=3.14.1",
