@@ -2,10 +2,10 @@ install:
 	uv sync
 install-dev:
 	@$(MAKE) install
-	uv run pre-commit install
+	uv run prek install
 
 format-lint:
-	SKIP=no-commit-to-branch uv run pre-commit run --all-files
+	SKIP=no-commit-to-branch uv run prek run --all-files
 format-lint-unsafe:
 	uv run --with ruff ruff check --fix --unsafe-fixes .
 	@echo
@@ -22,11 +22,10 @@ test:
 	@echo
 	@$(MAKE) test-pytest
 
-update-uv:
+update-dependencies:
 	uv lock --upgrade
-	uv sync
-update-pre-commit:
-	uv run pre-commit autoupdate
+update-pre-commit-hooks:
+	uv run prek autoupdate --cooldown-days 14
 
 clean:
 	rm -rf dist/
