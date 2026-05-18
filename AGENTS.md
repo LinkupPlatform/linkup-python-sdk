@@ -47,4 +47,6 @@ If packaging-related files changed, also run:
 Add durable exceptions here when a proposed sync should not be repeated.
 
 - Do not expose API capabilities that are not clearly public and stable.
+- Do not implement `/credits/balance` in this SDK unless explicitly requested.
+- Do not implement `/responses` in this SDK unless explicitly requested.
 - If a capability was intentionally rejected for product/design reasons, do not propose it again until this file is updated.
