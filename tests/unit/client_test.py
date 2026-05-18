@@ -15,17 +15,26 @@ from linkup import (
     LinkupFailedFetchError,
     LinkupFetchResponse,
     LinkupFetchResponseTooLargeError,
+    LinkupFetchTask,
+    LinkupFetchTaskInput,
     LinkupFetchUrlIsFileError,
     LinkupInsufficientCreditError,
     LinkupInvalidRequestError,
     LinkupNoResultError,
     LinkupPaymentRequiredError,
+    LinkupResearchTask,
+    LinkupResearchTaskInput,
+    LinkupResearchTasksPage,
     LinkupSearchImageResult,
     LinkupSearchResults,
     LinkupSearchStructuredResponse,
+    LinkupSearchTask,
+    LinkupSearchTaskInput,
     LinkupSearchTextResult,
     LinkupSource,
     LinkupSourcedAnswer,
+    LinkupTaskMetadata,
+    LinkupTasksPage,
     LinkupTimeoutError,
     LinkupTooManyRequestsError,
     LinkupUnknownError,
@@ -539,6 +548,108 @@ async def test_async_search_timeout(
         )
 
 
+def test_research(mocker: MockerFixture, client: LinkupClient) -> None:
+    request_mock = mocker.patch(
+        "httpx.Client.request",
+        return_value=Response(
+            status_code=200,
+            content=b"""
+            {
+                "createdAt": "2026-05-18T00:00:00.000Z",
+                "error": null,
+                "id": "4a44f4e0-eaf0-42eb-8ea4-99311b1d0f01",
+                "input": {
+                    "mode": "auto",
+                    "outputType": "sourcedAnswer",
+                    "q": "query"
+                },
+                "output": null,
+                "status": "pending",
+                "type": "research",
+                "updatedAt": "2026-05-18T00:00:00.000Z"
+            }
+            """,
+        ),
+    )
+
+    research_response = client.research(query="query", output_type="sourcedAnswer", mode="auto")
+
+    request_mock.assert_called_once_with(
+        method="POST",
+        url="/research",
+        json={
+            "q": "query",
+            "outputType": "sourcedAnswer",
+            "mode": "auto",
+        },
+        timeout=None,
+    )
+    assert research_response == LinkupResearchTask(
+        created_at="2026-05-18T00:00:00.000Z",
+        error=None,
+        id="4a44f4e0-eaf0-42eb-8ea4-99311b1d0f01",
+        input=LinkupResearchTaskInput(
+            query="query",
+            output_type="sourcedAnswer",
+            mode="auto",
+        ),
+        output=None,
+        status="pending",
+        type="research",
+        updated_at="2026-05-18T00:00:00.000Z",
+    )
+
+
+@pytest.mark.asyncio
+async def test_async_research(mocker: MockerFixture, client: LinkupClient) -> None:
+    request_mock = mocker.patch(
+        "httpx.AsyncClient.request",
+        return_value=Response(
+            status_code=200,
+            content=b"""
+            {
+                "createdAt": "2026-05-18T00:00:00.000Z",
+                "error": null,
+                "id": "9a1c4553-4d42-4622-98b1-113004c4cf20",
+                "input": {
+                    "outputType": "structured",
+                    "q": "query",
+                    "structuredOutputSchema": {
+                        "type": "object"
+                    }
+                },
+                "output": {
+                    "summary": "done"
+                },
+                "status": "completed",
+                "type": "research",
+                "updatedAt": "2026-05-18T00:00:00.000Z"
+            }
+            """,
+        ),
+    )
+
+    research_response = await client.async_research(
+        query="query",
+        output_type="structured",
+        structured_output_schema=Company,
+    )
+
+    request_mock.assert_called_once_with(
+        method="POST",
+        url="/research",
+        json={
+            "q": "query",
+            "outputType": "structured",
+            "structuredOutputSchema": json.dumps(Company.model_json_schema()),
+        },
+        timeout=None,
+    )
+    assert research_response.output == {"summary": "done"}
+    assert research_response.input.query == "query"
+    assert research_response.input.structured_output_schema == {"type": "object"}
+
+
 test_fetch_parameters = [
     (
         {"url": "https://example.com"},
@@ -779,6 +890,288 @@ async def test_async_fetch_timeout(
 
     with pytest.raises(LinkupTimeoutError):
         await client.async_fetch(url="https://example.com", timeout=1.0)
+
+
+def test_create_tasks(mocker: MockerFixture, client: LinkupClient) -> None:
+    request_mock = mocker.patch(
+        "httpx.Client.request",
+        return_value=Response(
+            status_code=200,
+            content=b"""
+            [
+                {
+                    "created_at": "2026-05-18T00:00:00.000Z",
+                    "error": null,
+                    "id": "7132d2b9-61b8-4d6f-a6f2-b69daeff6d58",
+                    "input": {
+                        "depth": "deep",
+                        "outputType": "structured",
+                        "q": "query",
+                        "structuredOutputSchema": {
+                            "type": "object"
+                        }
+                    },
+                    "output": null,
+                    "status": "pending",
+                    "type": "search",
+                    "updatedAt": "2026-05-18T00:00:00.000Z"
+                },
+                {
+                    "createdAt": "2026-05-18T00:00:00.000Z",
+                    "error": null,
+                    "id": "42057d84-72ea-4029-9598-1bf7424a6113",
+                    "input": {
+                        "extractImages": true,
+                        "url": "https://example.com"
+                    },
+                    "output": {
+                        "images": [
+                            {
+                                "alt": "hero",
+                                "url": "https://example.com/image.png"
+                            }
+                        ],
+                        "markdown": "Fetched content"
+                    },
+                    "status": "completed",
+                    "type": "fetch",
+                    "updatedAt": "2026-05-18T00:00:00.000Z"
+                }
+            ]
+            """,
+        ),
+    )
+
+    tasks_response = client.create_tasks(
+        [
+            LinkupSearchTaskInput(
+                query="query",
+                depth="deep",
+                output_type="structured",
+                structured_output_schema=Company,
+            ),
+            LinkupFetchTaskInput(
+                url="https://example.com",
+                extract_images=True,
+            ),
+        ]
+    )
+
+    request_mock.assert_called_once_with(
+        method="POST",
+        url="/tasks",
+        json=[
+            {
+                "type": "search",
+                "input": {
+                    "q": "query",
+                    "depth": "deep",
+                    "outputType": "structured",
+                    "structuredOutputSchema": json.dumps(Company.model_json_schema()),
+                },
+            },
+            {
+                "type": "fetch",
+                "input": {
+                    "url": "https://example.com",
+                    "extractImages": True,
+                },
+            },
+        ],
+        timeout=None,
+    )
+    assert isinstance(tasks_response[0], LinkupSearchTask)
+    assert tasks_response[0].input.query == "query"
+    assert tasks_response[0].input.structured_output_schema == {"type": "object"}
+    assert isinstance(tasks_response[1], LinkupFetchTask)
+    assert tasks_response[1].output is not None
+    assert tasks_response[1].output.images is not None
+    assert tasks_response[1].output.images[0].url == "https://example.com/image.png"
+
+
+def test_create_tasks_research_model(mocker: MockerFixture, client: LinkupClient) -> None:
+    request_mock = mocker.patch(
+        "httpx.Client.request",
+        return_value=Response(
+            status_code=200,
+            content=b"""
+            [
+                {
+                    "createdAt": "2026-05-18T00:00:00.000Z",
+                    "error": null,
+                    "id": "bbd897fb-b761-4dd9-bf6a-b41ec52f2de7",
+                    "input": {
+                        "mode": "answer",
+                        "outputType": "sourcedAnswer",
+                        "q": "query",
+                        "reasoningDepth": "S"
+                    },
+                    "output": null,
+                    "status": "processing",
+                    "type": "research",
+                    "updatedAt": "2026-05-18T00:00:00.000Z"
+                }
+            ]
+            """,
+        ),
+    )
+
+    tasks_response = client.create_tasks(
+        [
+            LinkupResearchTaskInput(
+                query="query",
+                output_type="sourcedAnswer",
+                mode="answer",
+                reasoning_depth="S",
+            )
+        ]
+    )
+
+    request_mock.assert_called_once_with(
+        method="POST",
+        url="/tasks",
+        json=[
+            {
+                "type": "research",
+                "input": {
+                    "q": "query",
+                    "outputType": "sourcedAnswer",
+                    "mode": "answer",
+                    "reasoningDepth": "S",
+                },
+            }
+        ],
+        timeout=None,
+    )
+    assert isinstance(tasks_response[0], LinkupResearchTask)
+    assert tasks_response[0].input.reasoning_depth == "S"
+
+
+@pytest.mark.asyncio
+async def test_async_list_research(mocker: MockerFixture, client: LinkupClient) -> None:
+    request_mock = mocker.patch(
+        "httpx.AsyncClient.request",
+        return_value=Response(
+            status_code=200,
+            content=b"""
+            {
+                "data": [
+                    {
+                        "createdAt": "2026-05-18T00:00:00.000Z",
+                        "error": null,
+                        "id": "cdedcd9f-ab4a-4404-b8c6-b9ca9dc4c837",
+                        "input": {
+                            "outputType": "sourcedAnswer",
+                            "q": "query"
+                        },
+                        "output": null,
+                        "status": "pending",
+                        "type": "research",
+                        "updatedAt": "2026-05-18T00:00:00.000Z"
+                    }
+                ],
+                "metadata": {
+                    "page": 2,
+                    "pageSize": 5,
+                    "total": 11,
+                    "totalPages": 3
+                }
+            }
+            """,
+        ),
+    )
+
+    research_page = await client.async_list_research(page=2, page_size=5)
+
+    request_mock.assert_called_once_with(
+        method="GET",
+        url="/research",
+        params={
+            "page": 2,
+            "pageSize": 5,
+        },
+        timeout=None,
+    )
+    assert research_page == LinkupResearchTasksPage(
+        data=[
+            LinkupResearchTask(
+                created_at="2026-05-18T00:00:00.000Z",
+                error=None,
+                id="cdedcd9f-ab4a-4404-b8c6-b9ca9dc4c837",
+                input=LinkupResearchTaskInput(
+                    query="query",
+                    output_type="sourcedAnswer",
+                ),
+                output=None,
+                status="pending",
+                type="research",
+                updated_at="2026-05-18T00:00:00.000Z",
+            )
+        ],
+        metadata=LinkupTaskMetadata(
+            page=2,
+            page_size=5,
+            total=11,
+            total_pages=3,
+        ),
+    )
+
+
+def test_list_tasks(mocker: MockerFixture, client: LinkupClient) -> None:
+    request_mock = mocker.patch(
+        "httpx.Client.request",
+        return_value=Response(
+            status_code=200,
+            content=b"""
+            {
+                "data": [
+                    {
+                        "createdAt": "2026-05-18T00:00:00.000Z",
+                        "error": null,
+                        "id": "bbd897fb-b761-4dd9-bf6a-b41ec52f2de7",
+                        "input": {
+                            "outputType": "sourcedAnswer",
+                            "q": "query"
+                        },
+                        "output": null,
+                        "status": "processing",
+                        "type": "research",
+                        "updatedAt": "2026-05-18T00:00:00.000Z"
+                    }
+                ],
+                "metadata": {
+                    "page": 1,
+                    "pageSize": 10,
+                    "total": 1,
+                    "totalPages": 1
+                },
+                "quota": {
+                    "inFlight": 1,
+                    "limit": 100
+                }
+            }
+            """,
+        ),
+    )
+
+    tasks_page = client.list_tasks(
+        status="pending",
+        task_type="search",
+    )
+
+    request_mock.assert_called_once_with(
+        method="GET",
+        url="/tasks",
+        params={
+            "status": "pending",
+            "type": "search",
+        },
+        timeout=None,
+    )
+    assert isinstance(tasks_page, LinkupTasksPage)
+    assert isinstance(tasks_page.data[0], LinkupResearchTask)
+    assert tasks_page.data[0].input.query == "query"
+    assert tasks_page.quota.in_flight == 1
 
 
 _402_BODY = b'{"error": {"code": "PAYMENT_REQUIRED", "message": "Pay", "details": []}}'

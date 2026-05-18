@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import os
 from datetime import date  # noqa: TC003 (`date` is used in test mocks)
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 import httpx
 from pydantic import BaseModel, SecretStr
@@ -25,9 +25,19 @@ from ._errors import (
 )
 from ._types import (
     LinkupFetchResponse,
+    LinkupFetchTask,
+    LinkupFetchTaskInput,
+    LinkupResearchTask,
+    LinkupResearchTaskInput,
+    LinkupResearchTasksPage,
     LinkupSearchResults,
     LinkupSearchStructuredResponse,
+    LinkupSearchTask,
+    LinkupSearchTaskInput,
     LinkupSourcedAnswer,
+    LinkupTask,
+    LinkupTaskInput,
+    LinkupTasksPage,
 )
 from ._version import __version__
 
@@ -271,6 +281,488 @@ class LinkupClient:
             include_sources=include_sources,
         )
 
+    def research(
+        self,
+        query: str,
+        output_type: Literal["sourcedAnswer", "structured"],
+        reasoning_depth: Literal["S", "M", "L", "XL"] | None = None,
+        mode: Literal["answer", "auto", "investigate", "research"] | None = None,
+        structured_output_schema: type[BaseModel] | str | None = None,
+        from_date: date | None = None,
+        to_date: date | None = None,
+        exclude_domains: list[str] | None = None,
+        include_domains: list[str] | None = None,
+        timeout: float | None = None,
+    ) -> LinkupResearchTask:
+        """Create an asynchronous research task using the Linkup API `research` endpoint.
+
+        The returned task can be inspected later with `get_research`, `list_research`, `get_task`,
+        or `list_tasks`.
+
+        Args:
+            query: The research query to investigate.
+            output_type: The expected research output type. Use "sourcedAnswer" for an answer with
+                supporting sources, or "structured" for output matching `structured_output_schema`.
+            reasoning_depth: The amount of reasoning effort to use. If None, the Linkup API default
+                is used.
+            mode: The research mode to use. If None, the Linkup API default is used.
+            structured_output_schema: If output_type is "structured", specify the output schema.
+                Supported formats are a pydantic.BaseModel or a string representing a valid object
+                JSON schema.
+            from_date: The date from which the research sources should be considered. If None,
+                sources will not be filtered by a start date.
+            to_date: The date until which the research sources should be considered. If None,
+                sources will not be filtered by an end date.
+            exclude_domains: Domains to exclude from the research sources.
+            include_domains: Domains to restrict the research sources to.
+            timeout: The timeout for the HTTP request, in seconds. If None, the request will have
+                no timeout.
+
+        Returns:
+            The created research task.
+
+        Raises:
+            TypeError: If structured_output_schema is not a string or pydantic.BaseModel when
+                provided.
+            LinkupInvalidRequestError: If the request parameters are invalid.
+            LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupInsufficientCreditError: If you have run out of credit.
+            LinkupTimeoutError: If the request times out.
+        """
+        params = self._get_research_params(
+            query=query,
+            output_type=output_type,
+            reasoning_depth=reasoning_depth,
+            mode=mode,
+            structured_output_schema=structured_output_schema,
+            from_date=from_date,
+            to_date=to_date,
+            exclude_domains=exclude_domains,
+            include_domains=include_domains,
+        )
+
+        response = self._request(
+            method="POST",
+            url="/research",
+            json=params,
+            timeout=timeout,
+        )
+
+        return self._parse_research_task(response.json())
+
+    async def async_research(
+        self,
+        query: str,
+        output_type: Literal["sourcedAnswer", "structured"],
+        reasoning_depth: Literal["S", "M", "L", "XL"] | None = None,
+        mode: Literal["answer", "auto", "investigate", "research"] | None = None,
+        structured_output_schema: type[BaseModel] | str | None = None,
+        from_date: date | None = None,
+        to_date: date | None = None,
+        exclude_domains: list[str] | None = None,
+        include_domains: list[str] | None = None,
+        timeout: float | None = None,
+    ) -> LinkupResearchTask:
+        """Asynchronously create a research task using the Linkup API `research` endpoint.
+
+        The returned task can be inspected later with `async_get_research`, `async_list_research`,
+        `async_get_task`, or `async_list_tasks`.
+
+        Args:
+            query: The research query to investigate.
+            output_type: The expected research output type. Use "sourcedAnswer" for an answer with
+                supporting sources, or "structured" for output matching `structured_output_schema`.
+            reasoning_depth: The amount of reasoning effort to use. If None, the Linkup API default
+                is used.
+            mode: The research mode to use. If None, the Linkup API default is used.
+            structured_output_schema: If output_type is "structured", specify the output schema.
+                Supported formats are a pydantic.BaseModel or a string representing a valid object
+                JSON schema.
+            from_date: The date from which the research sources should be considered. If None,
+                sources will not be filtered by a start date.
+            to_date: The date until which the research sources should be considered. If None,
+                sources will not be filtered by an end date.
+            exclude_domains: Domains to exclude from the research sources.
+            include_domains: Domains to restrict the research sources to.
+            timeout: The timeout for the HTTP request, in seconds. If None, the request will have
+                no timeout.
+
+        Returns:
+            The created research task.
+
+        Raises:
+            TypeError: If structured_output_schema is not a string or pydantic.BaseModel when
+                provided.
+            LinkupInvalidRequestError: If the request parameters are invalid.
+            LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupInsufficientCreditError: If you have run out of credit.
+            LinkupTimeoutError: If the request times out.
+        """
+        params = self._get_research_params(
+            query=query,
+            output_type=output_type,
+            reasoning_depth=reasoning_depth,
+            mode=mode,
+            structured_output_schema=structured_output_schema,
+            from_date=from_date,
+            to_date=to_date,
+            exclude_domains=exclude_domains,
+            include_domains=include_domains,
+        )
+
+        response = await self._async_request(
+            method="POST",
+            url="/research",
+            json=params,
+            timeout=timeout,
+        )
+
+        return self._parse_research_task(response.json())
+
+    def list_research(
+        self,
+        page: int | None = None,
+        page_size: int | None = None,
+        sort_by: Literal["createdAt", "updatedAt"] | None = None,
+        sort_direction: Literal["asc", "desc"] | None = None,
+        timeout: float | None = None,
+    ) -> LinkupResearchTasksPage:
+        """List research tasks for the authenticated organization.
+
+        Args:
+            page: The page number to retrieve. If None, the Linkup API default is used.
+            page_size: The number of tasks per page. If None, the Linkup API default is used.
+            sort_by: The field to sort by, either "createdAt" or "updatedAt". If None, the Linkup
+                API default is used.
+            sort_direction: The sort direction, either "asc" or "desc". If None, the Linkup API
+                default is used.
+            timeout: The timeout for the HTTP request, in seconds. If None, the request will have
+                no timeout.
+
+        Returns:
+            A paginated page of research tasks.
+
+        Raises:
+            LinkupInvalidRequestError: If the pagination or sorting parameters are invalid.
+            LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupTimeoutError: If the request times out.
+        """
+        response = self._request(
+            method="GET",
+            url="/research",
+            params=self._get_paginated_params(
+                page=page,
+                page_size=page_size,
+                sort_by=sort_by,
+                sort_direction=sort_direction,
+            ),
+            timeout=timeout,
+        )
+
+        return self._parse_research_tasks_page(response.json())
+
+    async def async_list_research(
+        self,
+        page: int | None = None,
+        page_size: int | None = None,
+        sort_by: Literal["createdAt", "updatedAt"] | None = None,
+        sort_direction: Literal["asc", "desc"] | None = None,
+        timeout: float | None = None,
+    ) -> LinkupResearchTasksPage:
+        """Asynchronously list research tasks for the authenticated organization.
+
+        Args:
+            page: The page number to retrieve. If None, the Linkup API default is used.
+            page_size: The number of tasks per page. If None, the Linkup API default is used.
+            sort_by: The field to sort by, either "createdAt" or "updatedAt". If None, the Linkup
+                API default is used.
+            sort_direction: The sort direction, either "asc" or "desc". If None, the Linkup API
+                default is used.
+            timeout: The timeout for the HTTP request, in seconds. If None, the request will have
+                no timeout.
+
+        Returns:
+            A paginated page of research tasks.
+
+        Raises:
+            LinkupInvalidRequestError: If the pagination or sorting parameters are invalid.
+            LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupTimeoutError: If the request times out.
+        """
+        response = await self._async_request(
+            method="GET",
+            url="/research",
+            params=self._get_paginated_params(
+                page=page,
+                page_size=page_size,
+                sort_by=sort_by,
+                sort_direction=sort_direction,
+            ),
+            timeout=timeout,
+        )
+
+        return self._parse_research_tasks_page(response.json())
+
+    def get_research(self, research_id: str, timeout: float | None = None) -> LinkupResearchTask:
+        """Retrieve a single research task by identifier.
+
+        Args:
+            research_id: The identifier of the research task to retrieve.
+            timeout: The timeout for the HTTP request, in seconds. If None, the request will have
+                no timeout.
+
+        Returns:
+            The requested research task.
+
+        Raises:
+            LinkupInvalidRequestError: If the research identifier is invalid or unknown.
+            LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupTimeoutError: If the request times out.
+        """
+        response = self._request(
+            method="GET",
+            url=f"/research/{research_id}",
+            timeout=timeout,
+        )
+
+        return self._parse_research_task(response.json())
+
+    async def async_get_research(
+        self, research_id: str, timeout: float | None = None
+    ) -> LinkupResearchTask:
+        """Asynchronously retrieve a single research task by identifier.
+
+        Args:
+            research_id: The identifier of the research task to retrieve.
+            timeout: The timeout for the HTTP request, in seconds. If None, the request will have
+                no timeout.
+
+        Returns:
+            The requested research task.
+
+        Raises:
+            LinkupInvalidRequestError: If the research identifier is invalid or unknown.
+            LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupTimeoutError: If the request times out.
+        """
+        response = await self._async_request(
+            method="GET",
+            url=f"/research/{research_id}",
+            timeout=timeout,
+        )
+
+        return self._parse_research_task(response.json())
+
+    def create_tasks(
+        self, tasks: list[LinkupTaskInput], timeout: float | None = None
+    ) -> list[LinkupTask]:
+        """Create a mixed batch of search, fetch, and research tasks.
+
+        Args:
+            tasks: The tasks to create. Supported task input models are `LinkupSearchTaskInput`,
+                `LinkupFetchTaskInput`, and `LinkupResearchTaskInput`.
+            timeout: The timeout for the HTTP request, in seconds. If None, the request will have
+                no timeout.
+
+        Returns:
+            The created tasks, parsed according to each task type.
+
+        Raises:
+            TypeError: If a task has an unsupported model type, or if a structured output schema has
+                an unsupported type.
+            LinkupInvalidRequestError: If the task payload is invalid.
+            LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupInsufficientCreditError: If you have run out of credit.
+            LinkupTimeoutError: If the request times out.
+        """
+        response = self._request(
+            method="POST",
+            url="/tasks",
+            json=self._get_tasks_payload(tasks),
+            timeout=timeout,
+        )
+
+        response_data = cast("list[dict[str, Any]]", response.json())
+        return [self._parse_task(task) for task in response_data]
+
+    async def async_create_tasks(
+        self, tasks: list[LinkupTaskInput], timeout: float | None = None
+    ) -> list[LinkupTask]:
+        """Asynchronously create a mixed batch of search, fetch, and research tasks.
+
+        Args:
+            tasks: The tasks to create. Supported task input models are `LinkupSearchTaskInput`,
+                `LinkupFetchTaskInput`, and `LinkupResearchTaskInput`.
+            timeout: The timeout for the HTTP request, in seconds. If None, the request will have
+                no timeout.
+
+        Returns:
+            The created tasks, parsed according to each task type.
+
+        Raises:
+            TypeError: If a task has an unsupported model type, or if a structured output schema has
+                an unsupported type.
+            LinkupInvalidRequestError: If the task payload is invalid.
+            LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupInsufficientCreditError: If you have run out of credit.
+            LinkupTimeoutError: If the request times out.
+        """
+        response = await self._async_request(
+            method="POST",
+            url="/tasks",
+            json=self._get_tasks_payload(tasks),
+            timeout=timeout,
+        )
+
+        response_data = cast("list[dict[str, Any]]", response.json())
+        return [self._parse_task(task) for task in response_data]
+
+    def list_tasks(
+        self,
+        page: int | None = None,
+        page_size: int | None = None,
+        sort_by: Literal["createdAt", "updatedAt"] | None = None,
+        sort_direction: Literal["asc", "desc"] | None = None,
+        status: Literal["pending", "processing", "completed", "failed"] | None = None,
+        task_type: Literal["search", "fetch", "research"] | None = None,
+        timeout: float | None = None,
+    ) -> LinkupTasksPage:
+        """List tasks for the authenticated organization.
+
+        Args:
+            page: The page number to retrieve. If None, the Linkup API default is used.
+            page_size: The number of tasks per page. If None, the Linkup API default is used.
+            sort_by: The field to sort by, either "createdAt" or "updatedAt". If None, the Linkup
+                API default is used.
+            sort_direction: The sort direction, either "asc" or "desc". If None, the Linkup API
+                default is used.
+            status: A task status to filter by. If None, no status filter is sent.
+            task_type: A task type to filter by. If None, no task type filter is sent.
+            timeout: The timeout for the HTTP request, in seconds. If None, the request will have
+                no timeout.
+
+        Returns:
+            A paginated page of tasks with pagination metadata and quota information.
+
+        Raises:
+            LinkupInvalidRequestError: If the filtering, pagination, or sorting parameters are
+                invalid.
+            LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupTimeoutError: If the request times out.
+        """
+        response = self._request(
+            method="GET",
+            url="/tasks",
+            params=self._get_task_list_params(
+                page=page,
+                page_size=page_size,
+                sort_by=sort_by,
+                sort_direction=sort_direction,
+                status=status,
+                task_type=task_type,
+            ),
+            timeout=timeout,
+        )
+
+        return self._parse_tasks_page(response.json())
+
+    async def async_list_tasks(
+        self,
+        page: int | None = None,
+        page_size: int | None = None,
+        sort_by: Literal["createdAt", "updatedAt"] | None = None,
+        sort_direction: Literal["asc", "desc"] | None = None,
+        status: Literal["pending", "processing", "completed", "failed"] | None = None,
+        task_type: Literal["search", "fetch", "research"] | None = None,
+        timeout: float | None = None,
+    ) -> LinkupTasksPage:
+        """Asynchronously list tasks for the authenticated organization.
+
+        Args:
+            page: The page number to retrieve. If None, the Linkup API default is used.
+            page_size: The number of tasks per page. If None, the Linkup API default is used.
+            sort_by: The field to sort by, either "createdAt" or "updatedAt". If None, the Linkup
+                API default is used.
+            sort_direction: The sort direction, either "asc" or "desc". If None, the Linkup API
+                default is used.
+            status: A task status to filter by. If None, no status filter is sent.
+            task_type: A task type to filter by. If None, no task type filter is sent.
+            timeout: The timeout for the HTTP request, in seconds. If None, the request will have
+                no timeout.
+
+        Returns:
+            A paginated page of tasks with pagination metadata and quota information.
+
+        Raises:
+            LinkupInvalidRequestError: If the filtering, pagination, or sorting parameters are
+                invalid.
+            LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupTimeoutError: If the request times out.
+        """
+        response = await self._async_request(
+            method="GET",
+            url="/tasks",
+            params=self._get_task_list_params(
+                page=page,
+                page_size=page_size,
+                sort_by=sort_by,
+                sort_direction=sort_direction,
+                status=status,
+                task_type=task_type,
+            ),
+            timeout=timeout,
+        )
+
+        return self._parse_tasks_page(response.json())
+
+    def get_task(self, task_id: str, timeout: float | None = None) -> LinkupTask:
+        """Retrieve a single task by identifier.
+
+        Args:
+            task_id: The identifier of the task to retrieve.
+            timeout: The timeout for the HTTP request, in seconds. If None, the request will have
+                no timeout.
+
+        Returns:
+            The requested task, parsed according to its task type.
+
+        Raises:
+            LinkupInvalidRequestError: If the task identifier is invalid or unknown.
+            LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupTimeoutError: If the request times out.
+        """
+        response = self._request(
+            method="GET",
+            url=f"/tasks/{task_id}",
+            timeout=timeout,
+        )
+
+        return self._parse_task(cast("dict[str, Any]", response.json()))
+
+    async def async_get_task(self, task_id: str, timeout: float | None = None) -> LinkupTask:
+        """Asynchronously retrieve a single task by identifier.
+
+        Args:
+            task_id: The identifier of the task to retrieve.
+            timeout: The timeout for the HTTP request, in seconds. If None, the request will have
+                no timeout.
+
+        Returns:
+            The requested task, parsed according to its task type.
+
+        Raises:
+            LinkupInvalidRequestError: If the task identifier is invalid or unknown.
+            LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupTimeoutError: If the request times out.
+        """
+        response = await self._async_request(
+            method="GET",
+            url=f"/tasks/{task_id}",
+            timeout=timeout,
+        )
+
+        return self._parse_task(cast("dict[str, Any]", response.json()))
+
     def fetch(
         self,
         url: str,
@@ -383,16 +875,23 @@ class LinkupClient:
         method: str,
         url: str,
         *,
-        json: dict[str, Any],
+        json: dict[str, Any] | list[dict[str, Any]] | None = None,
+        params: dict[str, Any] | None = None,
         timeout: float | None,
     ) -> httpx.Response:
         try:
             with httpx.Client(base_url=self._base_url, headers=self._headers()) as client:
+                request_kwargs: dict[str, Any] = {
+                    "method": method,
+                    "url": url,
+                    "timeout": timeout,
+                }
+                if json is not None:
+                    request_kwargs["json"] = json
+                if params is not None:
+                    request_kwargs["params"] = params
                 response: httpx.Response = client.request(
-                    method=method,
-                    url=url,
-                    json=json,
-                    timeout=timeout,
+                    **request_kwargs,
                 )
                 if response.status_code == 402 and self._x402_signer is not None:
                     return self._handle_x402_payment(
@@ -401,6 +900,7 @@ class LinkupClient:
                         method=method,
                         url=url,
                         json=json,
+                        params=params,
                         timeout=timeout,
                     )
         except httpx.TimeoutException as e:
@@ -416,18 +916,25 @@ class LinkupClient:
         method: str,
         url: str,
         *,
-        json: dict[str, Any],
+        json: dict[str, Any] | list[dict[str, Any]] | None = None,
+        params: dict[str, Any] | None = None,
         timeout: float | None,
     ) -> httpx.Response:
         try:
             async with httpx.AsyncClient(
                 base_url=self._base_url, headers=self._headers()
             ) as client:
+                request_kwargs: dict[str, Any] = {
+                    "method": method,
+                    "url": url,
+                    "timeout": timeout,
+                }
+                if json is not None:
+                    request_kwargs["json"] = json
+                if params is not None:
+                    request_kwargs["params"] = params
                 response: httpx.Response = await client.request(
-                    method=method,
-                    url=url,
-                    json=json,
-                    timeout=timeout,
+                    **request_kwargs,
                 )
                 if response.status_code == 402 and self._x402_signer is not None:
                     return await self._async_handle_x402_payment(
@@ -436,6 +943,7 @@ class LinkupClient:
                         method=method,
                         url=url,
                         json=json,
+                        params=params,
                         timeout=timeout,
                     )
         except httpx.TimeoutException as e:
@@ -452,7 +960,8 @@ class LinkupClient:
         response: httpx.Response,
         method: str,
         url: str,
-        json: dict[str, Any],
+        json: dict[str, Any] | list[dict[str, Any]] | None,
+        params: dict[str, Any] | None,
         timeout: float | None,
     ) -> httpx.Response:
         if self._x402_signer is None:
@@ -471,13 +980,17 @@ class LinkupClient:
             ) from e
 
         merged_headers = {**self._headers(), **payment_headers}
-        retry_response: httpx.Response = client.request(
-            method=method,
-            url=url,
-            json=json,
-            timeout=timeout,
-            headers=merged_headers,
-        )
+        request_kwargs: dict[str, Any] = {
+            "method": method,
+            "url": url,
+            "timeout": timeout,
+            "headers": merged_headers,
+        }
+        if json is not None:
+            request_kwargs["json"] = json
+        if params is not None:
+            request_kwargs["params"] = params
+        retry_response: httpx.Response = client.request(**request_kwargs)
 
         if retry_response.status_code != 200:
             self._raise_linkup_error(response=retry_response)
@@ -490,7 +1003,8 @@ class LinkupClient:
         response: httpx.Response,
         method: str,
         url: str,
-        json: dict[str, Any],
+        json: dict[str, Any] | list[dict[str, Any]] | None,
+        params: dict[str, Any] | None,
         timeout: float | None,
     ) -> httpx.Response:
         if self._x402_signer is None:
@@ -509,13 +1023,17 @@ class LinkupClient:
             ) from e
 
         merged_headers = {**self._headers(), **payment_headers}
-        retry_response: httpx.Response = await client.request(
-            method=method,
-            url=url,
-            json=json,
-            timeout=timeout,
-            headers=merged_headers,
-        )
+        request_kwargs: dict[str, Any] = {
+            "method": method,
+            "url": url,
+            "timeout": timeout,
+            "headers": merged_headers,
+        }
+        if json is not None:
+            request_kwargs["json"] = json
+        if params is not None:
+            request_kwargs["params"] = params
+        retry_response: httpx.Response = await client.request(**request_kwargs)
 
         if retry_response.status_code != 200:
             self._raise_linkup_error(response=retry_response)
@@ -618,10 +1136,10 @@ class LinkupClient:
         query: str,
         depth: Literal["standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
-        structured_output_schema: type[BaseModel] | str | None,
+        structured_output_schema: type[BaseModel] | str | dict[str, Any] | None,
         include_images: bool | None,
-        from_date: date | None,
-        to_date: date | None,
+        from_date: date | str | None,
+        to_date: date | str | None,
         exclude_domains: list[str] | None,
         include_domains: list[str] | None,
         max_results: int | None,
@@ -637,6 +1155,8 @@ class LinkupClient:
         if structured_output_schema is not None:
             if isinstance(structured_output_schema, str):
                 params["structuredOutputSchema"] = structured_output_schema
+            elif isinstance(structured_output_schema, dict):
+                params["structuredOutputSchema"] = json.dumps(structured_output_schema)
             elif issubclass(structured_output_schema, BaseModel):
                 json_schema: dict[str, Any] = structured_output_schema.model_json_schema()
                 params["structuredOutputSchema"] = json.dumps(json_schema)
@@ -647,9 +1167,9 @@ class LinkupClient:
         if include_images is not None:
             params["includeImages"] = include_images
         if from_date is not None:
-            params["fromDate"] = from_date.isoformat()
+            params["fromDate"] = from_date if isinstance(from_date, str) else from_date.isoformat()
         if to_date is not None:
-            params["toDate"] = to_date.isoformat()
+            params["toDate"] = to_date if isinstance(to_date, str) else to_date.isoformat()
         if exclude_domains is not None:
             params["excludeDomains"] = exclude_domains
         if include_domains is not None:
@@ -662,6 +1182,153 @@ class LinkupClient:
             params["includeSources"] = include_sources
 
         return params
+
+    def _get_research_params(
+        self,
+        query: str,
+        output_type: Literal["sourcedAnswer", "structured"],
+        reasoning_depth: Literal["S", "M", "L", "XL"] | None,
+        mode: Literal["answer", "auto", "investigate", "research"] | None,
+        structured_output_schema: type[BaseModel] | str | dict[str, Any] | None,
+        from_date: date | str | None,
+        to_date: date | str | None,
+        exclude_domains: list[str] | None,
+        include_domains: list[str] | None,
+    ) -> dict[str, str | bool | list[str]]:
+        params: dict[str, str | bool | list[str]] = {
+            "q": query,
+            "outputType": output_type,
+        }
+
+        if reasoning_depth is not None:
+            params["reasoningDepth"] = reasoning_depth
+        if mode is not None:
+            params["mode"] = mode
+
+        if structured_output_schema is not None:
+            if isinstance(structured_output_schema, str):
+                params["structuredOutputSchema"] = structured_output_schema
+            elif isinstance(structured_output_schema, dict):
+                params["structuredOutputSchema"] = json.dumps(structured_output_schema)
+            elif issubclass(structured_output_schema, BaseModel):
+                json_schema: dict[str, Any] = structured_output_schema.model_json_schema()
+                params["structuredOutputSchema"] = json.dumps(json_schema)
+            else:
+                raise TypeError(
+                    f"Unexpected structured_output_schema type: '{type(structured_output_schema)}'"
+                )
+        if from_date is not None:
+            params["fromDate"] = from_date if isinstance(from_date, str) else from_date.isoformat()
+        if to_date is not None:
+            params["toDate"] = to_date if isinstance(to_date, str) else to_date.isoformat()
+        if exclude_domains is not None:
+            params["excludeDomains"] = exclude_domains
+        if include_domains is not None:
+            params["includeDomains"] = include_domains
+
+        return params
+
+    def _get_paginated_params(
+        self,
+        page: int | None,
+        page_size: int | None,
+        sort_by: Literal["createdAt", "updatedAt"] | None,
+        sort_direction: Literal["asc", "desc"] | None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {}
+        if page is not None:
+            params["page"] = page
+        if page_size is not None:
+            params["pageSize"] = page_size
+        if sort_by is not None:
+            params["sortBy"] = sort_by
+        if sort_direction is not None:
+            params["sortDirection"] = sort_direction
+        return params
+
+    def _get_task_list_params(
+        self,
+        page: int | None,
+        page_size: int | None,
+        sort_by: Literal["createdAt", "updatedAt"] | None,
+        sort_direction: Literal["asc", "desc"] | None,
+        status: Literal["pending", "processing", "completed", "failed"] | None,
+        task_type: Literal["search", "fetch", "research"] | None,
+    ) -> dict[str, Any]:
+        params = self._get_paginated_params(
+            page=page,
+            page_size=page_size,
+            sort_by=sort_by,
+            sort_direction=sort_direction,
+        )
+        if status is not None:
+            params["status"] = status
+        if task_type is not None:
+            params["type"] = task_type
+        return params
+
+    def _get_tasks_payload(self, tasks: list[LinkupTaskInput]) -> list[dict[str, Any]]:
+        payload: list[dict[str, Any]] = []
+
+        for task in tasks:
+            if isinstance(task, LinkupSearchTaskInput):
+                payload.append(
+                    {
+                        "type": "search",
+                        "input": self._get_search_params(
+                            query=task.query,
+                            depth=task.depth,
+                            output_type=task.output_type,
+                            structured_output_schema=task.structured_output_schema,
+                            include_images=task.include_images,
+                            from_date=task.from_date,
+                            to_date=task.to_date,
+                            exclude_domains=task.exclude_domains,
+                            include_domains=task.include_domains,
+                            max_results=task.max_results,
+                            include_inline_citations=task.include_inline_citations,
+                            include_sources=task.include_sources,
+                        ),
+                    }
+                )
+                continue
+
+            if isinstance(task, LinkupFetchTaskInput):
+                payload.append(
+                    {
+                        "type": "fetch",
+                        "input": self._get_fetch_params(
+                            url=task.url,
+                            include_raw_html=task.include_raw_html,
+                            render_js=task.render_js,
+                            extract_images=task.extract_images,
+                        ),
+                    }
+                )
+                continue
+
+            if isinstance(task, LinkupResearchTaskInput):
+                payload.append(
+                    {
+                        "type": "research",
+                        "input": self._get_research_params(
+                            query=task.query,
+                            output_type=task.output_type,
+                            structured_output_schema=task.structured_output_schema,
+                            from_date=task.from_date,
+                            to_date=task.to_date,
+                            exclude_domains=task.exclude_domains,
+                            include_domains=task.include_domains,
+                            mode=task.mode,
+                            reasoning_depth=task.reasoning_depth,
+                        ),
+                    }
+                )
+                continue
+
+            raise TypeError(f"Unexpected task model type: '{type(task)}'")
+
+        return payload
 
     def _get_fetch_params(
         self,
@@ -688,7 +1355,20 @@ class LinkupClient:
         structured_output_schema: type[BaseModel] | str | None,
         include_sources: bool | None,
     ) -> Any:  # noqa: ANN401
-        response_data: Any = response.json()
+        return self._parse_search_response_data(
+            response_data=response.json(),
+            output_type=output_type,
+            structured_output_schema=structured_output_schema,
+            include_sources=include_sources,
+        )
+
+    def _parse_search_response_data(
+        self,
+        response_data: Any,  # noqa: ANN401
+        output_type: Literal["searchResults", "sourcedAnswer", "structured"],
+        structured_output_schema: type[BaseModel] | str | dict[str, Any] | None,
+        include_sources: bool | None,
+    ) -> Any:  # noqa: ANN401
         if output_type == "searchResults":
             return LinkupSearchResults.model_validate(response_data)
         if output_type == "sourcedAnswer":
@@ -701,14 +1381,14 @@ class LinkupClient:
             # HACK: we assume that `include_sources` will default to False, since the API output can
             # be arbitrary so we can't guess if it includes sources or not
             if include_sources:
-                if not isinstance(structured_output_schema, str) and issubclass(
+                if isinstance(structured_output_schema, type) and issubclass(
                     structured_output_schema, BaseModel
                 ):
                     response_data["data"] = structured_output_schema.model_validate(
                         response_data["data"]
                     )
                 return LinkupSearchStructuredResponse.model_validate(response_data)
-            if not isinstance(structured_output_schema, str) and issubclass(
+            if isinstance(structured_output_schema, type) and issubclass(
                 structured_output_schema, BaseModel
             ):
                 return structured_output_schema.model_validate(response_data)
@@ -716,4 +1396,65 @@ class LinkupClient:
         raise ValueError(f"Unexpected output_type value: '{output_type}'")
 
     def _parse_fetch_response(self, response: httpx.Response) -> LinkupFetchResponse:
-        return LinkupFetchResponse.model_validate(response.json())
+        return self._parse_fetch_response_data(response.json())
+
+    def _parse_fetch_response_data(self, response_data: Any) -> LinkupFetchResponse:  # noqa: ANN401
+        return LinkupFetchResponse.model_validate(response_data)
+
+    def _parse_research_task(self, task_data: dict[str, Any]) -> LinkupResearchTask:
+        research_input = LinkupResearchTaskInput.model_validate(task_data["input"])
+        parsed_output = task_data.get("output")
+
+        if parsed_output is not None and research_input.output_type == "sourcedAnswer":
+            parsed_output = LinkupSourcedAnswer.model_validate(parsed_output)
+
+        return LinkupResearchTask.model_validate(
+            {**task_data, "input": research_input, "output": parsed_output}
+        )
+
+    def _parse_task(self, task_data: dict[str, Any]) -> LinkupTask:
+        task_type = task_data["type"]
+
+        if task_type == "search":
+            search_input = LinkupSearchTaskInput.model_validate(task_data["input"])
+            parsed_output = task_data.get("output")
+            if parsed_output is not None:
+                parsed_output = self._parse_search_response_data(
+                    response_data=parsed_output,
+                    output_type=search_input.output_type,
+                    structured_output_schema=search_input.structured_output_schema,
+                    include_sources=search_input.include_sources,
+                )
+            return LinkupSearchTask.model_validate(
+                {**task_data, "input": search_input, "output": parsed_output}
+            )
+
+        if task_type == "fetch":
+            fetch_input = LinkupFetchTaskInput.model_validate(task_data["input"])
+            parsed_output = task_data.get("output")
+            if parsed_output is not None:
+                parsed_output = self._parse_fetch_response_data(parsed_output)
+            return LinkupFetchTask.model_validate(
+                {**task_data, "input": fetch_input, "output": parsed_output}
+            )
+
+        if task_type == "research":
+            return self._parse_research_task(task_data)
+
+        raise ValueError(f"Unexpected task type value: '{task_type}'")
+
+    def _parse_research_tasks_page(self, response_data: dict[str, Any]) -> LinkupResearchTasksPage:
+        return LinkupResearchTasksPage.model_validate(
+            {
+                **response_data,
+                "data": [self._parse_research_task(task) for task in response_data["data"]],
+            }
+        )
+
+    def _parse_tasks_page(self, response_data: dict[str, Any]) -> LinkupTasksPage:
+        return LinkupTasksPage.model_validate(
+            {
+                **response_data,
+                "data": [self._parse_task(task) for task in response_data["data"]],
+            }
+        )

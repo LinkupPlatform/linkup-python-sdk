@@ -16,7 +16,7 @@ benefit from Linkup services to the full extent. 📝
 ## 🌟 Features
 
 - ✅ **Simple and intuitive API client.**
-- 🔍 **Support all Linkup entrypoints and parameters.**
+- 🔍 **Supports Linkup search, fetch, research, and task workflows.**
 - ⚡ **Support synchronous and asynchronous calls.**
 - 🔒 **Handle authentication and request management.**
 - 💳 **Built-in x402 payment protocol support for on-chain payments.**
@@ -165,6 +165,50 @@ Which prints:
 Check the code or the
 [official documentation](https://docs.linkup.so/pages/documentation/api-reference/endpoint/post-fetch)
 for the detailed list of available parameters.
+
+#### 🧠 Research
+
+The `research` function creates an asynchronous research task. You can then use `get_research` or
+`list_research` to inspect it later.
+
+```python
+from linkup import LinkupClient, LinkupResearchTask
+
+client = LinkupClient()
+research_task: LinkupResearchTask = client.research(
+    query="What changed in the AI browser market this quarter?",
+    output_type="sourcedAnswer",
+)
+print(research_task.id)
+```
+
+#### 🗂️ Tasks
+
+The `create_tasks` function lets you submit mixed `search`, `fetch`, and `research` jobs in a single
+batch, then inspect them through `get_task` or `list_tasks`.
+
+```python
+from linkup import (
+    LinkupClient,
+    LinkupFetchTaskInput,
+    LinkupSearchTaskInput,
+)
+
+client = LinkupClient()
+tasks = client.create_tasks(
+    [
+        LinkupSearchTaskInput(
+            query="Linkup latest product updates",
+            depth="deep",
+            output_type="sourcedAnswer",
+        ),
+        LinkupFetchTaskInput(
+            url="https://docs.linkup.so",
+        ),
+    ]
+)
+print([task.id for task in tasks])
+```
 
 #### ⌛ Asynchronous Calls
 
