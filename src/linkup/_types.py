@@ -1,8 +1,6 @@
 """Input and output types for Linkup functions."""
 
-# ruff: noqa: FA100 (pydantic models don't play well with future annotations)
-
-from typing import Any, Literal, Optional, Union
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -46,7 +44,7 @@ class LinkupSearchResults(BaseModel):
         results: The results of the Linkup search.
     """
 
-    results: list[Union[LinkupSearchTextResult, LinkupSearchImageResult]]
+    results: list[LinkupSearchTextResult | LinkupSearchImageResult]
 
 
 class LinkupSource(BaseModel):
@@ -86,7 +84,7 @@ class LinkupSearchStructuredResponse(BaseModel):
     """
 
     data: Any
-    sources: list[Union[LinkupSearchTextResult, LinkupSearchImageResult]]
+    sources: list[LinkupSearchTextResult | LinkupSearchImageResult]
 
 
 class LinkupFetchImageExtraction(BaseModel):
@@ -113,5 +111,5 @@ class LinkupFetchResponse(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     markdown: str
-    raw_html: Optional[str] = Field(default=None, validation_alias="rawHtml")
-    images: Optional[list[LinkupFetchImageExtraction]] = Field(default=None)
+    raw_html: str | None = Field(default=None, validation_alias="rawHtml")
+    images: list[LinkupFetchImageExtraction] | None = Field(default=None)
