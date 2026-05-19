@@ -36,7 +36,8 @@ When adding or changing a public API capability, update the relevant pieces toge
 
 Before opening a PR, run the narrowest relevant checks:
 
-- `make format-lint`
+- `make lint`
+- `make typecheck`
 - `make test`
 
 ## Non-Goals

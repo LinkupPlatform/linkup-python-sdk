@@ -532,10 +532,10 @@ class LinkupClient:
             details = error.get("details", [])
 
             if details and isinstance(details, list):
-                for detail in details:
+                for detail in details:  # pyright: ignore[reportUnknownVariableType]
                     if isinstance(detail, dict):
-                        field = detail.get("field", "")
-                        field_message = detail.get("message", "")
+                        field = detail.get("field", "")  # pyright: ignore[reportUnknownVariableType,reportUnknownMemberType]
+                        field_message = detail.get("message", "")  # pyright: ignore[reportUnknownVariableType,reportUnknownMemberType]
                         error_msg += f" {field}: {field_message}"
 
             if response.status_code == 402:

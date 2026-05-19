@@ -29,8 +29,8 @@ Tracker = "https://github.com/LinkupPlatform/linkup-python-sdk/issues"
 
 [dependency-groups]
 dev = [
-  "mypy>=1.16.1",
   "prek>=0.3.5",
+  "pyright>=1.1.409",
   "pytest-asyncio>=1.0.0",
   "pytest-cov>=6.2.1",
   "pytest-mock>=3.14.1",
@@ -40,9 +40,14 @@ dev = [
   "x402[httpx,evm]>=2.0.0",
 ]
 
-[tool.mypy]
-strict = true
-warn_unreachable = true
+[tool.pyright]
+include = ["./src/", "./tests/"]
+reportMissingParameterType = false # Redundant with Ruff ANN001
+reportPrivateUsage = false # Redundant with Ruff SLF001
+reportUnnecessaryIsInstance = false # Incompatible with the `if: … else: typing.assert_never(…)` pattern
+reportUnusedImport = false # Redundant with Ruff F401
+reportUnusedVariable = false # Redundant with Ruff F841
+typeCheckingMode = "strict"
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
@@ -55,10 +60,15 @@ skip_covered = true
 [tool.ruff]
 line-length = 100
 target-version = "py310"
+unsafe-fixes = true
 
 [tool.ruff.lint]
+explicit-preview-rules = true
 extend-ignore = ["D107"]
+preview = true
 pydocstyle = { convention = "google" }
+
+# See rules documentation at: https://docs.astral.sh/ruff/rules/
 select = [
   "A", # flake8-builtins: avoid shadowing built-in names
   "ANN", # flake8-annotations: check for missing type annotations
@@ -74,6 +84,10 @@ select = [
   "ISC", # flake8-implicit-str-concat: check for invalid implicit or explicit string concatenation
   "N", # pep8-naming: check for naming convention violations
   "PERF", # perflint: check for performance anti-patterns
+  # pylint (PL): check for errors, enforce coding standards, looks for code smells, and make refactoring suggestions
+  "PLC", # pylint conventions
+  "PLE", # pylint errors
+  "PLW", # pylint warnings
   "PT", # flake8-pytest-style: check common style issues and inconsistencies in pytest-based tests
   "PTH", # flake8-use-pathlib: enforce usage of pathlib for path manipulations instead of os.path
   "Q", # flake8-quotes: enforce consistent string quote usage
@@ -92,6 +106,17 @@ select = [
 "examples/*.py" = ["D"]
 "src/linkup/__init__.py" = ["D104"]
 "tests/**/*test.py" = ["D", "S101"]
+
+ignore = [
+  "PTH123", # open() should be replaced by Path.open()
+  "S311", # Standard pseudo-random generators are not suitable for cryptographic purposes
+  "TD001", # Invalid TODO tag
+  "TD002", # Missing author in TODO
+  "TD003", # Missing issue link in TODO
+]
+
+[tool.ruff.lint.flake8-type-checking]
+runtime-evaluated-base-classes = ["pydantic.BaseModel"]
 
 [build-system]
 build-backend = "hatchling.build"

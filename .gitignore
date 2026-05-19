@@ -15,4 +15,7 @@ wheels/
 # MacOS stuff
 .DS_Store
 
+# Coding agents stuff
+.rtk/
+
 playground.py
