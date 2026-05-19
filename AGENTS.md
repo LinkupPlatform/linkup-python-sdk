@@ -30,12 +30,8 @@ When adding or changing a public API capability, update the relevant pieces toge
 ## Validation
 
 Before opening a PR, run the narrowest relevant checks:
-- `uv run pytest`
-- `uv run ruff check .`
-- `uv run mypy src`
-
-If packaging-related files changed, also run:
-- `uv build`
+- `make format-lint`
+- `make test`
 
 ## Non-Goals
 
