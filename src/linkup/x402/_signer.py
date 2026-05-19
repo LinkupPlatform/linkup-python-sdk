@@ -29,10 +29,14 @@ _NETWORK = "eip155:8453"
 class _DefaultX402Signer:
     def __init__(self, account: LocalAccount) -> None:
         try:
-            from x402 import x402Client, x402ClientSync
-            from x402.http import x402HTTPClient, x402HTTPClientSync
-            from x402.mechanisms.evm import EthAccountSigner
-            from x402.mechanisms.evm.exact.register import register_exact_evm_client
+            from x402 import x402Client, x402ClientSync  # noqa: PLC0415
+            from x402.http import x402HTTPClient, x402HTTPClientSync  # noqa: PLC0415
+            from x402.mechanisms.evm import (  # noqa: PLC0415  # pyright: ignore[reportMissingTypeStubs]
+                EthAccountSigner,
+            )
+            from x402.mechanisms.evm.exact.register import (  # noqa: PLC0415  # pyright: ignore[reportMissingTypeStubs]
+                register_exact_evm_client,  # pyright: ignore[reportUnknownVariableType]
+            )
         except ImportError as e:
             raise ImportError(
                 "The x402 optional dependencies are required to use x402 payment. "

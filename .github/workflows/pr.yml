@@ -40,5 +40,8 @@ jobs:
       - name: Install dependencies
         run: make install
 
+      - name: Type check
+        run: make typecheck
+
       - name: Test
         run: make test
