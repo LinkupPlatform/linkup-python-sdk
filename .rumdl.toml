@@ -1,0 +1,14 @@
+[global]
+line-length = 100
+
+[MD013]
+reflow = true
+
+[MD032]
+allow-lazy-continuation = false
+
+[MD033]
+allowed-elements = ["details", "summary"]
+
+[per-file-ignores]
+".github/pull_request_template.md" = ["MD041"]
