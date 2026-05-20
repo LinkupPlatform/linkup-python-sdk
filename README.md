@@ -292,8 +292,3 @@ result = client.search(
 )
 print(result.answer)
 ```
-
-#### 📚 More Examples
-
-See the `examples/` directory for more examples and documentation, for instance on how to use Linkup
-entrypoints using asynchronous functions to call the Linkup API several times concurrenly.

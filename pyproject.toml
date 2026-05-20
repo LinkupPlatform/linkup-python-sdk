@@ -103,7 +103,6 @@ select = [
 ]
 
 [tool.ruff.lint.extend-per-file-ignores]
-"examples/*.py" = ["D"]
 "src/linkup/__init__.py" = ["D104"]
 "tests/**/*test.py" = ["D", "S101"]
 

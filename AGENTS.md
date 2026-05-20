@@ -30,7 +30,7 @@ When adding or changing a public API capability, update the relevant pieces toge
 - request/response typing and models,
 - sync and async behavior when applicable,
 - tests,
-- README/examples if the user-facing API changed.
+- README if the user-facing API changed.
 
 ## Validation
 
