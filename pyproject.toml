@@ -6,7 +6,7 @@ license = "MIT"
 name = "linkup-sdk"
 readme = "README.md"
 requires-python = ">=3.10,<4.0"
-version = "0.13.0"
+version = "0.14.0"
 
 classifiers = [
   "Intended Audience :: Developers",
@@ -26,6 +26,7 @@ Documentation = "https://github.com/LinkupPlatform/linkup-python-sdk#readme"
 Homepage = "https://github.com/LinkupPlatform/linkup-python-sdk"
 Source = "https://github.com/LinkupPlatform/linkup-python-sdk"
 Tracker = "https://github.com/LinkupPlatform/linkup-python-sdk/issues"
+
 
 [dependency-groups]
 dev = [
@@ -52,10 +53,12 @@ typeCheckingMode = "strict"
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
 
+
 [tool.coverage.report]
 exclude_also = ["raise TypeError", "raise ValueError"]
 show_missing = true
 skip_covered = true
+
 
 [tool.ruff]
 line-length = 100
@@ -118,12 +121,10 @@ ignore = [
 [tool.ruff.lint.flake8-type-checking]
 runtime-evaluated-base-classes = ["pydantic.BaseModel"]
 
-[build-system]
-build-backend = "hatchling.build"
-requires = ["hatchling"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/linkup"] # Because project and source code directory names differ
+
 
 [tool.semantic_release]
 allow_zero_version = true
@@ -140,6 +141,12 @@ version_toml = ["pyproject.toml:project.version"]
 [tool.semantic_release.commit_parser_options]
 parse_squash_commits = false
 
+
 [tool.uv]
 exclude-newer = "2 weeks" # Reduce risks of supply chain attacks
 required-version = ">=0.10.0,<0.11.0"
+
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+

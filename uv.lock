@@ -3,7 +3,7 @@ revision = 3
 requires-python = ">=3.10, <4.0"
 
 [options]
-exclude-newer = "2026-05-05T14:21:26.956153Z"
+exclude-newer = "2026-05-06T14:34:17.762343569Z"
 exclude-newer-span = "P2W"
 
 [[package]]
@@ -1046,7 +1046,7 @@ wheels = [
 
 [[package]]
 name = "linkup-sdk"
-version = "0.13.0"
+version = "0.14.0"
 source = { editable = "." }
 dependencies = [
     { name = "httpx" },

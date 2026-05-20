@@ -2,6 +2,48 @@
 
 <!-- version list -->
 
+## v0.14.0 (2026-05-20)
+
+### Chores
+
+- Add upper bound on supported python version
+  ([`16493fa`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/16493fad04ff2ec0b3a3cc2a4bb8af982d1aaf04))
+
+- Enable lint checks in CI
+  ([`7623bc4`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/7623bc45faffb1cbdbae64dcb3b6e811c8e64a4f))
+
+- Replace pre-commit with prek
+  ([`f752423`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/f7524237c2cdff30109da43bdc82fa5ac47de823))
+
+- Update repo tooling
+  ([`7922036`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/7922036a99917fcf8ec781a3539ccf03f9a64bc8))
+
+- Update version of uv for semantic release
+  ([`5065e8d`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/5065e8dc3892cb1de8428a3f0e618894c7e18aa2))
+
+- **uv**: Prevent install of too recent packages
+  ([`ae3c055`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/ae3c055e69e5fd5f79f9af3ff1790b96da257d23))
+
+- **uv**: Regenerate uv.lock
+  ([`3afe084`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/3afe084121bd5de49189afd11d1f759b02bd8f62))
+
+### Documentation
+
+- Add AGENTS.md [skip release]
+  ([`402b9af`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/402b9afedd7fcd319c8f421de9c04f2a03b145fc))
+
+- Add AGENTS.md [skip release]
+  ([`cffca02`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/cffca0284819a1f936a3d76aebffaa7dd6650c65))
+
+- Add AGENTS.md [skip release]
+  ([`e5c6d58`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/e5c6d582797d864adc5d1ded23b4d2921b118bbc))
+
+### Features
+
+- Sync research and tasks endpoints
+  ([`b3f22ab`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/b3f22ab7cbaee67877bf51833e748aa18f761c06))
+
+
 ## v0.13.0 (2026-03-02)
 
 ### Features
