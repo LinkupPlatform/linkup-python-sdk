@@ -59,20 +59,20 @@ pip install linkup-sdk[x402]
 
    ```python
    import os
-   from linkup import LinkupClient
+   import linkup
 
    os.environ["LINKUP_API_KEY"] = "<your-linkup-api-key>"
    # or dotenv.load_dotenv()
-   client = LinkupClient()
+   client = linkup.Client()
    ...
    ```
 
    Option 3: Pass the Linkup API key to the Linkup Client when creating it.
 
    ```python
-   from linkup import LinkupClient
+   import linkup
 
-   client = LinkupClient(api_key="<your-linkup-api-key>")
+   client = linkup.Client(api_key="<your-linkup-api-key>")
    ...
    ```
 
@@ -99,16 +99,16 @@ The `search` function also supports three output types:
 ```python
 from typing import Any
 
-from linkup import LinkupClient, LinkupSourcedAnswer
+import linkup
 
-client = LinkupClient()  # API key can be read from the environment variable or passed as an argument
+client = linkup.Client()  # API key can be read from the environment variable or passed as an argument
 search_response: Any = client.search(
     query="What are the 3 major events in the life of Abraham Lincoln?",
     depth="deep",  # "standard" or "deep"
     output_type="sourcedAnswer",  # "searchResults" or "sourcedAnswer" or "structured"
     structured_output_schema=None,  # must be filled if output_type is "structured"
 )
-assert isinstance(search_response, LinkupSourcedAnswer)
+assert isinstance(search_response, linkup.SourcedAnswer)
 print(search_response.model_dump())
 ```
 
@@ -142,10 +142,10 @@ You can use the `render_js` flag to execute the JavaScript code of the page befo
 content, and ask to `include_raw_html` to the response if you feel like it.
 
 ```python
-from linkup import LinkupClient, LinkupFetchResponse
+import linkup
 
-client = LinkupClient()  # API key can be read from the environment variable or passed as an argument
-fetch_response: LinkupFetchResponse = client.fetch(
+client = linkup.Client()  # API key can be read from the environment variable or passed as an argument
+fetch_response: linkup.FetchResponse = client.fetch(
     url="https://docs.linkup.so",
     render_js=False,
     include_raw_html=True,
@@ -172,10 +172,10 @@ The `research` function creates an asynchronous research task. You can then use 
 `list_research` to inspect it later.
 
 ```python
-from linkup import LinkupClient, LinkupResearchTask
+import linkup
 
-client = LinkupClient()
-research_task: LinkupResearchTask = client.research(
+client = linkup.Client()
+research_task: linkup.ResearchTask = client.research(
     query="What changed in the AI browser market this quarter?",
     output_type="sourcedAnswer",
 )
@@ -188,21 +188,17 @@ The `create_tasks` function lets you submit mixed `search`, `fetch`, and `resear
 batch, then inspect them through `get_task` or `list_tasks`.
 
 ```python
-from linkup import (
-    LinkupClient,
-    LinkupFetchTaskInput,
-    LinkupSearchTaskInput,
-)
+import linkup
 
-client = LinkupClient()
+client = linkup.Client()
 tasks = client.create_tasks(
     [
-        LinkupSearchTaskInput(
+        linkup.SearchTaskInput(
             query="Linkup latest product updates",
             depth="deep",
             output_type="sourcedAnswer",
         ),
-        LinkupFetchTaskInput(
+        linkup.FetchTaskInput(
             url="https://docs.linkup.so",
         ),
     ]
@@ -221,17 +217,17 @@ This makes possible to call the Linkup API several times concurrently for instan
 import asyncio
 from typing import Any
 
-from linkup import LinkupClient, LinkupSourcedAnswer
+import linkup
 
 async def main() -> None:
-    client = LinkupClient()  # API key can be read from the environment variable or passed as an argument
+    client = linkup.Client()  # API key can be read from the environment variable or passed as an argument
     search_response: Any = await client.async_search(
         query="What are the 3 major events in the life of Abraham Lincoln?",
         depth="deep",  # "standard" or "deep"
         output_type="sourcedAnswer",  # "searchResults" or "sourcedAnswer" or "structured"
         structured_output_schema=None,  # must be filled if output_type is "structured"
     )
-    assert isinstance(search_response, LinkupSourcedAnswer)
+    assert isinstance(search_response, linkup.SourcedAnswer)
     print(search_response.model_dump())
 
 asyncio.run(main())
@@ -279,11 +275,11 @@ account = Account.from_mnemonic("<YOUR MNEMONIC PHRASE>")
 Then pass it to `create_x402_signer` and use the Linkup client:
 
 ```python
-from linkup import LinkupClient
+import linkup
 from linkup.x402 import create_x402_signer
 
 signer = create_x402_signer(account)
-client = LinkupClient(x402_signer=signer)
+client = linkup.Client(x402_signer=signer)
 
 result = client.search(
     query="What is x402?",

@@ -9,36 +9,7 @@ from httpx import Response
 from pydantic import BaseModel
 from pytest_mock import MockerFixture
 
-from linkup import (
-    LinkupAuthenticationError,
-    LinkupClient,
-    LinkupFailedFetchError,
-    LinkupFetchResponse,
-    LinkupFetchResponseTooLargeError,
-    LinkupFetchTask,
-    LinkupFetchTaskInput,
-    LinkupFetchUrlIsFileError,
-    LinkupInsufficientCreditError,
-    LinkupInvalidRequestError,
-    LinkupNoResultError,
-    LinkupPaymentRequiredError,
-    LinkupResearchTask,
-    LinkupResearchTaskInput,
-    LinkupResearchTasksPage,
-    LinkupSearchImageResult,
-    LinkupSearchResults,
-    LinkupSearchStructuredResponse,
-    LinkupSearchTask,
-    LinkupSearchTaskInput,
-    LinkupSearchTextResult,
-    LinkupSource,
-    LinkupSourcedAnswer,
-    LinkupTaskMetadata,
-    LinkupTasksPage,
-    LinkupTimeoutError,
-    LinkupTooManyRequestsError,
-    LinkupUnknownError,
-)
+import linkup
 
 
 class Company(BaseModel):
@@ -66,16 +37,16 @@ test_search_parameters = [
             ]
         }
         """,
-        LinkupSearchResults(
+        linkup.SearchResults(
             results=[
-                LinkupSearchTextResult(
+                linkup.SearchTextResult(
                     type="text",
                     name="foo",
                     url="https://foo.com",
                     content="lorem ipsum dolor sit amet",
                     favicon="https://foo.com/favicon.ico",
                 ),
-                LinkupSearchImageResult(
+                linkup.SearchImageResult(
                     type="image",
                     name="bar",
                     url="https://bar.com",
@@ -111,7 +82,7 @@ test_search_parameters = [
             "includeSources": True,
         },
         b'{"results": []}',
-        LinkupSearchResults(results=[]),
+        linkup.SearchResults(results=[]),
     ),
     (
         {
@@ -122,7 +93,7 @@ test_search_parameters = [
         },
         {"q": "query with timeout", "depth": "standard", "outputType": "searchResults"},
         b'{"results": []}',
-        LinkupSearchResults(results=[]),
+        linkup.SearchResults(results=[]),
     ),
     (
         {"query": "query", "depth": "standard", "output_type": "sourcedAnswer"},
@@ -137,20 +108,20 @@ test_search_parameters = [
             ]
         }
         """,
-        LinkupSourcedAnswer(
+        linkup.SourcedAnswer(
             answer="foo bar baz",
             sources=[
-                LinkupSource(
+                linkup.Source(
                     name="foo",
                     url="https://foo.com",
                     snippet="lorem ipsum dolor sit amet",
                 ),
-                LinkupSource(
+                linkup.Source(
                     name="bar",
                     url="https://bar.com",
                     snippet="consectetur adipiscing elit",
                 ),
-                LinkupSource(
+                linkup.Source(
                     name="baz",
                     url="https://baz.com",
                     snippet="",
@@ -248,7 +219,7 @@ test_search_parameters = [
             ]
         }
         """,
-        LinkupSearchStructuredResponse(
+        linkup.SearchStructuredResponse(
             data=Company(
                 name="Linkup",
                 founders_names=["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
@@ -256,13 +227,13 @@ test_search_parameters = [
                 website_url="https://www.linkup.so/",
             ),
             sources=[
-                LinkupSearchTextResult(
+                linkup.SearchTextResult(
                     type="text",
                     name="foo",
                     url="https://foo.com",
                     content="lorem ipsum dolor sit amet",
                 ),
-                LinkupSearchImageResult(type="image", name="bar", url="https://bar.com"),
+                linkup.SearchImageResult(type="image", name="bar", url="https://bar.com"),
             ],
         ),
     ),
@@ -280,7 +251,7 @@ test_search_parameters = [
 )
 def test_search(
     mocker: MockerFixture,
-    client: LinkupClient,
+    client: linkup.Client,
     search_kwargs: dict[str, Any],
     expected_request_params: dict[str, Any],
     mock_request_response_content: bytes,
@@ -318,7 +289,7 @@ def test_search(
 )
 async def test_async_search(
     mocker: MockerFixture,
-    client: LinkupClient,
+    client: linkup.Client,
     search_kwargs: dict[str, Any],
     expected_request_params: dict[str, Any],
     mock_request_response_content: bytes,
@@ -356,7 +327,7 @@ test_search_error_parameters = [
             }
         }
         """,
-        LinkupPaymentRequiredError,
+        linkup.PaymentRequiredError,
     ),
     (
         403,
@@ -369,7 +340,7 @@ test_search_error_parameters = [
             }
         }
         """,
-        LinkupAuthenticationError,
+        linkup.AuthenticationError,
     ),
     (
         401,
@@ -382,7 +353,7 @@ test_search_error_parameters = [
             }
         }
         """,
-        LinkupAuthenticationError,
+        linkup.AuthenticationError,
     ),
     (
         429,
@@ -395,7 +366,7 @@ test_search_error_parameters = [
             }
         }
         """,
-        LinkupInsufficientCreditError,
+        linkup.InsufficientCreditError,
     ),
     (
         429,
@@ -408,7 +379,7 @@ test_search_error_parameters = [
             }
         }
         """,
-        LinkupTooManyRequestsError,
+        linkup.TooManyRequestsError,
     ),
     (
         429,
@@ -421,7 +392,7 @@ test_search_error_parameters = [
             }
         }
         """,
-        LinkupUnknownError,
+        linkup.UnknownError,
     ),
     (
         400,
@@ -439,7 +410,7 @@ test_search_error_parameters = [
             }
         }
         """,
-        LinkupInvalidRequestError,
+        linkup.InvalidRequestError,
     ),
     (
         400,
@@ -452,7 +423,7 @@ test_search_error_parameters = [
             }
         }
         """,
-        LinkupNoResultError,
+        linkup.NoResultError,
     ),
     (
         500,
@@ -465,7 +436,7 @@ test_search_error_parameters = [
             }
         }
         """,
-        LinkupUnknownError,
+        linkup.UnknownError,
     ),
 ]
 
@@ -476,7 +447,7 @@ test_search_error_parameters = [
 )
 def test_search_error(
     mocker: MockerFixture,
-    client: LinkupClient,
+    client: linkup.Client,
     mock_request_response_status_code: int,
     mock_request_response_content: bytes,
     expected_exception: type[Exception],
@@ -501,7 +472,7 @@ def test_search_error(
 )
 async def test_async_search_error(
     mocker: MockerFixture,
-    client: LinkupClient,
+    client: linkup.Client,
     mock_request_response_status_code: int,
     mock_request_response_content: bytes,
     expected_exception: type[Exception],
@@ -521,34 +492,34 @@ async def test_async_search_error(
 
 def test_search_timeout(
     mocker: MockerFixture,
-    client: LinkupClient,
+    client: linkup.Client,
 ) -> None:
     mocker.patch(
         "httpx.Client.request",
         side_effect=httpx.ReadTimeout("Request timed out"),
     )
 
-    with pytest.raises(LinkupTimeoutError):
+    with pytest.raises(linkup.TimeoutError):
         client.search(query="query", depth="standard", output_type="searchResults", timeout=1.0)
 
 
 @pytest.mark.asyncio
 async def test_async_search_timeout(
     mocker: MockerFixture,
-    client: LinkupClient,
+    client: linkup.Client,
 ) -> None:
     mocker.patch(
         "httpx.AsyncClient.request",
         side_effect=httpx.ReadTimeout("Request timed out"),
     )
 
-    with pytest.raises(LinkupTimeoutError):
+    with pytest.raises(linkup.TimeoutError):
         await client.async_search(
             query="query", depth="standard", output_type="searchResults", timeout=1.0
         )
 
 
-def test_research(mocker: MockerFixture, client: LinkupClient) -> None:
+def test_research(mocker: MockerFixture, client: linkup.Client) -> None:
     request_mock = mocker.patch(
         "httpx.Client.request",
         return_value=Response(
@@ -584,11 +555,11 @@ def test_research(mocker: MockerFixture, client: LinkupClient) -> None:
         },
         timeout=None,
     )
-    assert research_response == LinkupResearchTask(
+    assert research_response == linkup.ResearchTask(
         created_at="2026-05-18T00:00:00.000Z",
         error=None,
         id="4a44f4e0-eaf0-42eb-8ea4-99311b1d0f01",
-        input=LinkupResearchTaskInput(
+        input=linkup.ResearchTaskInput(
             query="query",
             output_type="sourcedAnswer",
             mode="auto",
@@ -601,7 +572,7 @@ def test_research(mocker: MockerFixture, client: LinkupClient) -> None:
 
 
 @pytest.mark.asyncio
-async def test_async_research(mocker: MockerFixture, client: LinkupClient) -> None:
+async def test_async_research(mocker: MockerFixture, client: linkup.Client) -> None:
     request_mock = mocker.patch(
         "httpx.AsyncClient.request",
         return_value=Response(
@@ -655,7 +626,7 @@ test_fetch_parameters = [
         {"url": "https://example.com"},
         {"url": "https://example.com"},
         b'{"markdown": "Some web page content"}',
-        LinkupFetchResponse(markdown="Some web page content", raw_html=None),
+        linkup.FetchResponse(markdown="Some web page content", raw_html=None),
     ),
     (
         {
@@ -671,13 +642,13 @@ test_fetch_parameters = [
             "extractImages": True,
         },
         b'{"markdown": "#Some web page content", "rawHtml": "<html>...</html>"}',
-        LinkupFetchResponse(markdown="#Some web page content", raw_html="<html>...</html>"),
+        linkup.FetchResponse(markdown="#Some web page content", raw_html="<html>...</html>"),
     ),
     (
         {"url": "https://example.com", "timeout": 15.0},
         {"url": "https://example.com"},
         b'{"markdown": "Some web page content"}',
-        LinkupFetchResponse(markdown="Some web page content", raw_html=None),
+        linkup.FetchResponse(markdown="Some web page content", raw_html=None),
     ),
 ]
 
@@ -693,11 +664,11 @@ test_fetch_parameters = [
 )
 def test_fetch(
     mocker: MockerFixture,
-    client: LinkupClient,
+    client: linkup.Client,
     fetch_kwargs: dict[str, Any],
     expected_request_params: dict[str, Any],
     mock_request_response_content: bytes,
-    expected_fetch_response: LinkupFetchResponse,
+    expected_fetch_response: linkup.FetchResponse,
 ) -> None:
     request_mock = mocker.patch(
         "httpx.Client.request",
@@ -707,7 +678,7 @@ def test_fetch(
         ),
     )
 
-    fetch_response: LinkupFetchResponse = client.fetch(**fetch_kwargs)
+    fetch_response: linkup.FetchResponse = client.fetch(**fetch_kwargs)
     expected_timeout = fetch_kwargs.get("timeout", None)
     request_mock.assert_called_once_with(
         method="POST",
@@ -730,11 +701,11 @@ def test_fetch(
 )
 async def test_async_fetch(
     mocker: MockerFixture,
-    client: LinkupClient,
+    client: linkup.Client,
     fetch_kwargs: dict[str, Any],
     expected_request_params: dict[str, Any],
     mock_request_response_content: bytes,
-    expected_fetch_response: LinkupFetchResponse,
+    expected_fetch_response: linkup.FetchResponse,
 ) -> None:
     request_mock = mocker.patch(
         "httpx.AsyncClient.request",
@@ -744,7 +715,7 @@ async def test_async_fetch(
         ),
     )
 
-    fetch_response: LinkupFetchResponse = await client.async_fetch(**fetch_kwargs)
+    fetch_response: linkup.FetchResponse = await client.async_fetch(**fetch_kwargs)
     expected_timeout = fetch_kwargs.get("timeout", None)
     request_mock.assert_called_once_with(
         method="POST",
@@ -767,7 +738,7 @@ test_fetch_error_parameters = [
             }
         }
         """,
-        LinkupFailedFetchError,
+        linkup.FailedFetchError,
     ),
     (
         400,
@@ -785,7 +756,7 @@ test_fetch_error_parameters = [
             }
         }
         """,
-        LinkupInvalidRequestError,
+        linkup.InvalidRequestError,
     ),
     (
         400,
@@ -798,7 +769,7 @@ test_fetch_error_parameters = [
             }
         }
         """,
-        LinkupFetchResponseTooLargeError,
+        linkup.FetchResponseTooLargeError,
     ),
     (
         400,
@@ -811,7 +782,7 @@ test_fetch_error_parameters = [
             }
         }
         """,
-        LinkupFetchUrlIsFileError,
+        linkup.FetchUrlIsFileError,
     ),
 ]
 
@@ -822,7 +793,7 @@ test_fetch_error_parameters = [
 )
 def test_fetch_error(
     mocker: MockerFixture,
-    client: LinkupClient,
+    client: linkup.Client,
     mock_request_response_status_code: int,
     mock_request_response_content: bytes,
     expected_exception: type[Exception],
@@ -847,7 +818,7 @@ def test_fetch_error(
 )
 async def test_async_fetch_error(
     mocker: MockerFixture,
-    client: LinkupClient,
+    client: linkup.Client,
     mock_request_response_status_code: int,
     mock_request_response_content: bytes,
     expected_exception: type[Exception],
@@ -867,32 +838,32 @@ async def test_async_fetch_error(
 
 def test_fetch_timeout(
     mocker: MockerFixture,
-    client: LinkupClient,
+    client: linkup.Client,
 ) -> None:
     mocker.patch(
         "httpx.Client.request",
         side_effect=httpx.ReadTimeout("Request timed out"),
     )
 
-    with pytest.raises(LinkupTimeoutError):
+    with pytest.raises(linkup.TimeoutError):
         client.fetch(url="https://example.com", timeout=1.0)
 
 
 @pytest.mark.asyncio
 async def test_async_fetch_timeout(
     mocker: MockerFixture,
-    client: LinkupClient,
+    client: linkup.Client,
 ) -> None:
     mocker.patch(
         "httpx.AsyncClient.request",
         side_effect=httpx.ReadTimeout("Request timed out"),
     )
 
-    with pytest.raises(LinkupTimeoutError):
+    with pytest.raises(linkup.TimeoutError):
         await client.async_fetch(url="https://example.com", timeout=1.0)
 
 
-def test_create_tasks(mocker: MockerFixture, client: LinkupClient) -> None:
+def test_create_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
     request_mock = mocker.patch(
         "httpx.Client.request",
         return_value=Response(
@@ -944,13 +915,13 @@ def test_create_tasks(mocker: MockerFixture, client: LinkupClient) -> None:
 
     tasks_response = client.create_tasks(
         [
-            LinkupSearchTaskInput(
+            linkup.SearchTaskInput(
                 query="query",
                 depth="deep",
                 output_type="structured",
                 structured_output_schema=Company,
             ),
-            LinkupFetchTaskInput(
+            linkup.FetchTaskInput(
                 url="https://example.com",
                 extract_images=True,
             ),
@@ -980,16 +951,16 @@ def test_create_tasks(mocker: MockerFixture, client: LinkupClient) -> None:
         ],
         timeout=None,
     )
-    assert isinstance(tasks_response[0], LinkupSearchTask)
+    assert isinstance(tasks_response[0], linkup.SearchTask)
     assert tasks_response[0].input.query == "query"
     assert tasks_response[0].input.structured_output_schema == {"type": "object"}
-    assert isinstance(tasks_response[1], LinkupFetchTask)
+    assert isinstance(tasks_response[1], linkup.FetchTask)
     assert tasks_response[1].output is not None
     assert tasks_response[1].output.images is not None
     assert tasks_response[1].output.images[0].url == "https://example.com/image.png"
 
 
-def test_create_tasks_research_model(mocker: MockerFixture, client: LinkupClient) -> None:
+def test_create_tasks_research_model(mocker: MockerFixture, client: linkup.Client) -> None:
     request_mock = mocker.patch(
         "httpx.Client.request",
         return_value=Response(
@@ -1018,7 +989,7 @@ def test_create_tasks_research_model(mocker: MockerFixture, client: LinkupClient
 
     tasks_response = client.create_tasks(
         [
-            LinkupResearchTaskInput(
+            linkup.ResearchTaskInput(
                 query="query",
                 output_type="sourcedAnswer",
                 mode="answer",
@@ -1043,12 +1014,12 @@ def test_create_tasks_research_model(mocker: MockerFixture, client: LinkupClient
         ],
         timeout=None,
     )
-    assert isinstance(tasks_response[0], LinkupResearchTask)
+    assert isinstance(tasks_response[0], linkup.ResearchTask)
     assert tasks_response[0].input.reasoning_depth == "S"
 
 
 @pytest.mark.asyncio
-async def test_async_list_research(mocker: MockerFixture, client: LinkupClient) -> None:
+async def test_async_list_research(mocker: MockerFixture, client: linkup.Client) -> None:
     request_mock = mocker.patch(
         "httpx.AsyncClient.request",
         return_value=Response(
@@ -1092,13 +1063,13 @@ async def test_async_list_research(mocker: MockerFixture, client: LinkupClient) 
         },
         timeout=None,
     )
-    assert research_page == LinkupResearchTasksPage(
+    assert research_page == linkup.ResearchTasksPage(
         data=[
-            LinkupResearchTask(
+            linkup.ResearchTask(
                 created_at="2026-05-18T00:00:00.000Z",
                 error=None,
                 id="cdedcd9f-ab4a-4404-b8c6-b9ca9dc4c837",
-                input=LinkupResearchTaskInput(
+                input=linkup.ResearchTaskInput(
                     query="query",
                     output_type="sourcedAnswer",
                 ),
@@ -1108,7 +1079,7 @@ async def test_async_list_research(mocker: MockerFixture, client: LinkupClient) 
                 updated_at="2026-05-18T00:00:00.000Z",
             )
         ],
-        metadata=LinkupTaskMetadata(
+        metadata=linkup.TaskMetadata(
             page=2,
             page_size=5,
             total=11,
@@ -1117,7 +1088,7 @@ async def test_async_list_research(mocker: MockerFixture, client: LinkupClient) 
     )
 
 
-def test_list_tasks(mocker: MockerFixture, client: LinkupClient) -> None:
+def test_list_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
     request_mock = mocker.patch(
         "httpx.Client.request",
         return_value=Response(
@@ -1168,8 +1139,8 @@ def test_list_tasks(mocker: MockerFixture, client: LinkupClient) -> None:
         },
         timeout=None,
     )
-    assert isinstance(tasks_page, LinkupTasksPage)
-    assert isinstance(tasks_page.data[0], LinkupResearchTask)
+    assert isinstance(tasks_page, linkup.TasksPage)
+    assert isinstance(tasks_page.data[0], linkup.ResearchTask)
     assert tasks_page.data[0].input.query == "query"
     assert tasks_page.quota.in_flight == 1
 
@@ -1184,7 +1155,7 @@ _500_BODY = b'{"error": {"code": "INTERNAL_SERVER_ERROR", "message": "Error", "d
 
 
 def test_client_x402_signer(mock_x402_signer: MagicMock) -> None:
-    client = LinkupClient(x402_signer=mock_x402_signer)
+    client = linkup.Client(x402_signer=mock_x402_signer)
     assert client._x402_signer is mock_x402_signer  # noqa: SLF001
     assert client._api_key is None  # noqa: SLF001
 
@@ -1193,12 +1164,12 @@ def test_client_both_api_key_and_x402_signer_raises(
     mock_x402_signer: MagicMock,
 ) -> None:
     with pytest.raises(ValueError, match="Cannot provide both"):
-        LinkupClient(api_key="test-key", x402_signer=mock_x402_signer)
+        linkup.Client(api_key="test-key", x402_signer=mock_x402_signer)
 
 
 def test_client_x402_no_auth_header(
     mocker: MockerFixture,
-    x402_client: LinkupClient,
+    x402_client: linkup.Client,
     mock_x402_signer: MagicMock,
 ) -> None:
     mock_x402_signer.create_payment_headers.return_value = {
@@ -1233,7 +1204,7 @@ def test_client_x402_no_auth_header(
 
 def test_x402_retry_sync(
     mocker: MockerFixture,
-    x402_client: LinkupClient,
+    x402_client: linkup.Client,
     mock_x402_signer: MagicMock,
 ) -> None:
     mock_x402_signer.create_payment_headers.return_value = {
@@ -1275,7 +1246,7 @@ def test_x402_retry_sync(
 
 def test_x402_retry_failure_sync(
     mocker: MockerFixture,
-    x402_client: LinkupClient,
+    x402_client: linkup.Client,
     mock_x402_signer: MagicMock,
 ) -> None:
     mock_x402_signer.create_payment_headers.return_value = {
@@ -1293,13 +1264,13 @@ def test_x402_retry_failure_sync(
         ],
     )
 
-    with pytest.raises(LinkupUnknownError):
+    with pytest.raises(linkup.UnknownError):
         x402_client.search(query="query", depth="standard", output_type="searchResults")
 
 
 def test_x402_signer_error_sync(
     mocker: MockerFixture,
-    x402_client: LinkupClient,
+    x402_client: linkup.Client,
     mock_x402_signer: MagicMock,
 ) -> None:
     mock_x402_signer.create_payment_headers.side_effect = RuntimeError("signing failed")
@@ -1312,13 +1283,13 @@ def test_x402_signer_error_sync(
         ),
     )
 
-    with pytest.raises(LinkupPaymentRequiredError, match="signing failed"):
+    with pytest.raises(linkup.PaymentRequiredError, match="signing failed"):
         x402_client.search(query="query", depth="standard", output_type="searchResults")
 
 
 def test_402_without_signer(
     mocker: MockerFixture,
-    client: LinkupClient,
+    client: linkup.Client,
 ) -> None:
     mocker.patch(
         "httpx.Client.request",
@@ -1328,14 +1299,14 @@ def test_402_without_signer(
         ),
     )
 
-    with pytest.raises(LinkupPaymentRequiredError):
+    with pytest.raises(linkup.PaymentRequiredError):
         client.search(query="query", depth="standard", output_type="searchResults")
 
 
 @pytest.mark.asyncio
 async def test_x402_retry_async(
     mocker: MockerFixture,
-    x402_client: LinkupClient,
+    x402_client: linkup.Client,
     mock_x402_signer: MagicMock,
 ) -> None:
     mock_x402_signer.async_create_payment_headers = AsyncMock(return_value={"X-Payment": "signed"})
@@ -1378,7 +1349,7 @@ async def test_x402_retry_async(
 @pytest.mark.asyncio
 async def test_x402_retry_failure_async(
     mocker: MockerFixture,
-    x402_client: LinkupClient,
+    x402_client: linkup.Client,
     mock_x402_signer: MagicMock,
 ) -> None:
     mock_x402_signer.async_create_payment_headers = AsyncMock(return_value={"X-Payment": "signed"})
@@ -1394,14 +1365,14 @@ async def test_x402_retry_failure_async(
         ],
     )
 
-    with pytest.raises(LinkupUnknownError):
+    with pytest.raises(linkup.UnknownError):
         await x402_client.async_search(query="query", depth="standard", output_type="searchResults")
 
 
 @pytest.mark.asyncio
 async def test_x402_signer_error_async(
     mocker: MockerFixture,
-    x402_client: LinkupClient,
+    x402_client: linkup.Client,
     mock_x402_signer: MagicMock,
 ) -> None:
     mock_x402_signer.async_create_payment_headers = AsyncMock(
@@ -1416,14 +1387,14 @@ async def test_x402_signer_error_async(
         ),
     )
 
-    with pytest.raises(LinkupPaymentRequiredError, match="signing failed"):
+    with pytest.raises(linkup.PaymentRequiredError, match="signing failed"):
         await x402_client.async_search(query="query", depth="standard", output_type="searchResults")
 
 
 @pytest.mark.asyncio
 async def test_402_without_signer_async(
     mocker: MockerFixture,
-    client: LinkupClient,
+    client: linkup.Client,
 ) -> None:
     mocker.patch(
         "httpx.AsyncClient.request",
@@ -1433,5 +1404,5 @@ async def test_402_without_signer_async(
         ),
     )
 
-    with pytest.raises(LinkupPaymentRequiredError):
+    with pytest.raises(linkup.PaymentRequiredError):
         await client.async_search(query="query", depth="standard", output_type="searchResults")
