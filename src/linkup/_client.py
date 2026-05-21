@@ -90,7 +90,7 @@ class LinkupClient:
     def search(
         self,
         query: str,
-        depth: Literal["standard", "deep"],
+        depth: Literal["fast", "standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: type[BaseModel] | dict[str, Any] | str | None = None,
         include_images: bool | None = None,
@@ -111,8 +111,10 @@ class LinkupClient:
 
         Args:
             query: The search query.
-            depth: The depth of the search. Can be either "standard", for a straighforward and
-                fast search, or "deep" for a more powerful agentic workflow.
+            depth: The depth of the search. Can be "fast" (beta), for a sub-second search (query
+                must be keyword-based), "standard", for a simple, straightforward search (query can
+                be free text), or "deep" for a more powerful agentic workflow (query can be free
+                text).
             output_type: The type of output which is expected: "searchResults" will output raw
                 search results, "sourcedAnswer" will output the answer to the query and sources
                 supporting it, and "structured" will base the output on the format provided in
@@ -187,7 +189,7 @@ class LinkupClient:
     async def async_search(
         self,
         query: str,
-        depth: Literal["standard", "deep"],
+        depth: Literal["fast", "standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: type[BaseModel] | dict[str, Any] | str | None = None,
         include_images: bool | None = None,
@@ -208,8 +210,10 @@ class LinkupClient:
 
         Args:
             query: The search query.
-            depth: The depth of the search. Can be either "standard", for a straighforward and
-                fast search, or "deep" for a more powerful agentic workflow.
+            depth: The depth of the search. Can be "fast" (beta), for a sub-second search (query
+                must be keyword-based), "standard", for a simple, straightforward search (query can
+                be free text), or "deep" for a more powerful agentic workflow (query can be free
+                text).
             output_type: The type of output which is expected: "searchResults" will output raw
                 search results, "sourcedAnswer" will output the answer to the query and sources
                 supporting it, and "structured" will base the output on the format provided in
@@ -1134,7 +1138,7 @@ class LinkupClient:
     def _get_search_params(
         self,
         query: str,
-        depth: Literal["standard", "deep"],
+        depth: Literal["fast", "standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: type[BaseModel] | str | dict[str, Any] | None,
         include_images: bool | None,

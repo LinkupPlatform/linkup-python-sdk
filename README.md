@@ -80,21 +80,21 @@ pip install linkup-sdk[x402]
 
 #### 📝 Search
 
-The `search` function can be used to performs web searches. It supports two very different
-complexity modes:
+The `search` function can be used to performs web searches. It supports three different complexity
+modes, through the `depth` parameter:
 
-- with `depth="standard"`, the search will be straightforward and fast, suited for relatively simple
-  queries (e.g. "What's the weather in Paris today?")
-- with `depth="deep"`, the search will use an agentic workflow, which makes it in general slower,
-  but it will be able to solve more complex queries (e.g. "What is the company profile of LangChain
-  accross the last few years, and how does it compare to its concurrents?")
+- `"fast"` (**beta**), for sub-second responses to simple, focused queries (must be keyword-based)
+- `"standard"`, for single-iteration agentic search that can interpret the query, run parallel
+  sub-searches, and scrape one URL while remaining fast
+- `"deep"`, for slower, more agentic and complex responses, suited to more complex queries (e.g.
+  "What is the company profile of LangChain accross the last few years, and how does it compare to
+  its concurrents?")
 
-The `search` function also supports three output types:
+The `search` function also supports three output types, through the `output_type` parameter:
 
-- with `output_type="searchResults"`, the search will return a list of relevant documents
-- with `output_type="sourcedAnswer"`, the search will return a concise answer with sources
-- with `output_type="structured"`, the search will return a structured output according to a
-  user-defined schema
+- with `"searchResults"`, the search will return a list of relevant documents
+- with `"sourcedAnswer"`, the search will return a concise answer with sources
+- with `"structured"`, the search will return a structured output according to a user-defined schema
 
 ```python
 from typing import Any
@@ -104,7 +104,7 @@ import linkup
 client = linkup.Client()  # API key can be read from the environment variable or passed as an argument
 search_response: Any = client.search(
     query="What are the 3 major events in the life of Abraham Lincoln?",
-    depth="deep",  # "standard" or "deep"
+    depth="deep",  # "fast" (beta), "standard", or "deep"
     output_type="sourcedAnswer",  # "searchResults" or "sourcedAnswer" or "structured"
     structured_output_schema=None,  # must be filled if output_type is "structured"
 )
@@ -223,7 +223,7 @@ async def main() -> None:
     client = linkup.Client()  # API key can be read from the environment variable or passed as an argument
     search_response: Any = await client.async_search(
         query="What are the 3 major events in the life of Abraham Lincoln?",
-        depth="deep",  # "standard" or "deep"
+        depth="deep",  # "fast" (beta), "standard", or "deep"
         output_type="sourcedAnswer",  # "searchResults" or "sourcedAnswer" or "structured"
         structured_output_schema=None,  # must be filled if output_type is "structured"
     )
