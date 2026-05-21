@@ -102,9 +102,24 @@ test_search_parameters = [
         {
             "answer": "foo bar baz",
             "sources": [
-                {"name": "foo", "url": "https://foo.com", "snippet": "lorem ipsum dolor sit amet"},
-                {"name": "bar", "url": "https://bar.com", "snippet": "consectetur adipiscing elit"},
-                {"name": "baz", "url": "https://baz.com"}
+                {
+                    "name": "foo",
+                    "url": "https://foo.com",
+                    "snippet": "lorem ipsum dolor sit amet",
+                    "favicon": "https://foo.com/favicon.ico"
+                },
+                {
+                    "name": "bar",
+                    "url": "https://bar.com",
+                    "snippet": "consectetur adipiscing elit",
+                    "favicon": "https://bar.com/favicon.ico"
+                },
+                {
+                    "name": "baz",
+                    "url": "https://baz.com",
+                    "snippet": "",
+                    "favicon": ""
+                }
             ]
         }
         """,
@@ -115,16 +130,19 @@ test_search_parameters = [
                     name="foo",
                     url="https://foo.com",
                     snippet="lorem ipsum dolor sit amet",
+                    favicon="https://foo.com/favicon.ico",
                 ),
                 linkup.Source(
                     name="bar",
                     url="https://bar.com",
                     snippet="consectetur adipiscing elit",
+                    favicon="https://bar.com/favicon.ico",
                 ),
                 linkup.Source(
                     name="baz",
                     url="https://baz.com",
                     snippet="",
+                    favicon="",
                 ),
             ],
         ),
@@ -241,7 +259,8 @@ test_search_parameters = [
                     "type": "text",
                     "name": "foo",
                     "url": "https://foo.com",
-                    "content": "lorem ipsum dolor sit amet"
+                    "content": "lorem ipsum dolor sit amet",
+                    "favicon": "https://foo.com/favicon.ico"
                 },
                 {"type": "image", "name": "bar", "url": "https://bar.com"}
             ]
@@ -260,6 +279,7 @@ test_search_parameters = [
                     name="foo",
                     url="https://foo.com",
                     content="lorem ipsum dolor sit amet",
+                    favicon="https://foo.com/favicon.ico",
                 ),
                 linkup.SearchImageResult(type="image", name="bar", url="https://bar.com"),
             ],
