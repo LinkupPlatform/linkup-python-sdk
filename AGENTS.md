@@ -4,12 +4,15 @@ This repository contains the public Python SDK for the Linkup API.
 
 ## Goal
 
-Keep the SDK aligned with the current public, stable Linkup API while preserving a Pythonic public
-interface.
+Keep the SDK aligned with the current public, stable Linkup API while:
+
+- implementing a Pythonic public interface,
+- documenting the features through docstrings,
+- and adding type safety through type hints or input data validation with `pydantic` models when
+  relevant.
 
 ## Working Rules
 
-- Read this file before making changes.
 - Prefer minimal diffs focused on the public API change being synchronized.
 - Do not expose internal, beta, deprecated, or undocumented API behavior unless explicitly
   requested.
@@ -34,11 +37,7 @@ When adding or changing a public API capability, update the relevant pieces toge
 
 ## Validation
 
-Before opening a PR, run the narrowest relevant checks:
-
-- `make lint`
-- `make typecheck`
-- `make test`
+Before opening a PR, run the CI checks: `make lint typecheck test`.
 
 ## Non-Goals
 
