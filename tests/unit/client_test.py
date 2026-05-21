@@ -190,6 +190,34 @@ test_search_parameters = [
             "query": "query",
             "depth": "standard",
             "output_type": "structured",
+            "structured_output_schema": Company.model_json_schema(),
+        },
+        {
+            "q": "query",
+            "depth": "standard",
+            "outputType": "structured",
+            "structuredOutputSchema": json.dumps(Company.model_json_schema()),
+        },
+        b"""
+        {
+            "name": "Linkup",
+            "founders_names": ["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
+            "creation_date": "2024",
+            "website_url": "https://www.linkup.so/"
+        }
+        """,
+        {
+            "name": "Linkup",
+            "founders_names": ["Philippe Mizrahi", "Denis Charrier", "Boris Toledano"],
+            "creation_date": "2024",
+            "website_url": "https://www.linkup.so/",
+        },
+    ),
+    (
+        {
+            "query": "query",
+            "depth": "standard",
+            "output_type": "structured",
             "structured_output_schema": Company,
             "include_sources": True,
         },

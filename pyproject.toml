@@ -27,7 +27,6 @@ Homepage = "https://github.com/LinkupPlatform/linkup-python-sdk"
 Source = "https://github.com/LinkupPlatform/linkup-python-sdk"
 Tracker = "https://github.com/LinkupPlatform/linkup-python-sdk/issues"
 
-
 [dependency-groups]
 dev = [
   "prek>=0.3.5",
@@ -139,7 +138,6 @@ parse_squash_commits = false
 [tool.uv]
 exclude-newer = "2 weeks" # Reduce risks of supply chain attacks
 required-version = ">=0.10.0,<0.11.0"
-
 
 [build-system]
 build-backend = "hatchling.build"
