@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v0.14.2 (2026-05-21)
+
+### Bug Fixes
+
+- Allow structured output schema to be a dict
+  ([`87a6feb`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/87a6feb80904109787b14bec688ebcd6396b6541))
+
+### Chores
+
+- Upgrade semantic release action
+  ([`395f7d4`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/395f7d4dd5ecdb8f73abf98c07046d61456bb8fa))
+
+
 ## v0.14.1 (2026-05-21)
 
 ### Bug Fixes
