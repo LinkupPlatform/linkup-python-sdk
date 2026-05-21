@@ -25,7 +25,7 @@ class LinkupSearchTextResult(_LinkupBaseModel):
     name: str
     url: str
     content: str
-    favicon: str = ""
+    favicon: str
 
 
 class LinkupSearchImageResult(_LinkupBaseModel):
@@ -58,14 +58,14 @@ class LinkupSource(_LinkupBaseModel):
     Attributes:
         name: The name of the source.
         url: The URL of the source.
-        snippet: The text excerpt supporting the Linkup answer. Can be empty for image sources.
+        snippet: The text excerpt supporting the Linkup answer.
         favicon: The favicon URL of the source, if available.
     """
 
     name: str
     url: str
-    snippet: str = ""
-    favicon: str = ""
+    snippet: str
+    favicon: str
 
 
 class LinkupSourcedAnswer(_LinkupBaseModel):
