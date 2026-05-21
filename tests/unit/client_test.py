@@ -55,6 +55,12 @@ test_search_parameters = [
         ),
     ),
     (
+        {"query": "query", "depth": "fast", "output_type": "searchResults"},
+        {"q": "query", "depth": "fast", "outputType": "searchResults"},
+        b'{"results": []}',
+        linkup.SearchResults(results=[]),
+    ),
+    (
         {
             "query": "A long query.",
             "depth": "deep",
