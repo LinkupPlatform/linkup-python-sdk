@@ -2,6 +2,30 @@
 
 <!-- version list -->
 
+## v0.15.0 (2026-05-21)
+
+### Bug Fixes
+
+- Make types closer to actual API behavior
+  ([`0e11753`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/0e117532571aada5362aae59ea520178653ee3cd))
+
+### Chores
+
+- Bump dependencies
+  ([`42fc884`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/42fc884334babe901e9ebe065fa38df769c47bee))
+
+- Remove unused rich dependency
+  ([`70ebe6a`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/70ebe6ac1ebc0070275e8ce2d6d8e9c8d8347dea))
+
+- Update AGENTS.md
+  ([`a4550e8`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/a4550e8f86715f872845bb83731acf825e69f1fa))
+
+### Features
+
+- "fast" search depth (beta)
+  ([`2e97605`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/2e9760560a931e397250356ebc327fb0bdf76800))
+
+
 ## v0.14.2 (2026-05-21)
 
 ### Bug Fixes
