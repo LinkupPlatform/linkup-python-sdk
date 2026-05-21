@@ -2,6 +2,22 @@
 
 <!-- version list -->
 
+## v0.14.1 (2026-05-21)
+
+### Bug Fixes
+
+- Simplify linkup import with aliases
+  ([`ec20202`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/ec20202014606ee5b230f2648b587495fedb5ea0))
+
+### Chores
+
+- Remove examples
+  ([`0bccd36`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/0bccd36c6fa19511a522eacd08b334e34e67e037))
+
+- Replace mdformat by rumdl
+  ([`51d2942`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/51d29428e177b4eacc77fe486e5a00f98097aaa0))
+
+
 ## v0.14.0 (2026-05-20)
 
 ### Chores

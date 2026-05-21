@@ -6,7 +6,7 @@ license = "MIT"
 name = "linkup-sdk"
 readme = "README.md"
 requires-python = ">=3.10,<4.0"
-version = "0.14.0"
+version = "0.14.1"
 
 classifiers = [
   "Intended Audience :: Developers",
@@ -26,6 +26,7 @@ Documentation = "https://github.com/LinkupPlatform/linkup-python-sdk#readme"
 Homepage = "https://github.com/LinkupPlatform/linkup-python-sdk"
 Source = "https://github.com/LinkupPlatform/linkup-python-sdk"
 Tracker = "https://github.com/LinkupPlatform/linkup-python-sdk/issues"
+
 
 [dependency-groups]
 dev = [
@@ -138,6 +139,7 @@ parse_squash_commits = false
 [tool.uv]
 exclude-newer = "2 weeks" # Reduce risks of supply chain attacks
 required-version = ">=0.10.0,<0.11.0"
+
 
 [build-system]
 build-backend = "hatchling.build"
