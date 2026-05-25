@@ -440,6 +440,19 @@ test_search_error_parameters = [
         b"""
         {
             "error": {
+                "code": "EXCEED_BUDGET_LIMIT",
+                "message": "The API key has reached its budget limit.",
+                "details": []
+            }
+        }
+        """,
+        linkup.BudgetLimitExceededError,
+    ),
+    (
+        429,
+        b"""
+        {
+            "error": {
                 "code": "FOOBAR",
                 "message": "Foobar",
                 "details": []
@@ -830,13 +843,13 @@ test_fetch_error_parameters = [
         b"""
         {
             "error": {
-                "code": "FETCH_URL_IS_FILE",
-                "message": "The URL points to a file rather than a webpage",
+                "code": "FETCH_UNSUPPORTED_CONTENT_TYPE",
+                "message": "The URL returned an unsupported content type",
                 "details": []
             }
         }
         """,
-        linkup.FetchUrlIsFileError,
+        linkup.FetchUnsupportedContentTypeError,
     ),
 ]
 
@@ -1072,6 +1085,51 @@ def test_create_tasks_research_model(mocker: MockerFixture, client: linkup.Clien
     assert tasks_response[0].input.reasoning_depth == "S"
 
 
+def test_create_tasks_queue_limit_error(mocker: MockerFixture, client: linkup.Client) -> None:
+    mocker.patch(
+        "httpx.Client.request",
+        return_value=Response(
+            status_code=429,
+            content=b"""
+            {
+                "error": {
+                    "code": "TASKS_QUEUE_LIMIT_EXCEEDED",
+                    "message": "Too many pending tasks.",
+                    "details": []
+                }
+            }
+            """,
+        ),
+    )
+
+    with pytest.raises(linkup.TasksQueueLimitExceededError):
+        client.create_tasks([linkup.FetchTaskInput(url="https://example.com")])
+
+
+@pytest.mark.asyncio
+async def test_async_create_tasks_queue_limit_error(
+    mocker: MockerFixture, client: linkup.Client
+) -> None:
+    mocker.patch(
+        "httpx.AsyncClient.request",
+        return_value=Response(
+            status_code=429,
+            content=b"""
+            {
+                "error": {
+                    "code": "TASKS_QUEUE_LIMIT_EXCEEDED",
+                    "message": "Too many pending tasks.",
+                    "details": []
+                }
+            }
+            """,
+        ),
+    )
+
+    with pytest.raises(linkup.TasksQueueLimitExceededError):
+        await client.async_create_tasks([linkup.FetchTaskInput(url="https://example.com")])
+
+
 @pytest.mark.asyncio
 async def test_async_list_research(mocker: MockerFixture, client: linkup.Client) -> None:
     request_mock = mocker.patch(
@@ -1142,6 +1200,49 @@ async def test_async_list_research(mocker: MockerFixture, client: linkup.Client)
     )
 
 
+def test_get_task_not_found(mocker: MockerFixture, client: linkup.Client) -> None:
+    mocker.patch(
+        "httpx.Client.request",
+        return_value=Response(
+            status_code=404,
+            content=b"""
+            {
+                "error": {
+                    "code": "TASK_NOT_FOUND",
+                    "message": "Task task-404 not found.",
+                    "details": []
+                }
+            }
+            """,
+        ),
+    )
+
+    with pytest.raises(linkup.TaskNotFoundError):
+        client.get_task("task-404")
+
+
+@pytest.mark.asyncio
+async def test_async_get_research_not_found(mocker: MockerFixture, client: linkup.Client) -> None:
+    mocker.patch(
+        "httpx.AsyncClient.request",
+        return_value=Response(
+            status_code=404,
+            content=b"""
+            {
+                "error": {
+                    "code": "TASK_NOT_FOUND",
+                    "message": "Task research-404 not found.",
+                    "details": []
+                }
+            }
+            """,
+        ),
+    )
+
+    with pytest.raises(linkup.TaskNotFoundError):
+        await client.async_get_research("research-404")
+
+
 def test_list_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
     request_mock = mocker.patch(
         "httpx.Client.request",
@@ -1197,6 +1298,89 @@ def test_list_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
     assert isinstance(tasks_page.data[0], linkup.ResearchTask)
     assert tasks_page.data[0].input.query == "query"
     assert tasks_page.quota.in_flight == 1
+
+
+def test_list_tasks_with_multiple_filters(mocker: MockerFixture, client: linkup.Client) -> None:
+    request_mock = mocker.patch(
+        "httpx.Client.request",
+        return_value=Response(
+            status_code=200,
+            content=b"""
+            {
+                "data": [],
+                "metadata": {
+                    "page": 1,
+                    "pageSize": 10,
+                    "total": 0,
+                    "totalPages": 0
+                },
+                "quota": {
+                    "inFlight": 0,
+                    "limit": 100
+                }
+            }
+            """,
+        ),
+    )
+
+    tasks_page = client.list_tasks(
+        status=["pending", "processing"],
+        task_type=["search", "research"],
+    )
+
+    request_mock.assert_called_once_with(
+        method="GET",
+        url="/tasks",
+        params={
+            "status": ["pending", "processing"],
+            "type": ["search", "research"],
+        },
+        timeout=None,
+    )
+    assert tasks_page.metadata.total == 0
+
+
+@pytest.mark.asyncio
+async def test_async_list_tasks_with_multiple_filters(
+    mocker: MockerFixture, client: linkup.Client
+) -> None:
+    request_mock = mocker.patch(
+        "httpx.AsyncClient.request",
+        return_value=Response(
+            status_code=200,
+            content=b"""
+            {
+                "data": [],
+                "metadata": {
+                    "page": 1,
+                    "pageSize": 10,
+                    "total": 0,
+                    "totalPages": 0
+                },
+                "quota": {
+                    "inFlight": 0,
+                    "limit": 100
+                }
+            }
+            """,
+        ),
+    )
+
+    tasks_page = await client.async_list_tasks(
+        status=["pending", "processing"],
+        task_type=["search", "research"],
+    )
+
+    request_mock.assert_called_once_with(
+        method="GET",
+        url="/tasks",
+        params={
+            "status": ["pending", "processing"],
+            "type": ["search", "research"],
+        },
+        timeout=None,
+    )
+    assert tasks_page.metadata.total == 0
 
 
 _402_BODY = b'{"error": {"code": "PAYMENT_REQUIRED", "message": "Pay", "details": []}}'

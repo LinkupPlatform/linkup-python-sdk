@@ -12,13 +12,17 @@ from pydantic import BaseModel, SecretStr
 
 from ._errors import (
     LinkupAuthenticationError,
+    LinkupBudgetLimitExceededError,
     LinkupFailedFetchError,
     LinkupFetchResponseTooLargeError,
+    LinkupFetchUnsupportedContentTypeError,
     LinkupFetchUrlIsFileError,
     LinkupInsufficientCreditError,
     LinkupInvalidRequestError,
     LinkupNoResultError,
     LinkupPaymentRequiredError,
+    LinkupTaskNotFoundError,
+    LinkupTasksQueueLimitExceededError,
     LinkupTimeoutError,
     LinkupTooManyRequestsError,
     LinkupUnknownError,
@@ -154,6 +158,7 @@ class LinkupClient:
                 JSON schema when output_type is "structured".
             LinkupAuthenticationError: If the Linkup API key is invalid.
             LinkupInsufficientCreditError: If you have run out of credit.
+            LinkupBudgetLimitExceededError: If the API key has reached its configured budget limit.
             LinkupNoResultError: If the search query did not yield any result.
             LinkupTimeoutError: If the request times out.
         """
@@ -253,6 +258,7 @@ class LinkupClient:
                 JSON schema when output_type is "structured".
             LinkupAuthenticationError: If the Linkup API key is invalid.
             LinkupInsufficientCreditError: If you have run out of credit.
+            LinkupBudgetLimitExceededError: If the API key has reached its configured budget limit.
             LinkupNoResultError: If the search query did not yield any result.
             LinkupTimeoutError: If the request times out.
         """
@@ -519,7 +525,7 @@ class LinkupClient:
             The requested research task.
 
         Raises:
-            LinkupInvalidRequestError: If the research identifier is invalid or unknown.
+            LinkupTaskNotFoundError: If the research identifier does not match an existing task.
             LinkupAuthenticationError: If the Linkup API key is invalid.
             LinkupTimeoutError: If the request times out.
         """
@@ -545,7 +551,7 @@ class LinkupClient:
             The requested research task.
 
         Raises:
-            LinkupInvalidRequestError: If the research identifier is invalid or unknown.
+            LinkupTaskNotFoundError: If the research identifier does not match an existing task.
             LinkupAuthenticationError: If the Linkup API key is invalid.
             LinkupTimeoutError: If the request times out.
         """
@@ -577,6 +583,7 @@ class LinkupClient:
             LinkupInvalidRequestError: If the task payload is invalid.
             LinkupAuthenticationError: If the Linkup API key is invalid.
             LinkupInsufficientCreditError: If you have run out of credit.
+            LinkupTasksQueueLimitExceededError: If too many tasks are already pending or processing.
             LinkupTimeoutError: If the request times out.
         """
         response = self._request(
@@ -609,6 +616,7 @@ class LinkupClient:
             LinkupInvalidRequestError: If the task payload is invalid.
             LinkupAuthenticationError: If the Linkup API key is invalid.
             LinkupInsufficientCreditError: If you have run out of credit.
+            LinkupTasksQueueLimitExceededError: If too many tasks are already pending or processing.
             LinkupTimeoutError: If the request times out.
         """
         response = await self._async_request(
@@ -739,7 +747,7 @@ class LinkupClient:
             The requested task, parsed according to its task type.
 
         Raises:
-            LinkupInvalidRequestError: If the task identifier is invalid or unknown.
+            LinkupTaskNotFoundError: If the task identifier does not match an existing task.
             LinkupAuthenticationError: If the Linkup API key is invalid.
             LinkupTimeoutError: If the request times out.
         """
@@ -763,7 +771,7 @@ class LinkupClient:
             The requested task, parsed according to its task type.
 
         Raises:
-            LinkupInvalidRequestError: If the task identifier is invalid or unknown.
+            LinkupTaskNotFoundError: If the task identifier does not match an existing task.
             LinkupAuthenticationError: If the Linkup API key is invalid.
             LinkupTimeoutError: If the request times out.
         """
@@ -805,7 +813,8 @@ class LinkupClient:
             LinkupInvalidRequestError: If the provided URL is not valid.
             LinkupFailedFetchError: If the provided URL is not found or can't be fetched.
             LinkupFetchResponseTooLargeError: If the fetch response is too large.
-            LinkupFetchUrlIsFileError: If the provided URL points to a file and not a web page.
+            LinkupFetchUnsupportedContentTypeError: If the URL resolves to an unsupported content
+                type.
             LinkupTimeoutError: If the request times out.
         """
         params: dict[str, str | bool] = self._get_fetch_params(
@@ -854,7 +863,8 @@ class LinkupClient:
             LinkupInvalidRequestError: If the provided URL is not valid.
             LinkupFailedFetchError: If the provided URL is not found or can't be fetched.
             LinkupFetchResponseTooLargeError: If the fetch response is too large.
-            LinkupFetchUrlIsFileError: If the provided URL points to a file and not a web page.
+            LinkupFetchUnsupportedContentTypeError: If the URL resolves to an unsupported content
+                type.
             LinkupTimeoutError: If the request times out.
         """
         params: dict[str, str | bool] = self._get_fetch_params(
@@ -1093,6 +1103,12 @@ class LinkupClient:
                         "The provided URL's response is too large to be processed.\n"
                         f"Original error message: {error_msg}."
                     )
+                if code == "FETCH_UNSUPPORTED_CONTENT_TYPE":
+                    raise LinkupFetchUnsupportedContentTypeError(
+                        "The Linkup API returned an unsupported content type error (400). "
+                        "The provided URL does not point to a supported web page content type.\n"
+                        f"Original error message: {error_msg}."
+                    )
                 if code == "FETCH_URL_IS_FILE":
                     raise LinkupFetchUrlIsFileError(
                         "The Linkup API returned a fetch URL is file error (400). "
@@ -1118,11 +1134,34 @@ class LinkupClient:
                     "key is valid.\n"
                     f"Original error message: {error_msg}."
                 )
+            if response.status_code == 404:
+                if code == "TASK_NOT_FOUND":
+                    raise LinkupTaskNotFoundError(
+                        "The Linkup API returned a task not found error (404). "
+                        "The requested task identifier does not exist.\n"
+                        f"Original error message: {error_msg}."
+                    )
+                raise LinkupUnknownError(
+                    f"The Linkup API returned an unknown error (404).\n"
+                    f"Original error message: ({error_msg})."
+                )
             if response.status_code == 429:
                 if code == "INSUFFICIENT_FUNDS_CREDITS":
                     raise LinkupInsufficientCreditError(
                         "The Linkup API returned an insufficient credit error (429). Make sure "
                         "you haven't exhausted your credits.\n"
+                        f"Original error message: {error_msg}."
+                    )
+                if code == "EXCEED_BUDGET_LIMIT":
+                    raise LinkupBudgetLimitExceededError(
+                        "The Linkup API returned a budget limit exceeded error (429). "
+                        "The API key has reached its configured budget limit.\n"
+                        f"Original error message: {error_msg}."
+                    )
+                if code == "TASKS_QUEUE_LIMIT_EXCEEDED":
+                    raise LinkupTasksQueueLimitExceededError(
+                        "The Linkup API returned a tasks queue limit exceeded error (429). "
+                        "Too many tasks are already pending or processing.\n"
                         f"Original error message: {error_msg}."
                     )
                 if code == "TOO_MANY_REQUESTS":
