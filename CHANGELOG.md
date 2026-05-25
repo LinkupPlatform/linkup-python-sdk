@@ -2,6 +2,17 @@
 
 <!-- version list -->
 
+## v0.16.0 (2026-05-25)
+
+### Bug Fixes
+
+- Make error handling up to date with API
+  ([`d4f6fca`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/d4f6fca9a3a58ef9179b556f9e59401bebf5f608))
+
+- Support for multiple statuses and task types in list_tasks
+  ([`8853421`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/88534219b2e920df1922a46b9b8559f87532f9f4))
+
+
 ## v0.15.0 (2026-05-21)
 
 ### Bug Fixes
