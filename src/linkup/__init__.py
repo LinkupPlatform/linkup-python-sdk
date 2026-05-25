@@ -1,13 +1,17 @@
 from ._client import LinkupClient
 from ._errors import (
     LinkupAuthenticationError,
+    LinkupBudgetLimitExceededError,
     LinkupFailedFetchError,
     LinkupFetchResponseTooLargeError,
+    LinkupFetchUnsupportedContentTypeError,
     LinkupFetchUrlIsFileError,
     LinkupInsufficientCreditError,
     LinkupInvalidRequestError,
     LinkupNoResultError,
     LinkupPaymentRequiredError,
+    LinkupTaskNotFoundError,
+    LinkupTasksQueueLimitExceededError,
     LinkupTimeoutError,
     LinkupTooManyRequestsError,
     LinkupUnknownError,
@@ -38,11 +42,13 @@ from ._version import __version__
 
 # Aliases to allow usage like `import linkup` and `client = linkup.Client(...)`
 AuthenticationError = LinkupAuthenticationError
+BudgetLimitExceededError = LinkupBudgetLimitExceededError
 Client = LinkupClient
 FailedFetchError = LinkupFailedFetchError
 FetchImageExtraction = LinkupFetchImageExtraction
 FetchResponse = LinkupFetchResponse
 FetchResponseTooLargeError = LinkupFetchResponseTooLargeError
+FetchUnsupportedContentTypeError = LinkupFetchUnsupportedContentTypeError
 FetchTask = LinkupFetchTask
 FetchTaskInput = LinkupFetchTaskInput
 FetchUrlIsFileError = LinkupFetchUrlIsFileError
@@ -62,16 +68,19 @@ SearchTextResult = LinkupSearchTextResult
 Source = LinkupSource
 SourcedAnswer = LinkupSourcedAnswer
 Task = LinkupTask
+TaskNotFoundError = LinkupTaskNotFoundError
 TaskInput = LinkupTaskInput
 TaskMetadata = LinkupTaskMetadata
 TaskQuota = LinkupTaskQuota
 TasksPage = LinkupTasksPage
+TasksQueueLimitExceededError = LinkupTasksQueueLimitExceededError
 TimeoutError = LinkupTimeoutError  # noqa: A001
 TooManyRequestsError = LinkupTooManyRequestsError
 UnknownError = LinkupUnknownError
 
 __all__ = [
     "AuthenticationError",
+    "BudgetLimitExceededError",
     "Client",
     "FailedFetchError",
     "FetchImageExtraction",
@@ -79,10 +88,12 @@ __all__ = [
     "FetchResponseTooLargeError",
     "FetchTask",
     "FetchTaskInput",
+    "FetchUnsupportedContentTypeError",
     "FetchUrlIsFileError",
     "InsufficientCreditError",
     "InvalidRequestError",
     "LinkupAuthenticationError",
+    "LinkupBudgetLimitExceededError",
     "LinkupClient",
     "LinkupFailedFetchError",
     "LinkupFetchImageExtraction",
@@ -90,6 +101,7 @@ __all__ = [
     "LinkupFetchResponseTooLargeError",
     "LinkupFetchTask",
     "LinkupFetchTaskInput",
+    "LinkupFetchUnsupportedContentTypeError",
     "LinkupFetchUrlIsFileError",
     "LinkupInsufficientCreditError",
     "LinkupInvalidRequestError",
@@ -109,8 +121,10 @@ __all__ = [
     "LinkupTask",
     "LinkupTaskInput",
     "LinkupTaskMetadata",
+    "LinkupTaskNotFoundError",
     "LinkupTaskQuota",
     "LinkupTasksPage",
+    "LinkupTasksQueueLimitExceededError",
     "LinkupTimeoutError",
     "LinkupTooManyRequestsError",
     "LinkupUnknownError",
@@ -130,8 +144,10 @@ __all__ = [
     "Task",
     "TaskInput",
     "TaskMetadata",
+    "TaskNotFoundError",
     "TaskQuota",
     "TasksPage",
+    "TasksQueueLimitExceededError",
     "TimeoutError",
     "TooManyRequestsError",
     "UnknownError",

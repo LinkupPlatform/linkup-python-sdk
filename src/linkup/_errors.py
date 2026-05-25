@@ -76,11 +76,48 @@ class LinkupFetchResponseTooLargeError(Exception):
     pass
 
 
-class LinkupFetchUrlIsFileError(Exception):
-    """Fetch URL is file error, raised when the Linkup API search returns a 400 status code.
+class LinkupFetchUnsupportedContentTypeError(Exception):
+    """Unsupported fetch content type error, raised when the Linkup API returns a 400 status code.
 
-    It is returned when the Linkup API can't fetch the URL because it points to a file and not
-    a web page.
+    It is returned when the URL resolves to a content type that Linkup cannot convert into a web
+    page response.
+    """
+
+    pass
+
+
+class LinkupFetchUrlIsFileError(LinkupFetchUnsupportedContentTypeError):
+    """Backward-compatible alias for unsupported fetch content type errors.
+
+    Older Linkup API deployments could report this case as a file URL. Current deployments return
+    the more general unsupported content type error instead.
+    """
+
+    pass
+
+
+class LinkupBudgetLimitExceededError(Exception):
+    """Budget limit exceeded error, raised when the Linkup API returns a 429 status code.
+
+    It is returned when the API key has reached its configured budget limit.
+    """
+
+    pass
+
+
+class LinkupTasksQueueLimitExceededError(Exception):
+    """Tasks queue limit exceeded error, raised when the Linkup API returns a 429 status code.
+
+    It is returned when too many tasks are already pending or processing for the organization.
+    """
+
+    pass
+
+
+class LinkupTaskNotFoundError(Exception):
+    """Task not found error, raised when the Linkup API returns a 404 status code.
+
+    It is returned when a task or research task identifier does not exist.
     """
 
     pass
