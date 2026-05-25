@@ -627,8 +627,12 @@ class LinkupClient:
         page_size: int | None = None,
         sort_by: Literal["createdAt", "updatedAt"] | None = None,
         sort_direction: Literal["asc", "desc"] | None = None,
-        status: Literal["pending", "processing", "completed", "failed"] | None = None,
-        task_type: Literal["search", "fetch", "research"] | None = None,
+        status: Literal["pending", "processing", "completed", "failed"]
+        | list[Literal["pending", "processing", "completed", "failed"]]
+        | None = None,
+        task_type: Literal["search", "fetch", "research"]
+        | list[Literal["search", "fetch", "research"]]
+        | None = None,
         timeout: float | None = None,
     ) -> LinkupTasksPage:
         """List tasks for the authenticated organization.
@@ -640,8 +644,8 @@ class LinkupClient:
                 API default is used.
             sort_direction: The sort direction, either "asc" or "desc". If None, the Linkup API
                 default is used.
-            status: A task status to filter by. If None, no status filter is sent.
-            task_type: A task type to filter by. If None, no task type filter is sent.
+            status: One or more task statuses to filter by. If None, no status filter is sent.
+            task_type: One or more task types to filter by. If None, no task type filter is sent.
             timeout: The timeout for the HTTP request, in seconds. If None, the request will have
                 no timeout.
 
@@ -676,8 +680,12 @@ class LinkupClient:
         page_size: int | None = None,
         sort_by: Literal["createdAt", "updatedAt"] | None = None,
         sort_direction: Literal["asc", "desc"] | None = None,
-        status: Literal["pending", "processing", "completed", "failed"] | None = None,
-        task_type: Literal["search", "fetch", "research"] | None = None,
+        status: Literal["pending", "processing", "completed", "failed"]
+        | list[Literal["pending", "processing", "completed", "failed"]]
+        | None = None,
+        task_type: Literal["search", "fetch", "research"]
+        | list[Literal["search", "fetch", "research"]]
+        | None = None,
         timeout: float | None = None,
     ) -> LinkupTasksPage:
         """Asynchronously list tasks for the authenticated organization.
@@ -689,8 +697,8 @@ class LinkupClient:
                 API default is used.
             sort_direction: The sort direction, either "asc" or "desc". If None, the Linkup API
                 default is used.
-            status: A task status to filter by. If None, no status filter is sent.
-            task_type: A task type to filter by. If None, no task type filter is sent.
+            status: One or more task statuses to filter by. If None, no status filter is sent.
+            task_type: One or more task types to filter by. If None, no task type filter is sent.
             timeout: The timeout for the HTTP request, in seconds. If None, the request will have
                 no timeout.
 
@@ -1256,8 +1264,12 @@ class LinkupClient:
         page_size: int | None,
         sort_by: Literal["createdAt", "updatedAt"] | None,
         sort_direction: Literal["asc", "desc"] | None,
-        status: Literal["pending", "processing", "completed", "failed"] | None,
-        task_type: Literal["search", "fetch", "research"] | None,
+        status: Literal["pending", "processing", "completed", "failed"]
+        | list[Literal["pending", "processing", "completed", "failed"]]
+        | None,
+        task_type: Literal["search", "fetch", "research"]
+        | list[Literal["search", "fetch", "research"]]
+        | None,
     ) -> dict[str, Any]:
         params = self._get_paginated_params(
             page=page,
