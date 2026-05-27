@@ -19,6 +19,10 @@ class Company(BaseModel):
     founders_names: list[str]
 
 
+class ResearchSummary(BaseModel):
+    summary: str
+
+
 test_search_parameters = [
     (
         {"query": "query", "depth": "standard", "output_type": "searchResults"},
@@ -669,7 +673,7 @@ def test_research_structured_output_model(mocker: MockerFixture, client: linkup.
     research_response = client.research(
         query="query",
         output_type="structured",
-        structured_output_schema=Company,
+        structured_output_schema=ResearchSummary,
     )
 
     request_mock.assert_called_once_with(
@@ -678,11 +682,11 @@ def test_research_structured_output_model(mocker: MockerFixture, client: linkup.
         json={
             "q": "query",
             "outputType": "structured",
-            "structuredOutputSchema": json.dumps(Company.model_json_schema()),
+            "structuredOutputSchema": json.dumps(ResearchSummary.model_json_schema()),
         },
         timeout=None,
     )
-    assert research_response.output == Company(summary="done")
+    assert research_response.output == ResearchSummary(summary="done")
     assert research_response.input.query == "query"
     assert research_response.input.structured_output_schema == {"type": "object"}
 
@@ -719,7 +723,7 @@ async def test_async_research(mocker: MockerFixture, client: linkup.Client) -> N
     research_response = await client.async_research(
         query="query",
         output_type="structured",
-        structured_output_schema=Company,
+        structured_output_schema=ResearchSummary,
     )
 
     request_mock.assert_called_once_with(
@@ -728,11 +732,11 @@ async def test_async_research(mocker: MockerFixture, client: linkup.Client) -> N
         json={
             "q": "query",
             "outputType": "structured",
-            "structuredOutputSchema": json.dumps(Company.model_json_schema()),
+            "structuredOutputSchema": json.dumps(ResearchSummary.model_json_schema()),
         },
         timeout=None,
     )
-    assert research_response.output == Company(summary="done")
+    assert research_response.output == ResearchSummary(summary="done")
     assert research_response.input.query == "query"
     assert research_response.input.structured_output_schema == {"type": "object"}
 
