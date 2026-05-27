@@ -638,6 +638,55 @@ def test_research(mocker: MockerFixture, client: linkup.Client) -> None:
     )
 
 
+def test_research_structured_output_model(mocker: MockerFixture, client: linkup.Client) -> None:
+    request_mock = mocker.patch(
+        "httpx.Client.request",
+        return_value=Response(
+            status_code=200,
+            content=b"""
+            {
+                "createdAt": "2026-05-18T00:00:00.000Z",
+                "error": null,
+                "id": "bfeb26f5-f4d6-47d2-9818-7f62fbcd0b0c",
+                "input": {
+                    "outputType": "structured",
+                    "q": "query",
+                    "structuredOutputSchema": {
+                        "type": "object"
+                    }
+                },
+                "output": {
+                    "summary": "done"
+                },
+                "status": "completed",
+                "type": "research",
+                "updatedAt": "2026-05-18T00:00:00.000Z"
+            }
+            """,
+        ),
+    )
+
+    research_response = client.research(
+        query="query",
+        output_type="structured",
+        structured_output_schema=Company,
+    )
+
+    request_mock.assert_called_once_with(
+        method="POST",
+        url="/research",
+        json={
+            "q": "query",
+            "outputType": "structured",
+            "structuredOutputSchema": json.dumps(Company.model_json_schema()),
+        },
+        timeout=None,
+    )
+    assert research_response.output == Company(summary="done")
+    assert research_response.input.query == "query"
+    assert research_response.input.structured_output_schema == {"type": "object"}
+
+
 @pytest.mark.asyncio
 async def test_async_research(mocker: MockerFixture, client: linkup.Client) -> None:
     request_mock = mocker.patch(
@@ -683,7 +732,7 @@ async def test_async_research(mocker: MockerFixture, client: linkup.Client) -> N
         },
         timeout=None,
     )
-    assert research_response.output == {"summary": "done"}
+    assert research_response.output == Company(summary="done")
     assert research_response.input.query == "query"
     assert research_response.input.structured_output_schema == {"type": "object"}
 

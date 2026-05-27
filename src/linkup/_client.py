@@ -358,7 +358,9 @@ class LinkupClient:
             timeout=timeout,
         )
 
-        return self._parse_research_task(response.json())
+        return self._parse_research_task(
+            response.json(), structured_output_schema=structured_output_schema
+        )
 
     async def async_research(
         self,
@@ -427,7 +429,9 @@ class LinkupClient:
             timeout=timeout,
         )
 
-        return self._parse_research_task(response.json())
+        return self._parse_research_task(
+            response.json(), structured_output_schema=structured_output_schema
+        )
 
     def list_research(
         self,
@@ -1456,12 +1460,42 @@ class LinkupClient:
     def _parse_fetch_response_data(self, response_data: Any) -> LinkupFetchResponse:  # noqa: ANN401
         return LinkupFetchResponse.model_validate(response_data)
 
-    def _parse_research_task(self, task_data: dict[str, Any]) -> LinkupResearchTask:
+    def _parse_research_output_data(
+        self,
+        response_data: Any,  # noqa: ANN401
+        output_type: Literal["sourcedAnswer", "structured"],
+        structured_output_schema: type[BaseModel] | dict[str, Any] | str | None,
+    ) -> Any:  # noqa: ANN401
+        if output_type == "sourcedAnswer":
+            return LinkupSourcedAnswer.model_validate(response_data)
+        if output_type == "structured":
+            if structured_output_schema is None:
+                raise ValueError(
+                    "structured_output_schema must be provided when output_type is 'structured'"
+                )
+            if isinstance(structured_output_schema, type) and issubclass(
+                structured_output_schema, BaseModel
+            ):
+                return structured_output_schema.model_validate(response_data)
+            return response_data
+        raise ValueError(f"Unexpected output_type value: '{output_type}'")
+
+    def _parse_research_task(
+        self,
+        task_data: dict[str, Any],
+        structured_output_schema: type[BaseModel] | dict[str, Any] | str | None = None,
+    ) -> LinkupResearchTask:
         research_input = LinkupResearchTaskInput.model_validate(task_data["input"])
         parsed_output = task_data.get("output")
 
-        if parsed_output is not None and research_input.output_type == "sourcedAnswer":
-            parsed_output = LinkupSourcedAnswer.model_validate(parsed_output)
+        if parsed_output is not None:
+            parsed_output = self._parse_research_output_data(
+                response_data=parsed_output,
+                output_type=research_input.output_type,
+                structured_output_schema=structured_output_schema
+                if structured_output_schema is not None
+                else research_input.structured_output_schema,
+            )
 
         return LinkupResearchTask.model_validate(
             {**task_data, "input": research_input, "output": parsed_output}
