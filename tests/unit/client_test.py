@@ -1405,6 +1405,26 @@ def test_client_both_api_key_and_x402_signer_raises(
         linkup.Client(api_key="test-key", x402_signer=mock_x402_signer)
 
 
+def test_client_custom_auth_header(
+    mocker: MockerFixture,
+) -> None:
+    client = linkup.Client(api_key="my-key", auth_header="Ocp-Apim-Subscription-Key")
+    assert client._auth_header == "Ocp-Apim-Subscription-Key"  # noqa: SLF001
+
+    client_mock = mocker.patch("httpx.Client")
+    client_mock.return_value.__enter__ = lambda s: s
+    client_mock.return_value.__exit__ = MagicMock(return_value=False)
+    client_mock.return_value.request.return_value = Response(
+        status_code=200, content=b'{"results": []}'
+    )
+    client.search(query="query", depth="standard", output_type="searchResults")
+
+    init_kwargs = client_mock.call_args[1]
+    assert "Ocp-Apim-Subscription-Key" in init_kwargs["headers"]
+    assert init_kwargs["headers"]["Ocp-Apim-Subscription-Key"] == "my-key"
+    assert "Authorization" not in init_kwargs["headers"]
+
+
 def test_client_x402_no_auth_header(
     mocker: MockerFixture,
     x402_client: linkup.Client,

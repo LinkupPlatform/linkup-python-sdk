@@ -59,6 +59,10 @@ class LinkupClient:
         x402_signer: An optional x402 signer for payment-gated endpoints. If provided, the
             client will attempt to handle 402 responses automatically. Cannot be used together
             with api_key.
+        auth_header: Custom header name to use for the API key (e.g.
+            ``"Ocp-Apim-Subscription-Key"``). When set, the API key value is sent as
+            ``<auth_header>: <api_key>`` instead of the default
+            ``Authorization: Bearer <api_key>``.
 
     Raises:
         ValueError: If the API key is not provided and not found in the environment variable.
@@ -72,6 +76,7 @@ class LinkupClient:
         api_key: str | SecretStr | None = None,
         base_url: str = "https://api.linkup.so/v1",
         x402_signer: LinkupX402Signer | None = None,
+        auth_header: str | None = None,
     ) -> None:
         if api_key is not None and x402_signer is not None:
             raise ValueError("Cannot provide both api_key and x402_signer")
@@ -90,6 +95,7 @@ class LinkupClient:
             self._api_key = api_key
 
         self._base_url: str = base_url
+        self._auth_header: str | None = auth_header
 
     def search(
         self,
@@ -889,7 +895,10 @@ class LinkupClient:
     def _headers(self) -> dict[str, str]:  # pragma: no cover
         headers: dict[str, str] = {"User-Agent": self._user_agent()}
         if self._api_key is not None:
-            headers["Authorization"] = f"Bearer {self._api_key.get_secret_value()}"
+            if self._auth_header is not None:
+                headers[self._auth_header] = self._api_key.get_secret_value()
+            else:
+                headers["Authorization"] = f"Bearer {self._api_key.get_secret_value()}"
         return headers
 
     def _request(
