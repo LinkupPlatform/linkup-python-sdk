@@ -1412,8 +1412,7 @@ def test_client_custom_auth_header(
     assert client._auth_header == "Ocp-Apim-Subscription-Key"  # noqa: SLF001
 
     client_mock = mocker.patch("httpx.Client")
-    client_mock.return_value.__enter__ = lambda s: s
-    client_mock.return_value.__exit__ = MagicMock(return_value=False)
+    client_mock.return_value.__enter__.return_value = client_mock.return_value
     client_mock.return_value.request.return_value = Response(
         status_code=200, content=b'{"results": []}'
     )
