@@ -54,3 +54,29 @@ Add durable exceptions here when a proposed sync should not be repeated.
 - Do not implement `/responses` in this SDK unless explicitly requested.
 - If a capability was intentionally rejected for product/design reasons, do not propose it again
   until this file is updated.
+
+## Coding practices
+
+Besides the practices enforced through the CI checks (especially with ruff), we try to enforce the
+following coding practices:
+
+- Mark non-public modules, classes, methods, functions, and attributes private with a leading
+  underscore when they are not part of the SDK public API.
+- Prefer [Google style guide imports](https://google.github.io/styleguide/pyguide.html#22-imports)
+  for new code: import modules instead of importing symbols, except for `typing` symbols, public
+  re-exports, and cases where the existing file convention makes module imports awkward.
+- Treat anything exported from `linkup.__init__` or listed in `__all__` as public API; add exports
+  only intentionally.
+- Keep API wire-format names at the request/response boundary only. Internal and public Python APIs
+  should stay snake_case, and camelCase/API aliases should live in request serialization or Pydantic
+  aliases.
+- Keep sync and async methods structurally aligned: same parameters, same validation behavior, same
+  returned models, and same documented errors.
+- Store secrets as `pydantic.SecretStr` or an equivalent secret container once they enter client
+  state; do not store raw API keys on instances.
+- Prefer explicit SDK error classes over leaking transport or dependency exceptions from public
+  methods, except where deliberately documented.
+- Add `# noqa`, `# type: ignore`, and `# pyright: ignore` only with a short reason.
+- Avoid adding runtime dependencies for small conveniences; keep SDK dependencies minimal.
+- Write tests through the public `linkup` API unless the test is specifically covering private or
+  internal behavior.

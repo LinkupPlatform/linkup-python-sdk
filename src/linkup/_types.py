@@ -1,13 +1,18 @@
 """Input and output types for Linkup functions."""
 
+from __future__ import annotations
+
 from datetime import date
-from typing import Any, Literal
+from typing import Any, Literal, TypeAlias
 
-from pydantic import BaseModel, ConfigDict, Field
+import pydantic
 
 
-class _LinkupBaseModel(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
+class _LinkupBaseModel(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(populate_by_name=True)
+
+
+JSONObject: TypeAlias = dict[str, Any]
 
 
 class LinkupSearchTextResult(_LinkupBaseModel):
@@ -84,11 +89,11 @@ class LinkupSearchStructuredResponse(_LinkupBaseModel):
     """A Linkup `search` structured response, with the sources supporting it.
 
     Attributes:
-        data: The answer data, either as a Pydantic model or an arbitrary JSON structure.
+        data: The raw structured output dictionary.
         sources: The sources supporting the answer.
     """
 
-    data: Any
+    data: JSONObject
     sources: list[LinkupSearchTextResult | LinkupSearchImageResult]
 
 
@@ -114,8 +119,8 @@ class LinkupFetchResponse(_LinkupBaseModel):
     """
 
     markdown: str
-    raw_html: str | None = Field(default=None, validation_alias="rawHtml")
-    images: list[LinkupFetchImageExtraction] | None = Field(default=None)
+    raw_html: str | None = pydantic.Field(default=None, validation_alias="rawHtml")
+    images: list[LinkupFetchImageExtraction] | None = pydantic.Field(default=None)
 
 
 class LinkupSearchTaskInput(_LinkupBaseModel):
@@ -136,23 +141,27 @@ class LinkupSearchTaskInput(_LinkupBaseModel):
         structured_output_schema: The structured output schema, if any.
     """
 
-    query: str = Field(validation_alias="q")
+    query: str = pydantic.Field(validation_alias="q")
     depth: Literal["fast", "standard", "deep"]
-    output_type: Literal["searchResults", "sourcedAnswer", "structured"] = Field(
+    output_type: Literal["searchResults", "sourcedAnswer", "structured"] = pydantic.Field(
         validation_alias="outputType"
     )
-    include_images: bool | None = Field(default=None, validation_alias="includeImages")
-    from_date: date | str | None = Field(default=None, validation_alias="fromDate")
-    to_date: date | str | None = Field(default=None, validation_alias="toDate")
-    exclude_domains: list[str] | None = Field(default=None, validation_alias="excludeDomains")
-    include_domains: list[str] | None = Field(default=None, validation_alias="includeDomains")
-    max_results: int | None = Field(default=None, validation_alias="maxResults")
-    include_inline_citations: bool | None = Field(
+    include_images: bool | None = pydantic.Field(default=None, validation_alias="includeImages")
+    from_date: date | str | None = pydantic.Field(default=None, validation_alias="fromDate")
+    to_date: date | str | None = pydantic.Field(default=None, validation_alias="toDate")
+    exclude_domains: list[str] | None = pydantic.Field(
+        default=None, validation_alias="excludeDomains"
+    )
+    include_domains: list[str] | None = pydantic.Field(
+        default=None, validation_alias="includeDomains"
+    )
+    max_results: int | None = pydantic.Field(default=None, validation_alias="maxResults")
+    include_inline_citations: bool | None = pydantic.Field(
         default=None, validation_alias="includeInlineCitations"
     )
-    include_sources: bool | None = Field(default=None, validation_alias="includeSources")
-    structured_output_schema: type[BaseModel] | str | dict[str, Any] | None = Field(
-        default=None, validation_alias="structuredOutputSchema"
+    include_sources: bool | None = pydantic.Field(default=None, validation_alias="includeSources")
+    structured_output_schema: type[pydantic.BaseModel] | str | dict[str, Any] | None = (
+        pydantic.Field(default=None, validation_alias="structuredOutputSchema")
     )
 
 
@@ -171,18 +180,24 @@ class LinkupResearchTaskInput(_LinkupBaseModel):
         structured_output_schema: The structured output schema, if any.
     """
 
-    query: str = Field(validation_alias="q")
-    output_type: Literal["sourcedAnswer", "structured"] = Field(validation_alias="outputType")
+    query: str = pydantic.Field(validation_alias="q")
+    output_type: Literal["sourcedAnswer", "structured"] = pydantic.Field(
+        validation_alias="outputType"
+    )
     mode: Literal["answer", "auto", "investigate", "research"] | None = None
-    reasoning_depth: Literal["S", "M", "L", "XL"] | None = Field(
+    reasoning_depth: Literal["S", "M", "L", "XL"] | None = pydantic.Field(
         default=None, validation_alias="reasoningDepth"
     )
-    from_date: date | str | None = Field(default=None, validation_alias="fromDate")
-    to_date: date | str | None = Field(default=None, validation_alias="toDate")
-    exclude_domains: list[str] | None = Field(default=None, validation_alias="excludeDomains")
-    include_domains: list[str] | None = Field(default=None, validation_alias="includeDomains")
-    structured_output_schema: type[BaseModel] | str | dict[str, Any] | None = Field(
-        default=None, validation_alias="structuredOutputSchema"
+    from_date: date | str | None = pydantic.Field(default=None, validation_alias="fromDate")
+    to_date: date | str | None = pydantic.Field(default=None, validation_alias="toDate")
+    exclude_domains: list[str] | None = pydantic.Field(
+        default=None, validation_alias="excludeDomains"
+    )
+    include_domains: list[str] | None = pydantic.Field(
+        default=None, validation_alias="includeDomains"
+    )
+    structured_output_schema: type[pydantic.BaseModel] | str | dict[str, Any] | None = (
+        pydantic.Field(default=None, validation_alias="structuredOutputSchema")
     )
 
 
@@ -197,9 +212,9 @@ class LinkupFetchTaskInput(_LinkupBaseModel):
     """
 
     url: str
-    include_raw_html: bool | None = Field(default=None, validation_alias="includeRawHtml")
-    render_js: bool | None = Field(default=None, validation_alias="renderJs")
-    extract_images: bool | None = Field(default=None, validation_alias="extractImages")
+    include_raw_html: bool | None = pydantic.Field(default=None, validation_alias="includeRawHtml")
+    render_js: bool | None = pydantic.Field(default=None, validation_alias="renderJs")
+    extract_images: bool | None = pydantic.Field(default=None, validation_alias="extractImages")
 
 
 LinkupTaskInput = LinkupSearchTaskInput | LinkupFetchTaskInput | LinkupResearchTaskInput
@@ -216,9 +231,9 @@ class LinkupTaskMetadata(_LinkupBaseModel):
     """
 
     page: int
-    page_size: int = Field(validation_alias="pageSize")
+    page_size: int = pydantic.Field(validation_alias="pageSize")
     total: int
-    total_pages: int = Field(validation_alias="totalPages")
+    total_pages: int = pydantic.Field(validation_alias="totalPages")
 
 
 class LinkupTaskQuota(_LinkupBaseModel):
@@ -229,7 +244,7 @@ class LinkupTaskQuota(_LinkupBaseModel):
         limit: The maximum number of in-flight tasks allowed.
     """
 
-    in_flight: int = Field(validation_alias="inFlight")
+    in_flight: int = pydantic.Field(validation_alias="inFlight")
     limit: int
 
 
@@ -241,20 +256,27 @@ class LinkupSearchTask(_LinkupBaseModel):
         error: The task error message, if the task failed.
         id: The task identifier.
         input: The normalized search input for this task.
-        output: The parsed search output, if available.
+        output: The parsed search results, sourced answer, sourced structured response, or raw
+            structured output dictionary, if available.
         status: The current task status.
         type: The task type, in this case "search".
         updated_at: The last task update timestamp.
     """
 
-    created_at: str = Field(validation_alias="createdAt")
+    created_at: str = pydantic.Field(validation_alias="createdAt")
     error: str | None = None
     id: str
     input: LinkupSearchTaskInput
-    output: Any = None
+    output: (
+        LinkupSearchResults
+        | LinkupSourcedAnswer
+        | LinkupSearchStructuredResponse
+        | JSONObject
+        | None
+    ) = None
     status: Literal["pending", "processing", "completed", "failed"]
     type: Literal["search"]
-    updated_at: str = Field(validation_alias="updatedAt")
+    updated_at: str = pydantic.Field(validation_alias="updatedAt")
 
 
 class LinkupFetchTask(_LinkupBaseModel):
@@ -271,14 +293,14 @@ class LinkupFetchTask(_LinkupBaseModel):
         updated_at: The last task update timestamp.
     """
 
-    created_at: str = Field(validation_alias="createdAt")
+    created_at: str = pydantic.Field(validation_alias="createdAt")
     error: str | None = None
     id: str
     input: LinkupFetchTaskInput
     output: LinkupFetchResponse | None = None
     status: Literal["pending", "processing", "completed", "failed"]
     type: Literal["fetch"]
-    updated_at: str = Field(validation_alias="updatedAt")
+    updated_at: str = pydantic.Field(validation_alias="updatedAt")
 
 
 class LinkupResearchTask(_LinkupBaseModel):
@@ -289,20 +311,20 @@ class LinkupResearchTask(_LinkupBaseModel):
         error: The task error message, if the task failed.
         id: The task identifier.
         input: The normalized research input for this task.
-        output: The parsed research output, if available.
+        output: The parsed sourced answer, or raw structured output dictionary, if available.
         status: The current task status.
         type: The task type, in this case "research".
         updated_at: The last task update timestamp.
     """
 
-    created_at: str = Field(validation_alias="createdAt")
+    created_at: str = pydantic.Field(validation_alias="createdAt")
     error: str | None = None
     id: str
     input: LinkupResearchTaskInput
-    output: Any = None
+    output: LinkupSourcedAnswer | JSONObject | None = None
     status: Literal["pending", "processing", "completed", "failed"]
     type: Literal["research"]
-    updated_at: str = Field(validation_alias="updatedAt")
+    updated_at: str = pydantic.Field(validation_alias="updatedAt")
 
 
 LinkupTask = LinkupSearchTask | LinkupFetchTask | LinkupResearchTask

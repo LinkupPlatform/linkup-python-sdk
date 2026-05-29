@@ -17,6 +17,7 @@ from ._errors import (
     LinkupUnknownError,
 )
 from ._types import (
+    JSONObject,
     LinkupFetchImageExtraction,
     LinkupFetchResponse,
     LinkupFetchTask,
@@ -92,6 +93,7 @@ __all__ = [
     "FetchUrlIsFileError",
     "InsufficientCreditError",
     "InvalidRequestError",
+    "JSONObject",
     "LinkupAuthenticationError",
     "LinkupBudgetLimitExceededError",
     "LinkupClient",
