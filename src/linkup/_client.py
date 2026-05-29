@@ -5,10 +5,10 @@ from __future__ import annotations
 import json
 import os
 from datetime import date  # noqa: TC003 (`date` is used in test mocks)
-from typing import TYPE_CHECKING, Any, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal, cast, overload
 
 import httpx
-from pydantic import BaseModel, SecretStr
+import pydantic
 
 from ._errors import (
     LinkupAuthenticationError,
@@ -28,6 +28,7 @@ from ._errors import (
     LinkupUnknownError,
 )
 from ._types import (
+    JSONObject,
     LinkupFetchResponse,
     LinkupFetchTask,
     LinkupFetchTaskInput,
@@ -73,7 +74,7 @@ class LinkupClient:
 
     def __init__(
         self,
-        api_key: str | SecretStr | None = None,
+        api_key: str | pydantic.SecretStr | None = None,
         base_url: str = "https://api.linkup.so/v1",
         x402_signer: LinkupX402Signer | None = None,
         auth_header: str | None = None,
@@ -84,25 +85,27 @@ class LinkupClient:
         self._x402_signer: LinkupX402Signer | None = x402_signer
 
         if x402_signer is not None:
-            self._api_key: SecretStr | None = None
+            self._api_key: pydantic.SecretStr | None = None
         else:
             if api_key is None:
                 api_key = os.getenv("LINKUP_API_KEY")
             if not api_key:
                 raise ValueError("The Linkup API key was not provided")
             if isinstance(api_key, str):
-                api_key = SecretStr(api_key)
+                api_key = pydantic.SecretStr(api_key)
             self._api_key = api_key
 
         self._base_url: str = base_url
         self._auth_header: str | None = auth_header
 
+    @overload
     def search(
         self,
         query: str,
+        *,
         depth: Literal["fast", "standard", "deep"],
-        output_type: Literal["searchResults", "sourcedAnswer", "structured"],
-        structured_output_schema: type[BaseModel] | dict[str, Any] | str | None = None,
+        output_type: Literal["searchResults"],
+        structured_output_schema: None = None,
         include_images: bool | None = None,
         from_date: date | str | None = None,
         to_date: date | str | None = None,
@@ -112,7 +115,103 @@ class LinkupClient:
         include_inline_citations: bool | None = None,
         include_sources: bool | None = None,
         timeout: float | None = None,
-    ) -> Any:  # noqa: ANN401
+    ) -> LinkupSearchResults: ...
+
+    @overload
+    def search(
+        self,
+        query: str,
+        *,
+        depth: Literal["fast", "standard", "deep"],
+        output_type: Literal["sourcedAnswer"],
+        structured_output_schema: None = None,
+        include_images: bool | None = None,
+        from_date: date | str | None = None,
+        to_date: date | str | None = None,
+        exclude_domains: list[str] | None = None,
+        include_domains: list[str] | None = None,
+        max_results: int | None = None,
+        include_inline_citations: bool | None = None,
+        include_sources: bool | None = None,
+        timeout: float | None = None,
+    ) -> LinkupSourcedAnswer: ...
+
+    @overload
+    def search(
+        self,
+        query: str,
+        *,
+        depth: Literal["fast", "standard", "deep"],
+        output_type: Literal["structured"],
+        structured_output_schema: type[pydantic.BaseModel] | dict[str, Any] | str,
+        include_images: bool | None = None,
+        from_date: date | str | None = None,
+        to_date: date | str | None = None,
+        exclude_domains: list[str] | None = None,
+        include_domains: list[str] | None = None,
+        max_results: int | None = None,
+        include_inline_citations: bool | None = None,
+        include_sources: Literal[False] | None = None,
+        timeout: float | None = None,
+    ) -> JSONObject: ...
+
+    @overload
+    def search(
+        self,
+        query: str,
+        *,
+        depth: Literal["fast", "standard", "deep"],
+        output_type: Literal["structured"],
+        structured_output_schema: type[pydantic.BaseModel] | dict[str, Any] | str,
+        include_images: bool | None = None,
+        from_date: date | str | None = None,
+        to_date: date | str | None = None,
+        exclude_domains: list[str] | None = None,
+        include_domains: list[str] | None = None,
+        max_results: int | None = None,
+        include_inline_citations: bool | None = None,
+        include_sources: Literal[True],
+        timeout: float | None = None,
+    ) -> LinkupSearchStructuredResponse: ...
+
+    @overload
+    def search(
+        self,
+        query: str,
+        *,
+        depth: Literal["fast", "standard", "deep"],
+        output_type: Literal["searchResults", "sourcedAnswer", "structured"],
+        structured_output_schema: type[pydantic.BaseModel] | dict[str, Any] | str | None = None,
+        include_images: bool | None = None,
+        from_date: date | str | None = None,
+        to_date: date | str | None = None,
+        exclude_domains: list[str] | None = None,
+        include_domains: list[str] | None = None,
+        max_results: int | None = None,
+        include_inline_citations: bool | None = None,
+        include_sources: bool | None = None,
+        timeout: float | None = None,
+    ) -> (
+        LinkupSearchResults | LinkupSourcedAnswer | JSONObject | LinkupSearchStructuredResponse
+    ): ...
+
+    def search(
+        self,
+        query: str,
+        *,
+        depth: Literal["fast", "standard", "deep"],
+        output_type: Literal["searchResults", "sourcedAnswer", "structured"],
+        structured_output_schema: type[pydantic.BaseModel] | dict[str, Any] | str | None = None,
+        include_images: bool | None = None,
+        from_date: date | str | None = None,
+        to_date: date | str | None = None,
+        exclude_domains: list[str] | None = None,
+        include_domains: list[str] | None = None,
+        max_results: int | None = None,
+        include_inline_citations: bool | None = None,
+        include_sources: bool | None = None,
+        timeout: float | None = None,
+    ) -> LinkupSearchResults | LinkupSourcedAnswer | JSONObject | LinkupSearchStructuredResponse:
         """Perform a web search using the Linkup API `search` endpoint.
 
         All optional parameters will default to the Linkup API defaults when not provided. The
@@ -130,8 +229,8 @@ class LinkupClient:
                 supporting it, and "structured" will base the output on the format provided in
                 structured_output_schema.
             structured_output_schema: If output_type is "structured", specify the schema of the
-                output. Supported formats are a pydantic.BaseModel, a Python dictionary containing a
-                valid object JSON schema, or a string representing a valid object JSON schema.
+                output. Supported formats are a `pydantic.BaseModel`, a Python dictionary containing
+                a valid object JSON schema, or a string representing a valid object JSON schema.
             include_images: Indicate whether images should be included during the search.
             from_date: The date from which the search results should be considered. Accepts a
                 `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, the search
@@ -153,10 +252,8 @@ class LinkupClient:
             The Linkup API search result, which can have different types based on the parameters:
             - LinkupSearchResults if output_type is "searchResults"
             - LinkupSourcedAnswer if output_type is "sourcedAnswer"
-            - the provided pydantic.BaseModel or an arbitrary data structure if output_type is
-              "structured" and include_sources is False
-            - LinkupSearchStructuredResponse with the provided pydantic.BaseModel or an arbitrary
-              data structure as data field, if output_type is "structured" and include_sources is
+            - a raw dictionary if output_type is "structured" and include_sources is False
+            - LinkupSearchStructuredResponse if output_type is "structured" and include_sources is
               True
 
         Raises:
@@ -193,18 +290,19 @@ class LinkupClient:
         )
 
         return self._parse_search_response(
-            response=response,
+            response_data=response.json(),
             output_type=output_type,
-            structured_output_schema=structured_output_schema,
             include_sources=include_sources,
         )
 
+    @overload
     async def async_search(
         self,
         query: str,
+        *,
         depth: Literal["fast", "standard", "deep"],
-        output_type: Literal["searchResults", "sourcedAnswer", "structured"],
-        structured_output_schema: type[BaseModel] | dict[str, Any] | str | None = None,
+        output_type: Literal["searchResults"],
+        structured_output_schema: None = None,
         include_images: bool | None = None,
         from_date: date | str | None = None,
         to_date: date | str | None = None,
@@ -214,7 +312,103 @@ class LinkupClient:
         include_inline_citations: bool | None = None,
         include_sources: bool | None = None,
         timeout: float | None = None,
-    ) -> Any:  # noqa: ANN401
+    ) -> LinkupSearchResults: ...
+
+    @overload
+    async def async_search(
+        self,
+        query: str,
+        *,
+        depth: Literal["fast", "standard", "deep"],
+        output_type: Literal["sourcedAnswer"],
+        structured_output_schema: None = None,
+        include_images: bool | None = None,
+        from_date: date | str | None = None,
+        to_date: date | str | None = None,
+        exclude_domains: list[str] | None = None,
+        include_domains: list[str] | None = None,
+        max_results: int | None = None,
+        include_inline_citations: bool | None = None,
+        include_sources: bool | None = None,
+        timeout: float | None = None,
+    ) -> LinkupSourcedAnswer: ...
+
+    @overload
+    async def async_search(
+        self,
+        query: str,
+        *,
+        depth: Literal["fast", "standard", "deep"],
+        output_type: Literal["structured"],
+        structured_output_schema: type[pydantic.BaseModel] | dict[str, Any] | str,
+        include_images: bool | None = None,
+        from_date: date | str | None = None,
+        to_date: date | str | None = None,
+        exclude_domains: list[str] | None = None,
+        include_domains: list[str] | None = None,
+        max_results: int | None = None,
+        include_inline_citations: bool | None = None,
+        include_sources: Literal[False] | None = None,
+        timeout: float | None = None,
+    ) -> JSONObject: ...
+
+    @overload
+    async def async_search(
+        self,
+        query: str,
+        *,
+        depth: Literal["fast", "standard", "deep"],
+        output_type: Literal["structured"],
+        structured_output_schema: type[pydantic.BaseModel] | dict[str, Any] | str,
+        include_images: bool | None = None,
+        from_date: date | str | None = None,
+        to_date: date | str | None = None,
+        exclude_domains: list[str] | None = None,
+        include_domains: list[str] | None = None,
+        max_results: int | None = None,
+        include_inline_citations: bool | None = None,
+        include_sources: Literal[True],
+        timeout: float | None = None,
+    ) -> LinkupSearchStructuredResponse: ...
+
+    @overload
+    async def async_search(
+        self,
+        query: str,
+        *,
+        depth: Literal["fast", "standard", "deep"],
+        output_type: Literal["searchResults", "sourcedAnswer", "structured"],
+        structured_output_schema: type[pydantic.BaseModel] | dict[str, Any] | str | None = None,
+        include_images: bool | None = None,
+        from_date: date | str | None = None,
+        to_date: date | str | None = None,
+        exclude_domains: list[str] | None = None,
+        include_domains: list[str] | None = None,
+        max_results: int | None = None,
+        include_inline_citations: bool | None = None,
+        include_sources: bool | None = None,
+        timeout: float | None = None,
+    ) -> (
+        LinkupSearchResults | LinkupSourcedAnswer | JSONObject | LinkupSearchStructuredResponse
+    ): ...
+
+    async def async_search(
+        self,
+        query: str,
+        *,
+        depth: Literal["fast", "standard", "deep"],
+        output_type: Literal["searchResults", "sourcedAnswer", "structured"],
+        structured_output_schema: type[pydantic.BaseModel] | dict[str, Any] | str | None = None,
+        include_images: bool | None = None,
+        from_date: date | str | None = None,
+        to_date: date | str | None = None,
+        exclude_domains: list[str] | None = None,
+        include_domains: list[str] | None = None,
+        max_results: int | None = None,
+        include_inline_citations: bool | None = None,
+        include_sources: bool | None = None,
+        timeout: float | None = None,
+    ) -> LinkupSearchResults | LinkupSourcedAnswer | JSONObject | LinkupSearchStructuredResponse:
         """Asynchronously perform a web search using the Linkup API `search` endpoint.
 
         All optional parameters will default to the Linkup API defaults when not provided. The
@@ -232,8 +426,8 @@ class LinkupClient:
                 supporting it, and "structured" will base the output on the format provided in
                 structured_output_schema.
             structured_output_schema: If output_type is "structured", specify the schema of the
-                output. Supported formats are a pydantic.BaseModel, a Python dictionary containing a
-                valid object JSON schema, or a string representing a valid object JSON schema.
+                output. Supported formats are a `pydantic.BaseModel`, a Python dictionary containing
+                a valid object JSON schema, or a string representing a valid object JSON schema.
             include_images: Indicate whether images should be included during the search.
             from_date: The date from which the search results should be considered. Accepts a
                 `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, the search
@@ -255,10 +449,8 @@ class LinkupClient:
             The Linkup API search result, which can have different types based on the parameters:
             - LinkupSearchResults if output_type is "searchResults"
             - LinkupSourcedAnswer if output_type is "sourcedAnswer"
-            - the provided pydantic.BaseModel or an arbitrary data structure if output_type is
-              "structured" and include_sources is False
-            - LinkupSearchStructuredResponse with the provided pydantic.BaseModel or an arbitrary
-              data structure as data field, if output_type is "structured" and include_sources is
+            - a raw dictionary if output_type is "structured" and include_sources is False
+            - LinkupSearchStructuredResponse if output_type is "structured" and include_sources is
               True
 
         Raises:
@@ -295,9 +487,8 @@ class LinkupClient:
         )
 
         return self._parse_search_response(
-            response=response,
+            response_data=response.json(),
             output_type=output_type,
-            structured_output_schema=structured_output_schema,
             include_sources=include_sources,
         )
 
@@ -307,7 +498,7 @@ class LinkupClient:
         output_type: Literal["sourcedAnswer", "structured"],
         reasoning_depth: Literal["S", "M", "L", "XL"] | None = None,
         mode: Literal["answer", "auto", "investigate", "research"] | None = None,
-        structured_output_schema: type[BaseModel] | dict[str, Any] | str | None = None,
+        structured_output_schema: type[pydantic.BaseModel] | dict[str, Any] | str | None = None,
         from_date: date | str | None = None,
         to_date: date | str | None = None,
         exclude_domains: list[str] | None = None,
@@ -327,7 +518,7 @@ class LinkupClient:
                 is used.
             mode: The research mode to use. If None, the Linkup API default is used.
             structured_output_schema: If output_type is "structured", specify the output schema.
-                Supported formats are a pydantic.BaseModel, a Python dictionary containing a valid
+                Supported formats are a `pydantic.BaseModel`, a Python dictionary containing a valid
                 object JSON schema, or a string representing a valid object JSON schema.
             from_date: The date from which the research sources should be considered. Accepts a
                 `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, sources will
@@ -341,7 +532,7 @@ class LinkupClient:
                 no timeout.
 
         Returns:
-            The created research task.
+            The newly created research task, with "pending" status and no output.
 
         Raises:
             TypeError: If structured_output_schema is not a string, dictionary, or
@@ -378,7 +569,7 @@ class LinkupClient:
         output_type: Literal["sourcedAnswer", "structured"],
         reasoning_depth: Literal["S", "M", "L", "XL"] | None = None,
         mode: Literal["answer", "auto", "investigate", "research"] | None = None,
-        structured_output_schema: type[BaseModel] | dict[str, Any] | str | None = None,
+        structured_output_schema: type[pydantic.BaseModel] | dict[str, Any] | str | None = None,
         from_date: date | str | None = None,
         to_date: date | str | None = None,
         exclude_domains: list[str] | None = None,
@@ -398,7 +589,7 @@ class LinkupClient:
                 is used.
             mode: The research mode to use. If None, the Linkup API default is used.
             structured_output_schema: If output_type is "structured", specify the output schema.
-                Supported formats are a pydantic.BaseModel, a Python dictionary containing a valid
+                Supported formats are a `pydantic.BaseModel`, a Python dictionary containing a valid
                 object JSON schema, or a string representing a valid object JSON schema.
             from_date: The date from which the research sources should be considered. Accepts a
                 `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, sources will
@@ -412,7 +603,7 @@ class LinkupClient:
                 no timeout.
 
         Returns:
-            The created research task.
+            The newly created research task, with "pending" status and no output.
 
         Raises:
             TypeError: If structured_output_schema is not a string, dictionary, or
@@ -589,7 +780,7 @@ class LinkupClient:
                 no timeout.
 
         Returns:
-            The created tasks, parsed according to each task type.
+            The newly created tasks with "pending" status and no output.
 
         Raises:
             TypeError: If a task has an unsupported model type, or if a structured output schema has
@@ -622,7 +813,7 @@ class LinkupClient:
                 no timeout.
 
         Returns:
-            The created tasks, parsed according to each task type.
+            The newly created tasks with "pending" status and no output.
 
         Raises:
             TypeError: If a task has an unsupported model type, or if a structured output schema has
@@ -845,7 +1036,7 @@ class LinkupClient:
             timeout=timeout,
         )
 
-        return self._parse_fetch_response(response=response)
+        return self._parse_fetch_response(response_data=response.json())
 
     async def async_fetch(
         self,
@@ -895,7 +1086,7 @@ class LinkupClient:
             timeout=timeout,
         )
 
-        return self._parse_fetch_response(response=response)
+        return self._parse_fetch_response(response_data=response.json())
 
     def _user_agent(self) -> str:  # pragma: no cover
         return f"Linkup-Python/{self.__version__}"
@@ -1204,7 +1395,7 @@ class LinkupClient:
         query: str,
         depth: Literal["fast", "standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
-        structured_output_schema: type[BaseModel] | str | dict[str, Any] | None,
+        structured_output_schema: type[pydantic.BaseModel] | str | dict[str, Any] | None,
         include_images: bool | None,
         from_date: date | str | None,
         to_date: date | str | None,
@@ -1214,6 +1405,11 @@ class LinkupClient:
         include_inline_citations: bool | None,
         include_sources: bool | None,
     ) -> dict[str, str | bool | int | list[str]]:
+        if output_type == "structured" and structured_output_schema is None:
+            raise TypeError(
+                "structured_output_schema must be provided when output_type is 'structured'"
+            )
+
         params: dict[str, str | bool | int | list[str]] = {
             "q": query,
             "depth": depth,
@@ -1225,7 +1421,7 @@ class LinkupClient:
                 params["structuredOutputSchema"] = structured_output_schema
             elif isinstance(structured_output_schema, dict):
                 params["structuredOutputSchema"] = json.dumps(structured_output_schema)
-            elif issubclass(structured_output_schema, BaseModel):
+            elif issubclass(structured_output_schema, pydantic.BaseModel):
                 json_schema: dict[str, Any] = structured_output_schema.model_json_schema()
                 params["structuredOutputSchema"] = json.dumps(json_schema)
             else:
@@ -1257,7 +1453,7 @@ class LinkupClient:
         output_type: Literal["sourcedAnswer", "structured"],
         reasoning_depth: Literal["S", "M", "L", "XL"] | None,
         mode: Literal["answer", "auto", "investigate", "research"] | None,
-        structured_output_schema: type[BaseModel] | str | dict[str, Any] | None,
+        structured_output_schema: type[pydantic.BaseModel] | str | dict[str, Any] | None,
         from_date: date | str | None,
         to_date: date | str | None,
         exclude_domains: list[str] | None,
@@ -1278,7 +1474,7 @@ class LinkupClient:
                 params["structuredOutputSchema"] = structured_output_schema
             elif isinstance(structured_output_schema, dict):
                 params["structuredOutputSchema"] = json.dumps(structured_output_schema)
-            elif issubclass(structured_output_schema, BaseModel):
+            elif issubclass(structured_output_schema, pydantic.BaseModel):
                 json_schema: dict[str, Any] = structured_output_schema.model_json_schema()
                 params["structuredOutputSchema"] = json.dumps(json_schema)
             else:
@@ -1422,67 +1618,39 @@ class LinkupClient:
 
     def _parse_search_response(
         self,
-        response: httpx.Response,
+        response_data: dict[str, Any],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
-        structured_output_schema: type[BaseModel] | dict[str, Any] | str | None,
         include_sources: bool | None,
-    ) -> Any:  # noqa: ANN401
-        return self._parse_search_response_data(
-            response_data=response.json(),
-            output_type=output_type,
-            structured_output_schema=structured_output_schema,
-            include_sources=include_sources,
-        )
-
-    def _parse_search_response_data(
-        self,
-        response_data: Any,  # noqa: ANN401
-        output_type: Literal["searchResults", "sourcedAnswer", "structured"],
-        structured_output_schema: type[BaseModel] | dict[str, Any] | str | None,
-        include_sources: bool | None,
-    ) -> Any:  # noqa: ANN401
+    ) -> LinkupSearchResults | LinkupSourcedAnswer | JSONObject | LinkupSearchStructuredResponse:
         if output_type == "searchResults":
             return LinkupSearchResults.model_validate(response_data)
         if output_type == "sourcedAnswer":
             return LinkupSourcedAnswer.model_validate(response_data)
         if output_type == "structured":
-            if structured_output_schema is None:
-                raise ValueError(
-                    "structured_output_schema must be provided when output_type is 'structured'"
-                )
             # HACK: we assume that `include_sources` will default to False, since the API output can
             # be arbitrary so we can't guess if it includes sources or not
             if include_sources:
-                if isinstance(structured_output_schema, type) and issubclass(
-                    structured_output_schema, BaseModel
-                ):
-                    response_data["data"] = structured_output_schema.model_validate(
-                        response_data["data"]
-                    )
                 return LinkupSearchStructuredResponse.model_validate(response_data)
-            if isinstance(structured_output_schema, type) and issubclass(
-                structured_output_schema, BaseModel
-            ):
-                return structured_output_schema.model_validate(response_data)
             return response_data
         raise ValueError(f"Unexpected output_type value: '{output_type}'")
 
-    def _parse_fetch_response(self, response: httpx.Response) -> LinkupFetchResponse:
-        return self._parse_fetch_response_data(response.json())
-
-    def _parse_fetch_response_data(self, response_data: Any) -> LinkupFetchResponse:  # noqa: ANN401
+    def _parse_fetch_response(self, response_data: dict[str, Any]) -> LinkupFetchResponse:
         return LinkupFetchResponse.model_validate(response_data)
 
     def _parse_research_task(self, task_data: dict[str, Any]) -> LinkupResearchTask:
         research_input = LinkupResearchTaskInput.model_validate(task_data["input"])
         parsed_output = task_data.get("output")
-
-        if parsed_output is not None and research_input.output_type == "sourcedAnswer":
-            parsed_output = LinkupSourcedAnswer.model_validate(parsed_output)
-
-        return LinkupResearchTask.model_validate(
-            {**task_data, "input": research_input, "output": parsed_output}
+        task = LinkupResearchTask.model_validate(
+            {**task_data, "input": research_input, "output": None}
         )
+
+        # Following conversion is a bit convoluted but avoids parsing as sourced answer if using a
+        # structured output schema that matches the sourced answer schema
+        if parsed_output is None:
+            return task
+        if research_input.output_type == "sourcedAnswer":
+            parsed_output = LinkupSourcedAnswer.model_validate(parsed_output)
+        return task.model_copy(update={"output": parsed_output})
 
     def _parse_task(self, task_data: dict[str, Any]) -> LinkupTask:
         task_type = task_data["type"]
@@ -1490,22 +1658,24 @@ class LinkupClient:
         if task_type == "search":
             search_input = LinkupSearchTaskInput.model_validate(task_data["input"])
             parsed_output = task_data.get("output")
+            task = LinkupSearchTask.model_validate(
+                {**task_data, "input": search_input, "output": None}
+            )
+
             if parsed_output is not None:
-                parsed_output = self._parse_search_response_data(
+                parsed_output = self._parse_search_response(
                     response_data=parsed_output,
                     output_type=search_input.output_type,
-                    structured_output_schema=search_input.structured_output_schema,
                     include_sources=search_input.include_sources,
                 )
-            return LinkupSearchTask.model_validate(
-                {**task_data, "input": search_input, "output": parsed_output}
-            )
+                return task.model_copy(update={"output": parsed_output})
+            return task
 
         if task_type == "fetch":
             fetch_input = LinkupFetchTaskInput.model_validate(task_data["input"])
             parsed_output = task_data.get("output")
             if parsed_output is not None:
-                parsed_output = self._parse_fetch_response_data(parsed_output)
+                parsed_output = self._parse_fetch_response(parsed_output)
             return LinkupFetchTask.model_validate(
                 {**task_data, "input": fetch_input, "output": parsed_output}
             )

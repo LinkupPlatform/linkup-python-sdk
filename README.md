@@ -94,21 +94,19 @@ The `search` function also supports three output types, through the `output_type
 
 - with `"searchResults"`, the search will return a list of relevant documents
 - with `"sourcedAnswer"`, the search will return a concise answer with sources
-- with `"structured"`, the search will return a structured output according to a user-defined schema
+- with `"structured"`, the search will return a structured output according to a user-defined object
+  schema
 
 ```python
-from typing import Any
-
 import linkup
 
 client = linkup.Client()  # API key can be read from the environment variable or passed as an argument
-search_response: Any = client.search(
+search_response: linkup.SourcedAnswer = client.search(
     query="What are the 3 major events in the life of Abraham Lincoln?",
     depth="deep",  # "fast" (beta), "standard", or "deep"
     output_type="sourcedAnswer",  # "searchResults" or "sourcedAnswer" or "structured"
     structured_output_schema=None,  # must be filled if output_type is "structured"
 )
-assert isinstance(search_response, linkup.SourcedAnswer)
 print(search_response.model_dump())
 ```
 
@@ -215,19 +213,17 @@ This makes possible to call the Linkup API several times concurrently for instan
 
 ```python
 import asyncio
-from typing import Any
 
 import linkup
 
 async def main() -> None:
     client = linkup.Client()  # API key can be read from the environment variable or passed as an argument
-    search_response: Any = await client.async_search(
+    search_response: linkup.SourcedAnswer = await client.async_search(
         query="What are the 3 major events in the life of Abraham Lincoln?",
         depth="deep",  # "fast" (beta), "standard", or "deep"
         output_type="sourcedAnswer",  # "searchResults" or "sourcedAnswer" or "structured"
         structured_output_schema=None,  # must be filled if output_type is "structured"
     )
-    assert isinstance(search_response, linkup.SourcedAnswer)
     print(search_response.model_dump())
 
 asyncio.run(main())
