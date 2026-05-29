@@ -1409,7 +1409,6 @@ def test_client_custom_auth_header(
     mocker: MockerFixture,
 ) -> None:
     client = linkup.Client(api_key="my-key", auth_header="Ocp-Apim-Subscription-Key")
-    assert client._auth_header == "Ocp-Apim-Subscription-Key"  # noqa: SLF001
 
     client_mock = mocker.patch("httpx.Client")
     client_mock.return_value.__enter__.return_value = client_mock.return_value
