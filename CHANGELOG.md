@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v0.17.0 (2026-05-29)
+
+### Features
+
+- **client**: Add custom auth header name support
+  ([#75](https://github.com/LinkupPlatform/linkup-python-sdk/pull/75),
+  [`434751e`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/434751ee654da434a6ce16e105571364fc1db010))
+
+
 ## v0.16.0 (2026-05-25)
 
 ### Bug Fixes
