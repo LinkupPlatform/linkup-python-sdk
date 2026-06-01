@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.18.0 (2026-06-01)
+
+### Bug Fixes
+
+- Always return structured outputs as dicts
+  ([`0cded9d`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/0cded9d998f9e9df8ad5781fd0a7b4abf1fa16a0))
+
+
 ## v0.17.1 (2026-06-01)
 
 ### Bug Fixes
