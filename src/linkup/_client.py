@@ -104,8 +104,8 @@ class LinkupClient:
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: type[BaseModel] | dict[str, Any] | str | None = None,
         include_images: bool | None = None,
-        from_date: date | None = None,
-        to_date: date | None = None,
+        from_date: date | str | None = None,
+        to_date: date | str | None = None,
         exclude_domains: list[str] | None = None,
         include_domains: list[str] | None = None,
         max_results: int | None = None,
@@ -133,10 +133,12 @@ class LinkupClient:
                 output. Supported formats are a pydantic.BaseModel, a Python dictionary containing a
                 valid object JSON schema, or a string representing a valid object JSON schema.
             include_images: Indicate whether images should be included during the search.
-            from_date: The date from which the search results should be considered. If None, the
-                search results will not be filtered by date.
-            to_date: The date until which the search results should be considered. If None, the
-                search results will not be filtered by date.
+            from_date: The date from which the search results should be considered. Accepts a
+                `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, the search
+                results will not be filtered by date.
+            to_date: The date until which the search results should be considered. Accepts a
+                `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, the search
+                results will not be filtered by date.
             exclude_domains: If you want to exclude specific domains from your search.
             include_domains: If you want the search to only return results from certain domains.
             max_results: The maximum number of results to return.
@@ -204,8 +206,8 @@ class LinkupClient:
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: type[BaseModel] | dict[str, Any] | str | None = None,
         include_images: bool | None = None,
-        from_date: date | None = None,
-        to_date: date | None = None,
+        from_date: date | str | None = None,
+        to_date: date | str | None = None,
         exclude_domains: list[str] | None = None,
         include_domains: list[str] | None = None,
         max_results: int | None = None,
@@ -233,10 +235,12 @@ class LinkupClient:
                 output. Supported formats are a pydantic.BaseModel, a Python dictionary containing a
                 valid object JSON schema, or a string representing a valid object JSON schema.
             include_images: Indicate whether images should be included during the search.
-            from_date: The date from which the search results should be considered. If None, the
-                search results will not be filtered by date.
-            to_date: The date until which the search results should be considered. If None, the
-                search results will not be filtered by date.
+            from_date: The date from which the search results should be considered. Accepts a
+                `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, the search
+                results will not be filtered by date.
+            to_date: The date until which the search results should be considered. Accepts a
+                `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, the search
+                results will not be filtered by date.
             exclude_domains: If you want to exclude specific domains from your search.
             include_domains: If you want the search to only return results from certain domains.
             max_results: The maximum number of results to return.
@@ -304,8 +308,8 @@ class LinkupClient:
         reasoning_depth: Literal["S", "M", "L", "XL"] | None = None,
         mode: Literal["answer", "auto", "investigate", "research"] | None = None,
         structured_output_schema: type[BaseModel] | dict[str, Any] | str | None = None,
-        from_date: date | None = None,
-        to_date: date | None = None,
+        from_date: date | str | None = None,
+        to_date: date | str | None = None,
         exclude_domains: list[str] | None = None,
         include_domains: list[str] | None = None,
         timeout: float | None = None,
@@ -325,10 +329,12 @@ class LinkupClient:
             structured_output_schema: If output_type is "structured", specify the output schema.
                 Supported formats are a pydantic.BaseModel, a Python dictionary containing a valid
                 object JSON schema, or a string representing a valid object JSON schema.
-            from_date: The date from which the research sources should be considered. If None,
-                sources will not be filtered by a start date.
-            to_date: The date until which the research sources should be considered. If None,
-                sources will not be filtered by an end date.
+            from_date: The date from which the research sources should be considered. Accepts a
+                `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, sources will
+                not be filtered by a start date.
+            to_date: The date until which the research sources should be considered. Accepts a
+                `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, sources will
+                not be filtered by an end date.
             exclude_domains: Domains to exclude from the research sources.
             include_domains: Domains to restrict the research sources to.
             timeout: The timeout for the HTTP request, in seconds. If None, the request will have
@@ -373,8 +379,8 @@ class LinkupClient:
         reasoning_depth: Literal["S", "M", "L", "XL"] | None = None,
         mode: Literal["answer", "auto", "investigate", "research"] | None = None,
         structured_output_schema: type[BaseModel] | dict[str, Any] | str | None = None,
-        from_date: date | None = None,
-        to_date: date | None = None,
+        from_date: date | str | None = None,
+        to_date: date | str | None = None,
         exclude_domains: list[str] | None = None,
         include_domains: list[str] | None = None,
         timeout: float | None = None,
@@ -394,10 +400,12 @@ class LinkupClient:
             structured_output_schema: If output_type is "structured", specify the output schema.
                 Supported formats are a pydantic.BaseModel, a Python dictionary containing a valid
                 object JSON schema, or a string representing a valid object JSON schema.
-            from_date: The date from which the research sources should be considered. If None,
-                sources will not be filtered by a start date.
-            to_date: The date until which the research sources should be considered. If None,
-                sources will not be filtered by an end date.
+            from_date: The date from which the research sources should be considered. Accepts a
+                `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, sources will
+                not be filtered by a start date.
+            to_date: The date until which the research sources should be considered. Accepts a
+                `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, sources will
+                not be filtered by an end date.
             exclude_domains: Domains to exclude from the research sources.
             include_domains: Domains to restrict the research sources to.
             timeout: The timeout for the HTTP request, in seconds. If None, the request will have
