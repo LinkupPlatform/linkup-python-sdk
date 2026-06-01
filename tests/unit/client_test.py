@@ -92,6 +92,24 @@ test_search_parameters = [
     ),
     (
         {
+            "query": "query",
+            "depth": "standard",
+            "output_type": "searchResults",
+            "from_date": "2026-05-01T08:15:30.000Z",
+            "to_date": "2026-05-31T23:59:59.000Z",
+        },
+        {
+            "q": "query",
+            "depth": "standard",
+            "outputType": "searchResults",
+            "fromDate": "2026-05-01T08:15:30.000Z",
+            "toDate": "2026-05-31T23:59:59.000Z",
+        },
+        b'{"results": []}',
+        linkup.SearchResults(results=[]),
+    ),
+    (
+        {
             "query": "query with timeout",
             "depth": "standard",
             "output_type": "searchResults",
@@ -686,6 +704,55 @@ async def test_async_research(mocker: MockerFixture, client: linkup.Client) -> N
     assert research_response.output == {"summary": "done"}
     assert research_response.input.query == "query"
     assert research_response.input.structured_output_schema == {"type": "object"}
+
+
+def test_research_with_iso_datetime_string_dates(
+    mocker: MockerFixture, client: linkup.Client
+) -> None:
+    request_mock = mocker.patch(
+        "httpx.Client.request",
+        return_value=Response(
+            status_code=200,
+            content=b"""
+            {
+                "createdAt": "2026-05-18T00:00:00.000Z",
+                "error": null,
+                "id": "f93f33c8-2688-4bd0-ab11-47c8ff89f7b7",
+                "input": {
+                    "fromDate": "2026-05-01",
+                    "outputType": "sourcedAnswer",
+                    "q": "query",
+                    "toDate": "2026-05-31"
+                },
+                "output": null,
+                "status": "pending",
+                "type": "research",
+                "updatedAt": "2026-05-18T00:00:00.000Z"
+            }
+            """,
+        ),
+    )
+
+    research_response = client.research(
+        query="query",
+        output_type="sourcedAnswer",
+        from_date="2026-05-01T08:15:30.000Z",
+        to_date="2026-05-31T23:59:59.000Z",
+    )
+
+    request_mock.assert_called_once_with(
+        method="POST",
+        url="/research",
+        json={
+            "q": "query",
+            "outputType": "sourcedAnswer",
+            "fromDate": "2026-05-01T08:15:30.000Z",
+            "toDate": "2026-05-31T23:59:59.000Z",
+        },
+        timeout=None,
+    )
+    assert research_response.input.from_date == "2026-05-01"
+    assert research_response.input.to_date == "2026-05-31"
 
 
 test_fetch_parameters = [
