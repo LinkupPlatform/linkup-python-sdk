@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.17.1 (2026-06-01)
+
+### Bug Fixes
+
+- Allow to use string dates directly
+  ([`7b64243`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/7b64243d36c42fa31766edc0d307999b8380a591))
+
+
 ## v0.17.0 (2026-05-29)
 
 ### Features
