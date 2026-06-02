@@ -718,6 +718,17 @@ def test_research(mocker: MockerFixture, client: linkup.Client) -> None:
     )
 
 
+def test_research_structured_output_requires_schema(client: linkup.Client) -> None:
+    with pytest.raises(
+        TypeError,
+        match="structured_output_schema must be provided",
+    ):
+        client.research(
+            query="query",
+            output_type="structured",
+        )
+
+
 def test_get_research_structured_output_keeps_sourced_answer_shape_raw(
     mocker: MockerFixture, client: linkup.Client
 ) -> None:
@@ -802,6 +813,20 @@ async def test_async_research(mocker: MockerFixture, client: linkup.Client) -> N
     assert research_response.output == {"summary": "done"}
     assert research_response.input.query == "query"
     assert research_response.input.structured_output_schema == {"type": "object"}
+
+
+@pytest.mark.asyncio
+async def test_async_research_structured_output_requires_schema(
+    client: linkup.Client,
+) -> None:
+    with pytest.raises(
+        TypeError,
+        match="structured_output_schema must be provided",
+    ):
+        await client.async_research(
+            query="query",
+            output_type="structured",
+        )
 
 
 def test_research_with_iso_datetime_string_dates(
