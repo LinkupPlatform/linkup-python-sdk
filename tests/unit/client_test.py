@@ -329,7 +329,6 @@ def test_search(
     mock_request_response_content: bytes,
     expected_search_response: Any,  # noqa: ANN401
 ) -> None:
-    mocker.patch("linkup._client.date").today.return_value = date(2000, 1, 1)
     request_mock = mocker.patch(
         "httpx.Client.request",
         return_value=Response(
@@ -416,7 +415,6 @@ async def test_async_search(
     mock_request_response_content: bytes,
     expected_search_response: Any,  # noqa: ANN401
 ) -> None:
-    mocker.patch("linkup._client.date").today.return_value = date(2000, 1, 1)
     request_mock = mocker.patch(
         "httpx.AsyncClient.request",
         return_value=Response(
