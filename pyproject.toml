@@ -62,6 +62,7 @@ target-version = "py310"
 unsafe-fixes = true
 
 [tool.ruff.lint]
+exclude = ["scratch/"]
 explicit-preview-rules = true
 extend-ignore = ["D107"]
 preview = true

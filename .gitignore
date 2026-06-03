@@ -1,21 +1,30 @@
-# Python-generated files
-.idea/
+# Environment variables
+.env
+
+# Reserved directories
+data/
+scratch/
+
+# Python artefacts
 .ipynb_checkpoints/
 .venv/
-.vscode/
 __pycache__/
 build/
 dist/
 wheels/
 .coverage
-.env
 *.egg-info
 *.py[oc]
 
-# MacOS stuff
-.DS_Store
+# IDE artefacts
+.cursor/
+.idea/
+.vscode/
 
-# Coding agents stuff
+# Coding agents artefacts
+.claude/
+.opencode/
 .rtk/
 
-playground.py
+# System artefacts
+.DS_Store
