@@ -56,15 +56,14 @@ class LinkupClient:
 
     Args:
         api_key: The API key for the Linkup API. If None, the API key will be read from the
-            environment variable `LINKUP_API_KEY`.
+            environment variable LINKUP_API_KEY.
         base_url: The base URL for the Linkup API, for development purposes.
         x402_signer: An optional x402 signer for payment-gated endpoints. If provided, the
             client will attempt to handle 402 responses automatically. Cannot be used together
             with api_key.
-        auth_header: Custom header name to use for the API key (e.g.
-            ``"Ocp-Apim-Subscription-Key"``). When set, the API key value is sent as
-            ``<auth_header>: <api_key>`` instead of the default
-            ``Authorization: Bearer <api_key>``.
+        auth_header: Custom header name to use for the API key (e.g. "Ocp-Apim-Subscription-Key").
+            When set, the API key value is sent as <auth_header>: <api_key> instead of the default
+            Authorization: Bearer <api_key>.
 
     Raises:
         ValueError: If the API key is not provided and not found in the environment variable.
@@ -213,7 +212,7 @@ class LinkupClient:
         include_sources: bool | None = None,
         timeout: float | None = None,
     ) -> LinkupSearchResults | LinkupSourcedAnswer | JSONObject | LinkupSearchStructuredResponse:
-        """Perform a web search using the Linkup API `search` endpoint.
+        """Perform a web search using the Linkup API /search endpoint.
 
         All optional parameters will default to the Linkup API defaults when not provided. The
         Linkup API defaults are available in the
@@ -230,14 +229,14 @@ class LinkupClient:
                 supporting it, and "structured" will base the output on the format provided in
                 structured_output_schema.
             structured_output_schema: If output_type is "structured", specify the schema of the
-                output. Supported formats are a `pydantic.BaseModel`, a Python dictionary containing
+                output. Supported formats are a pydantic.BaseModel, a Python dictionary containing
                 a valid object JSON schema, or a string representing a valid object JSON schema.
             include_images: Indicate whether images should be included during the search.
             from_date: The date from which the search results should be considered. Accepts a
-                `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, the search
+                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, the search
                 results will not be filtered by date.
             to_date: The date until which the search results should be considered. Accepts a
-                `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, the search
+                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, the search
                 results will not be filtered by date.
             exclude_domains: If you want to exclude specific domains from your search.
             include_domains: If you want the search to only return results from certain domains.
@@ -410,7 +409,7 @@ class LinkupClient:
         include_sources: bool | None = None,
         timeout: float | None = None,
     ) -> LinkupSearchResults | LinkupSourcedAnswer | JSONObject | LinkupSearchStructuredResponse:
-        """Asynchronously perform a web search using the Linkup API `search` endpoint.
+        """Asynchronously perform a web search using the Linkup API /search endpoint.
 
         All optional parameters will default to the Linkup API defaults when not provided. The
         Linkup API defaults are available in the
@@ -427,14 +426,14 @@ class LinkupClient:
                 supporting it, and "structured" will base the output on the format provided in
                 structured_output_schema.
             structured_output_schema: If output_type is "structured", specify the schema of the
-                output. Supported formats are a `pydantic.BaseModel`, a Python dictionary containing
+                output. Supported formats are a pydantic.BaseModel, a Python dictionary containing
                 a valid object JSON schema, or a string representing a valid object JSON schema.
             include_images: Indicate whether images should be included during the search.
             from_date: The date from which the search results should be considered. Accepts a
-                `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, the search
+                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, the search
                 results will not be filtered by date.
             to_date: The date until which the search results should be considered. Accepts a
-                `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, the search
+                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, the search
                 results will not be filtered by date.
             exclude_domains: If you want to exclude specific domains from your search.
             include_domains: If you want the search to only return results from certain domains.
@@ -506,26 +505,26 @@ class LinkupClient:
         include_domains: list[str] | None = None,
         timeout: float | None = None,
     ) -> LinkupResearchTask:
-        """Create an asynchronous research task using the Linkup API `research` endpoint.
+        """Create an asynchronous research task using the Linkup API /research endpoint.
 
-        The returned task can be inspected later with `get_research`, `list_research`, `get_task`,
-        or `list_tasks`.
+        The returned task can be inspected later with get_research, list_research, get_task,
+        or list_tasks.
 
         Args:
             query: The research query to investigate.
             output_type: The expected research output type. Use "sourcedAnswer" for an answer with
-                supporting sources, or "structured" for output matching `structured_output_schema`.
+                supporting sources, or "structured" for output matching structured_output_schema.
             reasoning_depth: The amount of reasoning effort to use. If None, the Linkup API default
                 is used.
             mode: The research mode to use. If None, the Linkup API default is used.
             structured_output_schema: If output_type is "structured", specify the output schema.
-                Supported formats are a `pydantic.BaseModel`, a Python dictionary containing a valid
+                Supported formats are a pydantic.BaseModel, a Python dictionary containing a valid
                 object JSON schema, or a string representing a valid object JSON schema.
             from_date: The date from which the research sources should be considered. Accepts a
-                `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, sources will
+                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, sources will
                 not be filtered by a start date.
             to_date: The date until which the research sources should be considered. Accepts a
-                `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, sources will
+                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, sources will
                 not be filtered by an end date.
             exclude_domains: Domains to exclude from the research sources.
             include_domains: Domains to restrict the research sources to.
@@ -579,26 +578,26 @@ class LinkupClient:
         include_domains: list[str] | None = None,
         timeout: float | None = None,
     ) -> LinkupResearchTask:
-        """Asynchronously create a research task using the Linkup API `research` endpoint.
+        """Asynchronously create a research task using the Linkup API /research endpoint.
 
-        The returned task can be inspected later with `async_get_research`, `async_list_research`,
-        `async_get_task`, or `async_list_tasks`.
+        The returned task can be inspected later with async_get_research, async_list_research,
+        async_get_task, or async_list_tasks.
 
         Args:
             query: The research query to investigate.
             output_type: The expected research output type. Use "sourcedAnswer" for an answer with
-                supporting sources, or "structured" for output matching `structured_output_schema`.
+                supporting sources, or "structured" for output matching structured_output_schema.
             reasoning_depth: The amount of reasoning effort to use. If None, the Linkup API default
                 is used.
             mode: The research mode to use. If None, the Linkup API default is used.
             structured_output_schema: If output_type is "structured", specify the output schema.
-                Supported formats are a `pydantic.BaseModel`, a Python dictionary containing a valid
+                Supported formats are a pydantic.BaseModel, a Python dictionary containing a valid
                 object JSON schema, or a string representing a valid object JSON schema.
             from_date: The date from which the research sources should be considered. Accepts a
-                `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, sources will
+                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, sources will
                 not be filtered by a start date.
             to_date: The date until which the research sources should be considered. Accepts a
-                `datetime.date`, `YYYY-MM-DD`, or full ISO datetime string. If None, sources will
+                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, sources will
                 not be filtered by an end date.
             exclude_domains: Domains to exclude from the research sources.
             include_domains: Domains to restrict the research sources to.
@@ -779,8 +778,8 @@ class LinkupClient:
         """Create a mixed batch of search, fetch, and research tasks.
 
         Args:
-            tasks: The tasks to create. Supported task input models are `LinkupSearchTaskInput`,
-                `LinkupFetchTaskInput`, and `LinkupResearchTaskInput`.
+            tasks: The tasks to create. Supported task input models are LinkupSearchTaskInput,
+                LinkupFetchTaskInput, and LinkupResearchTaskInput.
             timeout: The timeout for the HTTP request, in seconds. If None, the request will have
                 no timeout.
 
@@ -812,8 +811,8 @@ class LinkupClient:
         """Asynchronously create a mixed batch of search, fetch, and research tasks.
 
         Args:
-            tasks: The tasks to create. Supported task input models are `LinkupSearchTaskInput`,
-                `LinkupFetchTaskInput`, and `LinkupResearchTaskInput`.
+            tasks: The tasks to create. Supported task input models are LinkupSearchTaskInput,
+                LinkupFetchTaskInput, and LinkupResearchTaskInput.
             timeout: The timeout for the HTTP request, in seconds. If None, the request will have
                 no timeout.
 
@@ -1001,7 +1000,7 @@ class LinkupClient:
         extract_images: bool | None = None,
         timeout: float | None = None,
     ) -> LinkupFetchResponse:
-        """Fetch the content of a web page using the Linkup API `fetch` endpoint.
+        """Fetch the content of a web page using the Linkup API /fetch endpoint.
 
         All optional parameters will default to the Linkup API defaults when not provided. The
         Linkup API defaults are available in the
@@ -1051,7 +1050,7 @@ class LinkupClient:
         extract_images: bool | None = None,
         timeout: float | None = None,
     ) -> LinkupFetchResponse:
-        """Asynchronously fetch the content of a web page using the Linkup API `fetch` endpoint.
+        """Asynchronously fetch the content of a web page using the Linkup API /fetch endpoint.
 
         All optional parameters will default to the Linkup API defaults when not provided. The
         Linkup API defaults are available in the
@@ -1637,7 +1636,7 @@ class LinkupClient:
         if output_type == "sourcedAnswer":
             return LinkupSourcedAnswer.model_validate(response_data)
         if output_type == "structured":
-            # HACK: we assume that `include_sources` will default to False, since the API output can
+            # HACK: we assume that include_sources will default to False, since the API output can
             # be arbitrary so we can't guess if it includes sources or not
             if include_sources:
                 return LinkupSearchStructuredResponse.model_validate(response_data)
