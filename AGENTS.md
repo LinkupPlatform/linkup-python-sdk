@@ -37,7 +37,11 @@ When adding or changing a public API capability, update the relevant pieces toge
 
 ## Validation
 
-Before opening a PR, run the CI checks: `make lint typecheck test`.
+After having done some changes or before opening a PR, run the CI checks:
+`make lint typecheck test`.
+
+Never run the underlying checks without using these `make` commands (e.g. with `uv run ruff ...`),
+as these kind of checks won't take into account some settings (like the `exclude` list).
 
 ## Non-Goals
 

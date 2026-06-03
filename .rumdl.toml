@@ -1,4 +1,5 @@
 [global]
+exclude = ["scratch/**"]
 line-length = 100
 
 [MD013]
