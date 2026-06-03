@@ -164,6 +164,14 @@ class LinkupSearchTaskInput(_LinkupBaseModel):
         pydantic.Field(default=None, validation_alias="structuredOutputSchema")
     )
 
+    @pydantic.model_validator(mode="after")
+    def _validate_structured_output_schema(self) -> LinkupSearchTaskInput:
+        if self.output_type == "structured" and self.structured_output_schema is None:
+            raise ValueError(
+                "structured_output_schema must be provided when output_type is 'structured'"
+            )
+        return self
+
 
 class LinkupResearchTaskInput(_LinkupBaseModel):
     """Input for creating or retrieving a research task.
@@ -199,6 +207,14 @@ class LinkupResearchTaskInput(_LinkupBaseModel):
     structured_output_schema: type[pydantic.BaseModel] | str | dict[str, Any] | None = (
         pydantic.Field(default=None, validation_alias="structuredOutputSchema")
     )
+
+    @pydantic.model_validator(mode="after")
+    def _validate_structured_output_schema(self) -> LinkupResearchTaskInput:
+        if self.output_type == "structured" and self.structured_output_schema is None:
+            raise ValueError(
+                "structured_output_schema must be provided when output_type is 'structured'"
+            )
+        return self
 
 
 class LinkupFetchTaskInput(_LinkupBaseModel):
