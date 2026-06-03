@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.18.1 (2026-06-03)
+
+### Bug Fixes
+
+- Validate structured research input before request
+  ([`65676c2`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/65676c2131f063291edf01cc0950b420ebe8fbdb))
+
+
 ## v0.18.0 (2026-06-01)
 
 ### Bug Fixes
