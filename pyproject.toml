@@ -136,7 +136,7 @@ parse_squash_commits = false
 
 [tool.uv]
 exclude-newer = "2 weeks" # Reduce risks of supply chain attacks
-required-version = ">=0.11.6,<0.12.0"
+required-version = ">=0.11.15,<0.12.0"
 
 [build-system]
 build-backend = "hatchling.build"
