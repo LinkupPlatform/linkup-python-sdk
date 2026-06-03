@@ -86,7 +86,7 @@ class LinkupSourcedAnswer(_LinkupBaseModel):
 
 
 class LinkupSearchStructuredResponse(_LinkupBaseModel):
-    """A Linkup `search` structured response, with the sources supporting it.
+    """A Linkup /search structured response, with the sources supporting it.
 
     Attributes:
         data: The raw structured output dictionary.
@@ -237,7 +237,7 @@ class LinkupTaskMetadata(_LinkupBaseModel):
 
 
 class LinkupTaskQuota(_LinkupBaseModel):
-    """Task quota information returned by `list_tasks`.
+    """Task quota information returned by list_tasks.
 
     Attributes:
         in_flight: The number of tasks currently in flight.
