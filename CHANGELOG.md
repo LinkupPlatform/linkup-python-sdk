@@ -2,6 +2,28 @@
 
 <!-- version list -->
 
+## v0.18.2 (2026-06-04)
+
+### Bug Fixes
+
+- More validation in models
+  ([`4ff43f0`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/4ff43f0c6a4e5294ee54f93e0669e6ed8f0ff16b))
+
+### Chores
+
+- Remove inconsistent backticks in docstrings
+  ([`4109b65`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/4109b65202561f912b4bb5eead1210ffaa455b7f))
+
+- Setup scratch file directory
+  ([`83beb9f`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/83beb9fbfc81d3840afb3bbb558ffef5c89dfdeb))
+
+- Simplify setup of datetime module
+  ([`b35d430`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/b35d4303954c7b3f28e19cf95bb7ba82eae5091b))
+
+- Upgrade deps with vulnerabilities
+  ([`4ffeb99`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/4ffeb99c426271090d4e3dfcec17a12891b81969))
+
+
 ## v0.18.1 (2026-06-03)
 
 ### Bug Fixes
