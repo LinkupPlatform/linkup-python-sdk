@@ -236,8 +236,8 @@ class LinkupClient:
                 datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, the search
                 results will not be filtered by date.
             to_date: The date until which the search results should be considered. Accepts a
-                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, the search
-                results will not be filtered by date.
+                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, the Linkup API
+                applies its current default end date.
             exclude_domains: If you want to exclude specific domains from your search.
             include_domains: If you want the search to only return results from certain domains.
             max_results: The maximum number of results to return.
@@ -433,8 +433,8 @@ class LinkupClient:
                 datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, the search
                 results will not be filtered by date.
             to_date: The date until which the search results should be considered. Accepts a
-                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, the search
-                results will not be filtered by date.
+                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, the Linkup API
+                applies its current default end date.
             exclude_domains: If you want to exclude specific domains from your search.
             include_domains: If you want the search to only return results from certain domains.
             max_results: The maximum number of results to return.
@@ -524,8 +524,8 @@ class LinkupClient:
                 datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, sources will
                 not be filtered by a start date.
             to_date: The date until which the research sources should be considered. Accepts a
-                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, sources will
-                not be filtered by an end date.
+                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, the Linkup API
+                applies its current default end date.
             exclude_domains: Domains to exclude from the research sources.
             include_domains: Domains to restrict the research sources to.
             timeout: The timeout for the HTTP request, in seconds. If None, the request will have
@@ -597,8 +597,8 @@ class LinkupClient:
                 datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, sources will
                 not be filtered by a start date.
             to_date: The date until which the research sources should be considered. Accepts a
-                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, sources will
-                not be filtered by an end date.
+                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, the Linkup API
+                applies its current default end date.
             exclude_domains: Domains to exclude from the research sources.
             include_domains: Domains to restrict the research sources to.
             timeout: The timeout for the HTTP request, in seconds. If None, the request will have
