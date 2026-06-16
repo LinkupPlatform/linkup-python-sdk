@@ -1492,6 +1492,62 @@ def test_list_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
     assert tasks_page.quota.in_flight == 1
 
 
+def test_list_tasks_preserves_unsupported_task_variants(
+    mocker: MockerFixture, client: linkup.Client
+) -> None:
+    mocker.patch(
+        "httpx.Client.request",
+        return_value=Response(
+            status_code=200,
+            content=b"""
+            {
+                "data": [
+                    {
+                        "createdAt": "2026-05-18T00:00:00.000Z",
+                        "error": null,
+                        "id": "extract-task-1",
+                        "input": {
+                            "q": "companies founded in paris",
+                            "schema": {
+                                "type": "object"
+                            }
+                        },
+                        "output": {
+                            "rows": [
+                                {
+                                    "company": "Linkup"
+                                }
+                            ],
+                            "rowsReturned": 1
+                        },
+                        "status": "completed",
+                        "type": "extract",
+                        "updatedAt": "2026-05-18T00:00:00.000Z"
+                    }
+                ],
+                "metadata": {
+                    "page": 1,
+                    "pageSize": 10,
+                    "total": 1,
+                    "totalPages": 1
+                },
+                "quota": {
+                    "inFlight": 1,
+                    "limit": 100
+                }
+            }
+            """,
+        ),
+    )
+
+    tasks_page = client.list_tasks()
+
+    assert isinstance(tasks_page.data[0], linkup.UnsupportedTask)
+    assert tasks_page.data[0].type == "unsupported"
+    assert tasks_page.data[0].raw_type == "extract"
+    assert tasks_page.data[0].output == {"rows": [{"company": "Linkup"}], "rowsReturned": 1}
+
+
 def test_get_task_structured_search_output_keeps_search_results_shape_raw(
     mocker: MockerFixture, client: linkup.Client
 ) -> None:
@@ -1565,6 +1621,38 @@ def test_get_task_structured_search_output_raw(
     assert isinstance(task, linkup.SearchTask)
     assert task.input.structured_output_schema == {"type": "object"}
     assert task.output == {"summary": "done"}
+
+
+def test_get_task_preserves_unsupported_task_variant(
+    mocker: MockerFixture, client: linkup.Client
+) -> None:
+    mocker.patch(
+        "httpx.Client.request",
+        return_value=Response(
+            status_code=200,
+            content=b"""
+            {
+                "createdAt": "2026-05-18T00:00:00.000Z",
+                "error": null,
+                "id": "extract-task-2",
+                "input": {
+                    "q": "companies founded in paris"
+                },
+                "output": null,
+                "status": "processing",
+                "type": "extract",
+                "updatedAt": "2026-05-18T00:00:00.000Z"
+            }
+            """,
+        ),
+    )
+
+    task = client.get_task("extract-task-2")
+
+    assert isinstance(task, linkup.UnsupportedTask)
+    assert task.type == "unsupported"
+    assert task.raw_type == "extract"
+    assert task.input == {"q": "companies founded in paris"}
 
 
 def test_list_tasks_with_multiple_filters(mocker: MockerFixture, client: linkup.Client) -> None:

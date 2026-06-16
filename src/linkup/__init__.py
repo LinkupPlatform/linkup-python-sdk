@@ -38,6 +38,7 @@ from ._types import (
     LinkupTaskMetadata,
     LinkupTaskQuota,
     LinkupTasksPage,
+    LinkupUnsupportedTask,
 )
 from ._version import __version__
 
@@ -78,6 +79,7 @@ TasksQueueLimitExceededError = LinkupTasksQueueLimitExceededError
 TimeoutError = LinkupTimeoutError  # noqa: A001
 TooManyRequestsError = LinkupTooManyRequestsError
 UnknownError = LinkupUnknownError
+UnsupportedTask = LinkupUnsupportedTask
 
 __all__ = [
     "AuthenticationError",
@@ -129,6 +131,7 @@ __all__ = [
     "LinkupTasksQueueLimitExceededError",
     "LinkupTimeoutError",
     "LinkupTooManyRequestsError",
+    "LinkupUnsupportedTask",
     "LinkupUnknownError",
     "NoResultError",
     "PaymentRequiredError",
@@ -152,6 +155,7 @@ __all__ = [
     "TasksQueueLimitExceededError",
     "TimeoutError",
     "TooManyRequestsError",
+    "UnsupportedTask",
     "UnknownError",
     "__version__",
 ]

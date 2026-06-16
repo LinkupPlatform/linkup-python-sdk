@@ -343,7 +343,33 @@ class LinkupResearchTask(_LinkupBaseModel):
     updated_at: str = pydantic.Field(validation_alias="updatedAt")
 
 
-LinkupTask = LinkupSearchTask | LinkupFetchTask | LinkupResearchTask
+class LinkupUnsupportedTask(_LinkupBaseModel):
+    """A task returned by the API that this SDK does not model explicitly.
+
+    Attributes:
+        created_at: The task creation timestamp.
+        error: The task error message, if the task failed.
+        id: The task identifier.
+        input: The raw task input payload returned by the API.
+        output: The raw task output payload, if available.
+        raw_type: The original task type returned by the API.
+        status: The current task status.
+        type: The normalized task type, always "unsupported".
+        updated_at: The last task update timestamp.
+    """
+
+    created_at: str = pydantic.Field(validation_alias="createdAt")
+    error: str | None = None
+    id: str
+    input: JSONObject
+    output: Any | None = None
+    raw_type: str = pydantic.Field(validation_alias="rawType")
+    status: Literal["pending", "processing", "completed", "failed"]
+    type: Literal["unsupported"]
+    updated_at: str = pydantic.Field(validation_alias="updatedAt")
+
+
+LinkupTask = LinkupSearchTask | LinkupFetchTask | LinkupResearchTask | LinkupUnsupportedTask
 
 
 class LinkupResearchTasksPage(_LinkupBaseModel):

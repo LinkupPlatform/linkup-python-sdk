@@ -42,6 +42,7 @@ from ._types import (
     LinkupTask,
     LinkupTaskInput,
     LinkupTasksPage,
+    LinkupUnsupportedTask,
 )
 from ._version import __version__
 
@@ -1692,7 +1693,9 @@ class LinkupClient:
         if task_type == "research":
             return self._parse_research_task(task_data)
 
-        raise ValueError(f"Unexpected task type value: '{task_type}'")
+        return LinkupUnsupportedTask.model_validate(
+            {**task_data, "rawType": task_type, "type": "unsupported"}
+        )
 
     def _parse_research_tasks_page(self, response_data: dict[str, Any]) -> LinkupResearchTasksPage:
         return LinkupResearchTasksPage.model_validate(
