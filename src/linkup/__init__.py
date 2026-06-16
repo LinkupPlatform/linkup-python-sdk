@@ -131,8 +131,8 @@ __all__ = [
     "LinkupTasksQueueLimitExceededError",
     "LinkupTimeoutError",
     "LinkupTooManyRequestsError",
-    "LinkupUnsupportedTask",
     "LinkupUnknownError",
+    "LinkupUnsupportedTask",
     "NoResultError",
     "PaymentRequiredError",
     "ResearchTask",
@@ -155,7 +155,7 @@ __all__ = [
     "TasksQueueLimitExceededError",
     "TimeoutError",
     "TooManyRequestsError",
-    "UnsupportedTask",
     "UnknownError",
+    "UnsupportedTask",
     "__version__",
 ]
