@@ -475,6 +475,19 @@ test_search_error_parameters = [
         linkup.AuthenticationError,
     ),
     (
+        403,
+        b"""
+        {
+            "error": {
+                "code": "TASK_TYPE_NOT_SUPPORTED",
+                "message": "Extract tasks are not enabled for this organization.",
+                "details": []
+            }
+        }
+        """,
+        linkup.UnsupportedTaskTypeError,
+    ),
+    (
         401,
         b"""
         {
@@ -1490,6 +1503,36 @@ def test_list_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
     assert isinstance(tasks_page.data[0], linkup.ResearchTask)
     assert tasks_page.data[0].input.query == "query"
     assert tasks_page.quota.in_flight == 1
+
+
+def test_get_task_unsupported_task_type(mocker: MockerFixture, client: linkup.Client) -> None:
+    mocker.patch(
+        "httpx.Client.request",
+        return_value=Response(
+            status_code=200,
+            content=b"""
+            {
+                "createdAt": "2026-05-18T00:00:00.000Z",
+                "error": null,
+                "id": "extract-task",
+                "input": {
+                    "q": "query",
+                    "url": "https://example.com"
+                },
+                "output": null,
+                "status": "pending",
+                "type": "extract",
+                "updatedAt": "2026-05-18T00:00:00.000Z"
+            }
+            """,
+        ),
+    )
+
+    with pytest.raises(
+        linkup.UnsupportedTaskTypeError,
+        match="unsupported task type 'extract'",
+    ):
+        client.get_task("extract-task")
 
 
 def test_get_task_structured_search_output_keeps_search_results_shape_raw(

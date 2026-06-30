@@ -15,6 +15,7 @@ from ._errors import (
     LinkupTimeoutError,
     LinkupTooManyRequestsError,
     LinkupUnknownError,
+    LinkupUnsupportedTaskTypeError,
 )
 from ._types import (
     JSONObject,
@@ -78,6 +79,7 @@ TasksQueueLimitExceededError = LinkupTasksQueueLimitExceededError
 TimeoutError = LinkupTimeoutError  # noqa: A001
 TooManyRequestsError = LinkupTooManyRequestsError
 UnknownError = LinkupUnknownError
+UnsupportedTaskTypeError = LinkupUnsupportedTaskTypeError
 
 __all__ = [
     "AuthenticationError",
@@ -130,6 +132,7 @@ __all__ = [
     "LinkupTimeoutError",
     "LinkupTooManyRequestsError",
     "LinkupUnknownError",
+    "LinkupUnsupportedTaskTypeError",
     "NoResultError",
     "PaymentRequiredError",
     "ResearchTask",
@@ -153,5 +156,6 @@ __all__ = [
     "TimeoutError",
     "TooManyRequestsError",
     "UnknownError",
+    "UnsupportedTaskTypeError",
     "__version__",
 ]

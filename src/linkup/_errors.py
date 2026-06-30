@@ -136,3 +136,9 @@ class LinkupUnknownError(Exception):
     """Unknown error, raised when the Linkup API returns an unknown status code."""
 
     pass
+
+
+class LinkupUnsupportedTaskTypeError(Exception):
+    """Unsupported task type error, raised when a task type is not supported by this SDK."""
+
+    pass

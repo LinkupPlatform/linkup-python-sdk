@@ -25,6 +25,7 @@ from ._errors import (
     LinkupTimeoutError,
     LinkupTooManyRequestsError,
     LinkupUnknownError,
+    LinkupUnsupportedTaskTypeError,
 )
 from ._types import (
     JSONObject,
@@ -1341,6 +1342,11 @@ class LinkupClient:
                     f"Original error message: {error_msg}."
                 )
             if response.status_code == 403:
+                if code == "TASK_TYPE_NOT_SUPPORTED":
+                    raise LinkupUnsupportedTaskTypeError(
+                        "The Linkup API returned an unsupported task type error (403). \n"
+                        f"Original error message: {error_msg}."
+                    )
                 raise LinkupAuthenticationError(
                     "The Linkup API returned an authorization error (403). Make sure your API "
                     "key is valid.\n"
@@ -1692,7 +1698,9 @@ class LinkupClient:
         if task_type == "research":
             return self._parse_research_task(task_data)
 
-        raise ValueError(f"Unexpected task type value: '{task_type}'")
+        raise LinkupUnsupportedTaskTypeError(
+            f"The Linkup API returned an unsupported task type '{task_type}'."
+        )
 
     def _parse_research_tasks_page(self, response_data: dict[str, Any]) -> LinkupResearchTasksPage:
         return LinkupResearchTasksPage.model_validate(
