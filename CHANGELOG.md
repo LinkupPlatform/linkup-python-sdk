@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v0.18.3 (2026-06-30)
+
+### Bug Fixes
+
+- Handle unsupported task types
+  ([`d9a9a13`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/d9a9a13594528b305bc1f22cabc94dd26655a919))
+
+### Documentation
+
+- Fix missing status code in error docstring
+  ([`ca0422c`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/ca0422caa67edf2734ed06f2e03c5b843b99b2d4))
+
+
 ## v0.18.2 (2026-06-04)
 
 ### Bug Fixes
