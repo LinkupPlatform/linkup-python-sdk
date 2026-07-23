@@ -14,6 +14,7 @@ from ._errors import (
     LinkupBudgetLimitExceededError,
     LinkupFailedFetchError,
     LinkupFetchResponseTooLargeError,
+    LinkupFetchTargetUnreachableError,
     LinkupFetchUnsupportedContentTypeError,
     LinkupFetchUrlIsFileError,
     LinkupInsufficientCreditError,
@@ -1023,6 +1024,7 @@ class LinkupClient:
             LinkupInvalidRequestError: If the provided URL is not valid.
             LinkupFailedFetchError: If the provided URL is not found or can't be fetched.
             LinkupFetchResponseTooLargeError: If the fetch response is too large.
+            LinkupFetchTargetUnreachableError: If the target URL cannot be reached.
             LinkupFetchUnsupportedContentTypeError: If the URL resolves to an unsupported content
                 type.
             LinkupTimeoutError: If the request times out.
@@ -1073,6 +1075,7 @@ class LinkupClient:
             LinkupInvalidRequestError: If the provided URL is not valid.
             LinkupFailedFetchError: If the provided URL is not found or can't be fetched.
             LinkupFetchResponseTooLargeError: If the fetch response is too large.
+            LinkupFetchTargetUnreachableError: If the target URL cannot be reached.
             LinkupFetchUnsupportedContentTypeError: If the URL resolves to an unsupported content
                 type.
             LinkupTimeoutError: If the request times out.
@@ -1314,6 +1317,12 @@ class LinkupClient:
                     raise LinkupFetchResponseTooLargeError(
                         "The Linkup API returned a fetch response too large error (400). "
                         "The provided URL's response is too large to be processed.\n"
+                        f"Original error message: {error_msg}."
+                    )
+                if code == "FETCH_TARGET_UNREACHABLE":
+                    raise LinkupFetchTargetUnreachableError(
+                        "The Linkup API returned a fetch target unreachable error (400). "
+                        "The provided URL could not be reached by Linkup.\n"
                         f"Original error message: {error_msg}."
                     )
                 if code == "FETCH_UNSUPPORTED_CONTENT_TYPE":
