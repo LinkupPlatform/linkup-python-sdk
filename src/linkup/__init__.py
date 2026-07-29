@@ -4,6 +4,7 @@ from ._errors import (
     LinkupBudgetLimitExceededError,
     LinkupFailedFetchError,
     LinkupFetchResponseTooLargeError,
+    LinkupFetchTargetUnreachableError,
     LinkupFetchUnsupportedContentTypeError,
     LinkupFetchUrlIsFileError,
     LinkupInsufficientCreditError,
@@ -50,6 +51,7 @@ FailedFetchError = LinkupFailedFetchError
 FetchImageExtraction = LinkupFetchImageExtraction
 FetchResponse = LinkupFetchResponse
 FetchResponseTooLargeError = LinkupFetchResponseTooLargeError
+FetchTargetUnreachableError = LinkupFetchTargetUnreachableError
 FetchUnsupportedContentTypeError = LinkupFetchUnsupportedContentTypeError
 FetchTask = LinkupFetchTask
 FetchTaskInput = LinkupFetchTaskInput
@@ -89,6 +91,7 @@ __all__ = [
     "FetchImageExtraction",
     "FetchResponse",
     "FetchResponseTooLargeError",
+    "FetchTargetUnreachableError",
     "FetchTask",
     "FetchTaskInput",
     "FetchUnsupportedContentTypeError",
@@ -103,6 +106,7 @@ __all__ = [
     "LinkupFetchImageExtraction",
     "LinkupFetchResponse",
     "LinkupFetchResponseTooLargeError",
+    "LinkupFetchTargetUnreachableError",
     "LinkupFetchTask",
     "LinkupFetchTaskInput",
     "LinkupFetchUnsupportedContentTypeError",

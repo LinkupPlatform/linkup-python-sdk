@@ -1048,6 +1048,19 @@ test_fetch_error_parameters = [
         b"""
         {
             "error": {
+                "code": "FETCH_TARGET_UNREACHABLE",
+                "message": "The target URL could not be reached (connection failed or timed out)",
+                "details": []
+            }
+        }
+        """,
+        linkup.FetchTargetUnreachableError,
+    ),
+    (
+        400,
+        b"""
+        {
+            "error": {
                 "code": "FETCH_UNSUPPORTED_CONTENT_TYPE",
                 "message": "The URL returned an unsupported content type",
                 "details": []

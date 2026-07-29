@@ -76,6 +76,16 @@ class LinkupFetchResponseTooLargeError(Exception):
     pass
 
 
+class LinkupFetchTargetUnreachableError(Exception):
+    """Fetch target unreachable error, raised when the Linkup API returns a 400 status code.
+
+    It is returned when the Linkup API cannot connect to the requested target URL, such as when
+    the host is unreachable or the request times out before a response is received.
+    """
+
+    pass
+
+
 class LinkupFetchUnsupportedContentTypeError(Exception):
     """Unsupported fetch content type error, raised when the Linkup API returns a 400 status code.
 
