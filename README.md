@@ -137,7 +137,8 @@ The `fetch` function can be used to retrieve the content of a given web page in 
 markdown format.
 
 You can use the `render_js` flag to execute the JavaScript code of the page before returning the
-content, and ask to `include_raw_html` to the response if you feel like it.
+content, and set `include_raw_content` to include the raw page content and its content type.
+`include_raw_html` is deprecated in favor of `include_raw_content`.
 
 ```python
 import linkup
@@ -146,7 +147,7 @@ client = linkup.Client()  # API key can be read from the environment variable or
 fetch_response: linkup.FetchResponse = client.fetch(
     url="https://docs.linkup.so",
     render_js=False,
-    include_raw_html=True,
+    include_raw_content=True,
 )
 print(fetch_response.model_dump())
 ```
@@ -156,7 +157,8 @@ Which prints:
 ```bash
 {
   markdown="Get started for free, no credit card required...",
-  raw_html="<!DOCTYPE html><html lang=\"en\"><head>...</head><body>...</body></html>"
+  raw_content="<!DOCTYPE html><html lang=\"en\"><head>...</head><body>...</body></html>",
+  content_type="html"
 }
 ```
 
