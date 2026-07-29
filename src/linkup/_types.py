@@ -114,11 +114,15 @@ class LinkupFetchResponse(_LinkupBaseModel):
 
     Attributes:
         markdown: The cleaned up markdown content.
-        raw_html: The optional raw HTML content.
-        images: The optional list of image URLs.
+        raw_content: The optional raw page content.
+        content_type: The type of the raw page content, if returned.
+        raw_html: The optional raw HTML content. Deprecated; use raw_content instead.
+        images: The optional list of extracted images.
     """
 
     markdown: str
+    raw_content: str | None = pydantic.Field(default=None, validation_alias="rawContent")
+    content_type: str | None = pydantic.Field(default=None, validation_alias="contentType")
     raw_html: str | None = pydantic.Field(default=None, validation_alias="rawHtml")
     images: list[LinkupFetchImageExtraction] | None = pydantic.Field(default=None)
 
@@ -222,12 +226,17 @@ class LinkupFetchTaskInput(_LinkupBaseModel):
 
     Attributes:
         url: The URL requested for fetching.
-        include_raw_html: Whether raw HTML should be included in the fetch response.
+        include_raw_content: Whether raw page content should be included in the fetch response.
+        include_raw_html: Whether raw HTML should be included in the fetch response. Deprecated;
+            use include_raw_content instead.
         render_js: Whether JavaScript rendering should be enabled.
         extract_images: Whether image extraction should be enabled.
     """
 
     url: str
+    include_raw_content: bool | None = pydantic.Field(
+        default=None, validation_alias="includeRawContent"
+    )
     include_raw_html: bool | None = pydantic.Field(default=None, validation_alias="includeRawHtml")
     render_js: bool | None = pydantic.Field(default=None, validation_alias="renderJs")
     extract_images: bool | None = pydantic.Field(default=None, validation_alias="extractImages")

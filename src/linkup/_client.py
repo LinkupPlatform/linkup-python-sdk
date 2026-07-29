@@ -238,8 +238,8 @@ class LinkupClient:
                 datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, the search
                 results will not be filtered by date.
             to_date: The date until which the search results should be considered. Accepts a
-                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, the search
-                results will not be filtered by date.
+                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, defaults to the
+                current date.
             exclude_domains: If you want to exclude specific domains from your search.
             include_domains: If you want the search to only return results from certain domains.
             max_results: The maximum number of results to return.
@@ -435,8 +435,8 @@ class LinkupClient:
                 datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, the search
                 results will not be filtered by date.
             to_date: The date until which the search results should be considered. Accepts a
-                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, the search
-                results will not be filtered by date.
+                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, defaults to the
+                current date.
             exclude_domains: If you want to exclude specific domains from your search.
             include_domains: If you want the search to only return results from certain domains.
             max_results: The maximum number of results to return.
@@ -526,8 +526,8 @@ class LinkupClient:
                 datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, sources will
                 not be filtered by a start date.
             to_date: The date until which the research sources should be considered. Accepts a
-                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, sources will
-                not be filtered by an end date.
+                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, defaults to the
+                current date.
             exclude_domains: Domains to exclude from the research sources.
             include_domains: Domains to restrict the research sources to.
             timeout: The timeout for the HTTP request, in seconds. If None, the request will have
@@ -599,8 +599,8 @@ class LinkupClient:
                 datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, sources will
                 not be filtered by a start date.
             to_date: The date until which the research sources should be considered. Accepts a
-                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, sources will
-                not be filtered by an end date.
+                datetime.date, YYYY-MM-DD, or full ISO datetime string. If None, defaults to the
+                current date.
             exclude_domains: Domains to exclude from the research sources.
             include_domains: Domains to restrict the research sources to.
             timeout: The timeout for the HTTP request, in seconds. If None, the request will have
@@ -1001,6 +1001,7 @@ class LinkupClient:
         render_js: bool | None = None,
         extract_images: bool | None = None,
         timeout: float | None = None,
+        include_raw_content: bool | None = None,
     ) -> LinkupFetchResponse:
         """Fetch the content of a web page using the Linkup API /fetch endpoint.
 
@@ -1011,11 +1012,14 @@ class LinkupClient:
         Args:
             url: The URL of the web page to fetch.
             include_raw_html: Whether to include the raw HTML of the webpage in the response.
+                Deprecated; use include_raw_content instead.
             render_js: Whether the API should render the JavaScript of the webpage.
             extract_images: Whether the API should extract images from the webpage and return them
                 in the response.
             timeout: The timeout for the HTTP request, in seconds. If None, the request will have
                 no timeout.
+            include_raw_content: Whether to include the raw page content and its content type in the
+                response.
 
         Returns:
             The response of the web page fetch, containing the web page content.
@@ -1032,6 +1036,7 @@ class LinkupClient:
         params: dict[str, str | bool] = self._get_fetch_params(
             url=url,
             include_raw_html=include_raw_html,
+            include_raw_content=include_raw_content,
             render_js=render_js,
             extract_images=extract_images,
         )
@@ -1052,6 +1057,7 @@ class LinkupClient:
         render_js: bool | None = None,
         extract_images: bool | None = None,
         timeout: float | None = None,
+        include_raw_content: bool | None = None,
     ) -> LinkupFetchResponse:
         """Asynchronously fetch the content of a web page using the Linkup API /fetch endpoint.
 
@@ -1062,11 +1068,14 @@ class LinkupClient:
         Args:
             url: The URL of the web page to fetch.
             include_raw_html: Whether to include the raw HTML of the webpage in the response.
+                Deprecated; use include_raw_content instead.
             render_js: Whether the API should render the JavaScript of the webpage.
             extract_images: Whether the API should extract images from the webpage and return them
                 in the response.
             timeout: The timeout for the HTTP request, in seconds. If None, the request will have
                 no timeout.
+            include_raw_content: Whether to include the raw page content and its content type in the
+                response.
 
         Returns:
             The response of the web page fetch, containing the web page content.
@@ -1083,6 +1092,7 @@ class LinkupClient:
         params: dict[str, str | bool] = self._get_fetch_params(
             url=url,
             include_raw_html=include_raw_html,
+            include_raw_content=include_raw_content,
             render_js=render_js,
             extract_images=extract_images,
         )
@@ -1592,6 +1602,7 @@ class LinkupClient:
                         "input": self._get_fetch_params(
                             url=task.url,
                             include_raw_html=task.include_raw_html,
+                            include_raw_content=task.include_raw_content,
                             render_js=task.render_js,
                             extract_images=task.extract_images,
                         ),
@@ -1626,6 +1637,7 @@ class LinkupClient:
         self,
         url: str,
         include_raw_html: bool | None,
+        include_raw_content: bool | None,
         render_js: bool | None,
         extract_images: bool | None,
     ) -> dict[str, str | bool]:
@@ -1634,6 +1646,8 @@ class LinkupClient:
         }
         if include_raw_html is not None:
             params["includeRawHtml"] = include_raw_html
+        if include_raw_content is not None:
+            params["includeRawContent"] = include_raw_content
         if render_js is not None:
             params["renderJs"] = render_js
         if extract_images is not None:

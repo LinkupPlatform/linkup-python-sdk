@@ -903,6 +903,28 @@ test_fetch_parameters = [
     (
         {
             "url": "https://example.com",
+            "include_raw_content": True,
+        },
+        {
+            "url": "https://example.com",
+            "includeRawContent": True,
+        },
+        b"""
+        {
+            "markdown": "# Some web page content",
+            "rawContent": "<html>...</html>",
+            "contentType": "html"
+        }
+        """,
+        linkup.FetchResponse(
+            markdown="# Some web page content",
+            raw_content="<html>...</html>",
+            content_type="html",
+        ),
+    ),
+    (
+        {
+            "url": "https://example.com",
             "include_raw_html": True,
             "render_js": True,
             "extract_images": True,
@@ -1178,16 +1200,19 @@ def test_create_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
                     "id": "42057d84-72ea-4029-9598-1bf7424a6113",
                     "input": {
                         "extractImages": true,
+                        "includeRawContent": true,
                         "url": "https://example.com"
                     },
                     "output": {
+                        "contentType": "html",
                         "images": [
                             {
                                 "alt": "hero",
                                 "url": "https://example.com/image.png"
                             }
                         ],
-                        "markdown": "Fetched content"
+                        "markdown": "Fetched content",
+                        "rawContent": "<html>Fetched content</html>"
                     },
                     "status": "completed",
                     "type": "fetch",
@@ -1209,6 +1234,7 @@ def test_create_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
             linkup.FetchTaskInput(
                 url="https://example.com",
                 extract_images=True,
+                include_raw_content=True,
             ),
         ]
     )
@@ -1231,6 +1257,7 @@ def test_create_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
                 "input": {
                     "url": "https://example.com",
                     "extractImages": True,
+                    "includeRawContent": True,
                 },
             },
         ],
@@ -1243,6 +1270,8 @@ def test_create_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
     assert tasks_response[1].output is not None
     assert tasks_response[1].output.images is not None
     assert tasks_response[1].output.images[0].url == "https://example.com/image.png"
+    assert tasks_response[1].output.raw_content == "<html>Fetched content</html>"
+    assert tasks_response[1].output.content_type == "html"
 
 
 def test_create_tasks_research_model(mocker: MockerFixture, client: linkup.Client) -> None:
