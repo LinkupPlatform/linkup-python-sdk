@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v0.19.0 (2026-07-29)
+
+### Features
+
+- Support raw content fetch responses
+  ([#85](https://github.com/LinkupPlatform/linkup-python-sdk/pull/85),
+  [`ef3ece8`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/ef3ece8c06ac4c0a573ac4441d957f51a87199b6))
+
+
 ## v0.18.4 (2026-07-29)
 
 ### Bug Fixes
