@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v0.18.4 (2026-07-29)
+
+### Bug Fixes
+
+- Handle fetch target unreachable errors
+  ([#84](https://github.com/LinkupPlatform/linkup-python-sdk/pull/84),
+  [`5f4ed40`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/5f4ed40f193b58d364848b70a7d918490f0b3c99))
+
+
 ## v0.18.3 (2026-06-30)
 
 ### Bug Fixes
