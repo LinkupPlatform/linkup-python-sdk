@@ -9,6 +9,7 @@ from ._errors import (
     LinkupFetchUrlIsFileError,
     LinkupInsufficientCreditError,
     LinkupInvalidRequestError,
+    LinkupIpNotWhitelistedError,
     LinkupNoResultError,
     LinkupPaymentRequiredError,
     LinkupTaskNotFoundError,
@@ -58,6 +59,7 @@ FetchTaskInput = LinkupFetchTaskInput
 FetchUrlIsFileError = LinkupFetchUrlIsFileError
 InsufficientCreditError = LinkupInsufficientCreditError
 InvalidRequestError = LinkupInvalidRequestError
+IpNotWhitelistedError = LinkupIpNotWhitelistedError
 NoResultError = LinkupNoResultError
 PaymentRequiredError = LinkupPaymentRequiredError
 ResearchTask = LinkupResearchTask
@@ -98,6 +100,7 @@ __all__ = [
     "FetchUrlIsFileError",
     "InsufficientCreditError",
     "InvalidRequestError",
+    "IpNotWhitelistedError",
     "JSONObject",
     "LinkupAuthenticationError",
     "LinkupBudgetLimitExceededError",
@@ -113,6 +116,7 @@ __all__ = [
     "LinkupFetchUrlIsFileError",
     "LinkupInsufficientCreditError",
     "LinkupInvalidRequestError",
+    "LinkupIpNotWhitelistedError",
     "LinkupNoResultError",
     "LinkupPaymentRequiredError",
     "LinkupResearchTask",
