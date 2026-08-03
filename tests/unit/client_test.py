@@ -479,6 +479,19 @@ test_search_error_parameters = [
         b"""
         {
             "error": {
+                "code": "IP_NOT_WHITELISTED",
+                "message": "IP address 192.0.2.1 is not whitelisted",
+                "details": []
+            }
+        }
+        """,
+        linkup.IpNotWhitelistedError,
+    ),
+    (
+        403,
+        b"""
+        {
+            "error": {
                 "code": "TASK_TYPE_NOT_SUPPORTED",
                 "message": "Extract tasks are not enabled for this organization.",
                 "details": []

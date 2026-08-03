@@ -19,6 +19,7 @@ from ._errors import (
     LinkupFetchUrlIsFileError,
     LinkupInsufficientCreditError,
     LinkupInvalidRequestError,
+    LinkupIpNotWhitelistedError,
     LinkupNoResultError,
     LinkupPaymentRequiredError,
     LinkupTaskNotFoundError,
@@ -1361,6 +1362,12 @@ class LinkupClient:
                     f"Original error message: {error_msg}."
                 )
             if response.status_code == 403:
+                if code == "IP_NOT_WHITELISTED":
+                    raise LinkupIpNotWhitelistedError(
+                        "The Linkup API rejected the request IP address (403). Make sure it is "
+                        "included in the API key's IP whitelist.\n"
+                        f"Original error message: {error_msg}."
+                    )
                 if code == "TASK_TYPE_NOT_SUPPORTED":
                     raise LinkupUnsupportedTaskTypeError(
                         "The Linkup API returned an unsupported task type error (403). \n"

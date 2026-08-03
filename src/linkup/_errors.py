@@ -29,6 +29,12 @@ class LinkupAuthenticationError(Exception):
     pass
 
 
+class LinkupIpNotWhitelistedError(Exception):
+    """IP whitelist error, raised when the request IP is not allowed by the API key."""
+
+    pass
+
+
 class LinkupPaymentRequiredError(Exception):
     """Payment required error, raised when the Linkup API returns a 402 status code.
 
