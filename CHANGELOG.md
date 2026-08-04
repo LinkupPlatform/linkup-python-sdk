@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.19.1 (2026-08-04)
+
+### Bug Fixes
+
+- Expose ip whitelist errors
+  ([`8da5590`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/8da55901d3408d51f29e8befdc54d252600e9a6c))
+
+
 ## v0.19.0 (2026-07-29)
 
 ### Features
