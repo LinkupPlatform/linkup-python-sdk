@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.20.0 (2026-08-05)
+
+### Features
+
+- Expose fetch favicon
+  ([`f34440a`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/f34440acbf6c3438b914c2de91d73e1182bccb31))
+
+
 ## v0.19.1 (2026-08-04)
 
 ### Bug Fixes
