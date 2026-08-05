@@ -114,6 +114,7 @@ class LinkupFetchResponse(_LinkupBaseModel):
 
     Attributes:
         markdown: The cleaned up markdown content.
+        favicon: The URL of the website favicon.
         raw_content: The optional raw page content.
         content_type: The type of the raw page content, if returned.
         raw_html: The optional raw HTML content. Deprecated; use raw_content instead.
@@ -121,6 +122,7 @@ class LinkupFetchResponse(_LinkupBaseModel):
     """
 
     markdown: str
+    favicon: str
     raw_content: str | None = pydantic.Field(default=None, validation_alias="rawContent")
     content_type: str | None = pydantic.Field(default=None, validation_alias="contentType")
     raw_html: str | None = pydantic.Field(default=None, validation_alias="rawHtml")

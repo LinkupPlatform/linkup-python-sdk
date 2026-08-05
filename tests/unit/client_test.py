@@ -910,8 +910,17 @@ test_fetch_parameters = [
     (
         {"url": "https://example.com"},
         {"url": "https://example.com"},
-        b'{"markdown": "Some web page content"}',
-        linkup.FetchResponse(markdown="Some web page content", raw_html=None),
+        b"""
+        {
+            "favicon": "https://favicons.linkup.so?domain=example.com",
+            "markdown": "Some web page content"
+        }
+        """,
+        linkup.FetchResponse(
+            favicon="https://favicons.linkup.so?domain=example.com",
+            markdown="Some web page content",
+            raw_html=None,
+        ),
     ),
     (
         {
@@ -924,12 +933,14 @@ test_fetch_parameters = [
         },
         b"""
         {
+            "favicon": "https://favicons.linkup.so?domain=example.com",
             "markdown": "# Some web page content",
             "rawContent": "<html>...</html>",
             "contentType": "html"
         }
         """,
         linkup.FetchResponse(
+            favicon="https://favicons.linkup.so?domain=example.com",
             markdown="# Some web page content",
             raw_content="<html>...</html>",
             content_type="html",
@@ -948,14 +959,33 @@ test_fetch_parameters = [
             "renderJs": True,
             "extractImages": True,
         },
-        b'{"markdown": "#Some web page content", "rawHtml": "<html>...</html>"}',
-        linkup.FetchResponse(markdown="#Some web page content", raw_html="<html>...</html>"),
+        b"""
+        {
+            "favicon": "https://favicons.linkup.so?domain=example.com",
+            "markdown": "#Some web page content",
+            "rawHtml": "<html>...</html>"
+        }
+        """,
+        linkup.FetchResponse(
+            favicon="https://favicons.linkup.so?domain=example.com",
+            markdown="#Some web page content",
+            raw_html="<html>...</html>",
+        ),
     ),
     (
         {"url": "https://example.com", "timeout": 15.0},
         {"url": "https://example.com"},
-        b'{"markdown": "Some web page content"}',
-        linkup.FetchResponse(markdown="Some web page content", raw_html=None),
+        b"""
+        {
+            "favicon": "https://favicons.linkup.so?domain=example.com",
+            "markdown": "Some web page content"
+        }
+        """,
+        linkup.FetchResponse(
+            favicon="https://favicons.linkup.so?domain=example.com",
+            markdown="Some web page content",
+            raw_html=None,
+        ),
     ),
 ]
 
@@ -1218,6 +1248,7 @@ def test_create_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
                     },
                     "output": {
                         "contentType": "html",
+                        "favicon": "https://favicons.linkup.so?domain=example.com",
                         "images": [
                             {
                                 "alt": "hero",
@@ -1281,6 +1312,7 @@ def test_create_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
     assert tasks_response[0].input.structured_output_schema == {"type": "object"}
     assert isinstance(tasks_response[1], linkup.FetchTask)
     assert tasks_response[1].output is not None
+    assert tasks_response[1].output.favicon == "https://favicons.linkup.so?domain=example.com"
     assert tasks_response[1].output.images is not None
     assert tasks_response[1].output.images[0].url == "https://example.com/image.png"
     assert tasks_response[1].output.raw_content == "<html>Fetched content</html>"
