@@ -134,7 +134,7 @@ for the detailed list of available parameters.
 #### 🪝 Fetch
 
 The `fetch` function can be used to retrieve the content of a given web page in a cleaned up
-markdown format.
+markdown format, together with the website's favicon URL.
 
 You can use the `render_js` flag to execute the JavaScript code of the page before returning the
 content, and set `include_raw_content` to include the raw page content and its content type.
@@ -157,6 +157,7 @@ Which prints:
 ```bash
 {
   markdown="Get started for free, no credit card required...",
+  favicon="https://favicons.linkup.so?domain=docs.linkup.so",
   raw_content="<!DOCTYPE html><html lang=\"en\"><head>...</head><body>...</body></html>",
   content_type="html"
 }
