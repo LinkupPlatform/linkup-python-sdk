@@ -233,6 +233,7 @@ class LinkupFetchTaskInput(_LinkupBaseModel):
             use include_raw_content instead.
         render_js: Whether JavaScript rendering should be enabled.
         extract_images: Whether image extraction should be enabled.
+        mode: The fetch strategy to use.
     """
 
     url: str
@@ -242,6 +243,7 @@ class LinkupFetchTaskInput(_LinkupBaseModel):
     include_raw_html: bool | None = pydantic.Field(default=None, validation_alias="includeRawHtml")
     render_js: bool | None = pydantic.Field(default=None, validation_alias="renderJs")
     extract_images: bool | None = pydantic.Field(default=None, validation_alias="extractImages")
+    mode: Literal["standard", "pro"] | None = None
 
 
 LinkupTaskInput = LinkupSearchTaskInput | LinkupFetchTaskInput | LinkupResearchTaskInput

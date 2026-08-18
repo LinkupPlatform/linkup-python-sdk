@@ -137,8 +137,8 @@ The `fetch` function can be used to retrieve the content of a given web page in 
 markdown format, together with the website's favicon URL.
 
 You can use the `render_js` flag to execute the JavaScript code of the page before returning the
-content, and set `include_raw_content` to include the raw page content and its content type.
-`include_raw_html` is deprecated in favor of `include_raw_content`.
+content, set `include_raw_content` to include the raw page content and its content type in the
+output, or set `mode` to `"pro"` for significantly higher success rates on hard-to-retrieve pages.
 
 ```python
 import linkup
@@ -146,8 +146,9 @@ import linkup
 client = linkup.Client()  # API key can be read from the environment variable or passed as an argument
 fetch_response: linkup.FetchResponse = client.fetch(
     url="https://docs.linkup.so",
-    render_js=False,
+    render_js=True,
     include_raw_content=True,
+    mode="pro",
 )
 print(fetch_response.model_dump())
 ```
