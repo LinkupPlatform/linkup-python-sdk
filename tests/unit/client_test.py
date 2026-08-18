@@ -987,6 +987,20 @@ test_fetch_parameters = [
             raw_html=None,
         ),
     ),
+    (
+        {"url": "https://example.com", "mode": "pro"},
+        {"url": "https://example.com", "mode": "pro"},
+        b"""
+        {
+            "favicon": "https://favicons.linkup.so?domain=example.com",
+            "markdown": "Some web page content"
+        }
+        """,
+        linkup.FetchResponse(
+            favicon="https://favicons.linkup.so?domain=example.com",
+            markdown="Some web page content",
+        ),
+    ),
 ]
 
 
@@ -1244,6 +1258,7 @@ def test_create_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
                     "input": {
                         "extractImages": true,
                         "includeRawContent": true,
+                        "mode": "pro",
                         "url": "https://example.com"
                     },
                     "output": {
@@ -1279,6 +1294,7 @@ def test_create_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
                 url="https://example.com",
                 extract_images=True,
                 include_raw_content=True,
+                mode="pro",
             ),
         ]
     )
@@ -1302,6 +1318,7 @@ def test_create_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
                     "url": "https://example.com",
                     "extractImages": True,
                     "includeRawContent": True,
+                    "mode": "pro",
                 },
             },
         ],
@@ -1311,6 +1328,7 @@ def test_create_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
     assert tasks_response[0].input.query == "query"
     assert tasks_response[0].input.structured_output_schema == {"type": "object"}
     assert isinstance(tasks_response[1], linkup.FetchTask)
+    assert tasks_response[1].input.mode == "pro"
     assert tasks_response[1].output is not None
     assert tasks_response[1].output.favicon == "https://favicons.linkup.so?domain=example.com"
     assert tasks_response[1].output.images is not None

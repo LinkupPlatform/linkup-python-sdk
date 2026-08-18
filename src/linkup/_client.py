@@ -1003,6 +1003,7 @@ class LinkupClient:
         extract_images: bool | None = None,
         timeout: float | None = None,
         include_raw_content: bool | None = None,
+        mode: Literal["standard", "pro"] | None = None,
     ) -> LinkupFetchResponse:
         """Fetch the content of a web page using the Linkup API /fetch endpoint.
 
@@ -1021,6 +1022,8 @@ class LinkupClient:
                 no timeout.
             include_raw_content: Whether to include the raw page content and its content type in the
                 response.
+            mode: The fetch strategy to use. "pro" delivers significantly higher success rates on
+                hard-to-retrieve pages.
 
         Returns:
             The response of the web page fetch, containing the web page content.
@@ -1040,6 +1043,7 @@ class LinkupClient:
             include_raw_content=include_raw_content,
             render_js=render_js,
             extract_images=extract_images,
+            mode=mode,
         )
 
         response: httpx.Response = self._request(
@@ -1059,6 +1063,7 @@ class LinkupClient:
         extract_images: bool | None = None,
         timeout: float | None = None,
         include_raw_content: bool | None = None,
+        mode: Literal["standard", "pro"] | None = None,
     ) -> LinkupFetchResponse:
         """Asynchronously fetch the content of a web page using the Linkup API /fetch endpoint.
 
@@ -1077,6 +1082,8 @@ class LinkupClient:
                 no timeout.
             include_raw_content: Whether to include the raw page content and its content type in the
                 response.
+            mode: The fetch strategy to use. "pro" delivers significantly higher success rates on
+                hard-to-retrieve pages.
 
         Returns:
             The response of the web page fetch, containing the web page content.
@@ -1096,6 +1103,7 @@ class LinkupClient:
             include_raw_content=include_raw_content,
             render_js=render_js,
             extract_images=extract_images,
+            mode=mode,
         )
 
         response: httpx.Response = await self._async_request(
@@ -1612,6 +1620,7 @@ class LinkupClient:
                             include_raw_content=task.include_raw_content,
                             render_js=task.render_js,
                             extract_images=task.extract_images,
+                            mode=task.mode,
                         ),
                     }
                 )
@@ -1647,6 +1656,7 @@ class LinkupClient:
         include_raw_content: bool | None,
         render_js: bool | None,
         extract_images: bool | None,
+        mode: Literal["standard", "pro"] | None,
     ) -> dict[str, str | bool]:
         params: dict[str, str | bool] = {
             "url": url,
@@ -1659,6 +1669,8 @@ class LinkupClient:
             params["renderJs"] = render_js
         if extract_images is not None:
             params["extractImages"] = extract_images
+        if mode is not None:
+            params["mode"] = mode
         return params
 
     def _parse_search_response(
