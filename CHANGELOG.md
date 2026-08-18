@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v0.21.0 (2026-08-18)
+
+### Chores
+
+- Update lock file dependencies
+  ([`be653ff`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/be653ffe73bd34d8f0430878ca1e27a8086fc50c))
+
+### Features
+
+- Support fetch mode selection
+  ([`b9d06fb`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/b9d06fbca88f06f78c9fe903f05c50706ddbf0bb))
+
+
 ## v0.20.0 (2026-08-05)
 
 ### Features
