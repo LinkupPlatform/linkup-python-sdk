@@ -14,6 +14,7 @@ from ._errors import (
     LinkupBudgetLimitExceededError,
     LinkupFailedFetchError,
     LinkupFetchResponseTooLargeError,
+    LinkupFetchTargetNotFoundError,
     LinkupFetchTargetUnreachableError,
     LinkupFetchUnsupportedContentTypeError,
     LinkupFetchUrlIsFileError,
@@ -1030,8 +1031,9 @@ class LinkupClient:
 
         Raises:
             LinkupInvalidRequestError: If the provided URL is not valid.
-            LinkupFailedFetchError: If the provided URL is not found or can't be fetched.
+            LinkupFailedFetchError: If the provided URL can't be fetched.
             LinkupFetchResponseTooLargeError: If the fetch response is too large.
+            LinkupFetchTargetNotFoundError: If the target URL is not found.
             LinkupFetchTargetUnreachableError: If the target URL cannot be reached.
             LinkupFetchUnsupportedContentTypeError: If the URL resolves to an unsupported content
                 type.
@@ -1090,8 +1092,9 @@ class LinkupClient:
 
         Raises:
             LinkupInvalidRequestError: If the provided URL is not valid.
-            LinkupFailedFetchError: If the provided URL is not found or can't be fetched.
+            LinkupFailedFetchError: If the provided URL can't be fetched.
             LinkupFetchResponseTooLargeError: If the fetch response is too large.
+            LinkupFetchTargetNotFoundError: If the target URL is not found.
             LinkupFetchTargetUnreachableError: If the target URL cannot be reached.
             LinkupFetchUnsupportedContentTypeError: If the URL resolves to an unsupported content
                 type.
@@ -1336,6 +1339,12 @@ class LinkupClient:
                     raise LinkupFetchResponseTooLargeError(
                         "The Linkup API returned a fetch response too large error (400). "
                         "The provided URL's response is too large to be processed.\n"
+                        f"Original error message: {error_msg}."
+                    )
+                if code == "FETCH_TARGET_NOT_FOUND":
+                    raise LinkupFetchTargetNotFoundError(
+                        "The Linkup API returned a fetch target not found error (400). "
+                        "The target URL was not found.\n"
                         f"Original error message: {error_msg}."
                     )
                 if code == "FETCH_TARGET_UNREACHABLE":

@@ -1127,6 +1127,19 @@ test_fetch_error_parameters = [
         b"""
         {
             "error": {
+                "code": "FETCH_TARGET_NOT_FOUND",
+                "message": "The target URL was not found",
+                "details": []
+            }
+        }
+        """,
+        linkup.FetchTargetNotFoundError,
+    ),
+    (
+        400,
+        b"""
+        {
+            "error": {
                 "code": "FETCH_TARGET_UNREACHABLE",
                 "message": "The target URL could not be reached (connection failed or timed out)",
                 "details": []

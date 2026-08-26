@@ -82,6 +82,15 @@ class LinkupFetchResponseTooLargeError(Exception):
     pass
 
 
+class LinkupFetchTargetNotFoundError(Exception):
+    """Fetch target not found error.
+
+    Raised when the API reports that the target URL was not found.
+    """
+
+    pass
+
+
 class LinkupFetchTargetUnreachableError(Exception):
     """Fetch target unreachable error, raised when the Linkup API returns a 400 status code.
 
