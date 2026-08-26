@@ -83,7 +83,10 @@ class LinkupFetchResponseTooLargeError(Exception):
 
 
 class LinkupFetchTargetNotFoundError(Exception):
-    """Fetch target not found error, raised when the API reports that the target URL was not found."""
+    """Fetch target not found error.
+
+    Raised when the API reports that the target URL was not found.
+    """
 
     pass
 
