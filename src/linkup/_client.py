@@ -1003,6 +1003,8 @@ class LinkupClient:
         timeout: float | None = None,
         include_raw_content: bool | None = None,
         mode: Literal["standard", "pro"] | None = None,
+        schema: type[pydantic.BaseModel] | dict[str, Any] | str | None = None,
+        instructions: str | None = None,
     ) -> LinkupFetchResponse:
         """Fetch the content of a web page using the Linkup API /fetch endpoint.
 
@@ -1023,6 +1025,10 @@ class LinkupClient:
                 response.
             mode: The fetch strategy to use. "pro" delivers significantly higher success rates on
                 hard-to-retrieve pages.
+            schema: An object JSON schema describing an optional structured data to extract.
+                Supported formats are a pydantic.BaseModel, a Python dictionary, or a JSON string.
+            instructions: Optional instructions guiding structured data extraction if schema is
+                passed.
 
         Returns:
             The response of the web page fetch, containing the web page content.
@@ -1037,13 +1043,15 @@ class LinkupClient:
                 type.
             LinkupTimeoutError: If the request times out.
         """
-        params: dict[str, str | bool] = self._get_fetch_params(
+        params: dict[str, Any] = self._get_fetch_params(
             url=url,
             include_raw_html=include_raw_html,
             include_raw_content=include_raw_content,
             render_js=render_js,
             extract_images=extract_images,
             mode=mode,
+            schema=schema,
+            instructions=instructions,
         )
 
         response: httpx.Response = self._request(
@@ -1064,6 +1072,8 @@ class LinkupClient:
         timeout: float | None = None,
         include_raw_content: bool | None = None,
         mode: Literal["standard", "pro"] | None = None,
+        schema: type[pydantic.BaseModel] | dict[str, Any] | str | None = None,
+        instructions: str | None = None,
     ) -> LinkupFetchResponse:
         """Asynchronously fetch the content of a web page using the Linkup API /fetch endpoint.
 
@@ -1084,6 +1094,10 @@ class LinkupClient:
                 response.
             mode: The fetch strategy to use. "pro" delivers significantly higher success rates on
                 hard-to-retrieve pages.
+            schema: An object JSON schema describing an optional structured data to extract.
+                Supported formats are a pydantic.BaseModel, a Python dictionary, or a JSON string.
+            instructions: Optional instructions guiding structured data extraction if schema is
+                passed.
 
         Returns:
             The response of the web page fetch, containing the web page content.
@@ -1098,13 +1112,15 @@ class LinkupClient:
                 type.
             LinkupTimeoutError: If the request times out.
         """
-        params: dict[str, str | bool] = self._get_fetch_params(
+        params: dict[str, Any] = self._get_fetch_params(
             url=url,
             include_raw_html=include_raw_html,
             include_raw_content=include_raw_content,
             render_js=render_js,
             extract_images=extract_images,
             mode=mode,
+            schema=schema,
+            instructions=instructions,
         )
 
         response: httpx.Response = await self._async_request(
@@ -1618,6 +1634,8 @@ class LinkupClient:
                             render_js=task.render_js,
                             extract_images=task.extract_images,
                             mode=task.mode,
+                            schema=task.schema_,
+                            instructions=task.instructions,
                         ),
                     }
                 )
@@ -1654,8 +1672,10 @@ class LinkupClient:
         render_js: bool | None,
         extract_images: bool | None,
         mode: Literal["standard", "pro"] | None,
-    ) -> dict[str, str | bool]:
-        params: dict[str, str | bool] = {
+        schema: type[pydantic.BaseModel] | str | dict[str, Any] | None,
+        instructions: str | None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {
             "url": url,
         }
         if include_raw_html is not None:
@@ -1668,6 +1688,17 @@ class LinkupClient:
             params["extractImages"] = extract_images
         if mode is not None:
             params["mode"] = mode
+        if schema is not None:
+            if isinstance(schema, str):
+                params["schema"] = schema
+            elif isinstance(schema, dict):
+                params["schema"] = json.dumps(schema)
+            elif issubclass(schema, pydantic.BaseModel):
+                params["schema"] = json.dumps(schema.model_json_schema())
+            else:
+                raise TypeError(f"Unexpected schema type: '{type(schema)}'")
+        if instructions is not None:
+            params["instructions"] = instructions
         return params
 
     def _parse_search_response(

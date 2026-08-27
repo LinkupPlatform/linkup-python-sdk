@@ -139,6 +139,7 @@ markdown format, together with the website's favicon URL.
 You can use the `render_js` flag to execute the JavaScript code of the page before returning the
 content, set `include_raw_content` to include the raw page content and its content type in the
 output, or set `mode` to `"pro"` for significantly higher success rates on hard-to-retrieve pages.
+You can also pass an object JSON `schema`, with optional `instructions`, to extract structured data.
 
 ```python
 import linkup
@@ -149,18 +150,24 @@ fetch_response: linkup.FetchResponse = client.fetch(
     render_js=True,
     include_raw_content=True,
     mode="pro",
+    schema={
+        "type": "object",
+        "properties": {"title": {"type": "string"}},
+    },
+    instructions="Extract the page title.",
 )
 print(fetch_response.model_dump())
 ```
 
 Which prints:
 
-```bash
+```python
 {
-  markdown="Get started for free, no credit card required...",
-  favicon="https://favicons.linkup.so?domain=docs.linkup.so",
-  raw_content="<!DOCTYPE html><html lang=\"en\"><head>...</head><body>...</body></html>",
-  content_type="html"
+  "markdown": "The production-grade web search API for AI.",
+  "favicon": "https://favicons.linkup.so?domain=docs.linkup.so",
+  "raw_content": "<!DOCTYPE html><html lang=\"en\"><head>...</head><body>...</body></html>",
+  "content_type": "html",
+  "data": {"title": "The production-grade web search API for AI."},
 }
 ```
 
