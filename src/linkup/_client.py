@@ -261,10 +261,10 @@ class LinkupClient:
               True
 
         Raises:
-            TypeError: If structured_output_schema is not provided or is not a string, dictionary,
-                or pydantic.BaseModel when output_type is "structured".
-            LinkupInvalidRequestError: If structured_output_schema doesn't represent a valid object
-                JSON schema when output_type is "structured".
+            TypeError: If structured_output_schema is not a string, dictionary, or
+                pydantic.BaseModel when provided.
+            LinkupInvalidRequestError: If the request parameters are invalid, including an invalid
+                or missing structured_output_schema when output_type is "structured".
             LinkupAuthenticationError: If the Linkup API key is invalid.
             LinkupInsufficientCreditError: If you have run out of credit.
             LinkupBudgetLimitExceededError: If the API key has reached its configured budget limit.
@@ -458,10 +458,10 @@ class LinkupClient:
               True
 
         Raises:
-            TypeError: If structured_output_schema is not provided or is not a string, dictionary,
-                or pydantic.BaseModel when output_type is "structured".
-            LinkupInvalidRequestError: If structured_output_schema doesn't represent a valid object
-                JSON schema when output_type is "structured".
+            TypeError: If structured_output_schema is not a string, dictionary, or
+                pydantic.BaseModel when provided.
+            LinkupInvalidRequestError: If the request parameters are invalid, including an invalid
+                or missing structured_output_schema when output_type is "structured".
             LinkupAuthenticationError: If the Linkup API key is invalid.
             LinkupInsufficientCreditError: If you have run out of credit.
             LinkupBudgetLimitExceededError: If the API key has reached its configured budget limit.
@@ -539,9 +539,8 @@ class LinkupClient:
             The newly created research task, with "pending" status and no output.
 
         Raises:
-            TypeError: If structured_output_schema is not provided when output_type is
-                "structured", or if it is not a string, dictionary, or pydantic.BaseModel when
-                provided.
+            TypeError: If structured_output_schema is not a string, dictionary, or
+                pydantic.BaseModel when provided.
             LinkupInvalidRequestError: If the request parameters are invalid.
             LinkupAuthenticationError: If the Linkup API key is invalid.
             LinkupInsufficientCreditError: If you have run out of credit.
@@ -612,9 +611,8 @@ class LinkupClient:
             The newly created research task, with "pending" status and no output.
 
         Raises:
-            TypeError: If structured_output_schema is not provided when output_type is
-                "structured", or if it is not a string, dictionary, or pydantic.BaseModel when
-                provided.
+            TypeError: If structured_output_schema is not a string, dictionary, or
+                pydantic.BaseModel when provided.
             LinkupInvalidRequestError: If the request parameters are invalid.
             LinkupAuthenticationError: If the Linkup API key is invalid.
             LinkupInsufficientCreditError: If you have run out of credit.
@@ -1458,11 +1456,6 @@ class LinkupClient:
         include_inline_citations: bool | None,
         include_sources: bool | None,
     ) -> dict[str, str | bool | int | list[str]]:
-        if output_type == "structured" and structured_output_schema is None:
-            raise TypeError(
-                "structured_output_schema must be provided when output_type is 'structured'"
-            )
-
         params: dict[str, str | bool | int | list[str]] = {
             "q": query,
             "depth": depth,
@@ -1512,11 +1505,6 @@ class LinkupClient:
         exclude_domains: list[str] | None,
         include_domains: list[str] | None,
     ) -> dict[str, str | bool | list[str]]:
-        if output_type == "structured" and structured_output_schema is None:
-            raise TypeError(
-                "structured_output_schema must be provided when output_type is 'structured'"
-            )
-
         params: dict[str, str | bool | list[str]] = {
             "q": query,
             "outputType": output_type,

@@ -8,8 +8,12 @@ Keep the SDK aligned with the current public, stable Linkup API while:
 
 - implementing a Pythonic public interface,
 - documenting the features through docstrings,
-- and adding type safety through type hints or input data validation with `pydantic` models when
-  relevant.
+- and adding type safety through type hints and `pydantic` models when relevant.
+
+However, **do not**:
+
+- duplicate API request-semantic validation in the SDK: SDK models may validate local data shape,
+  but the API owns cross-field, conditional, and product constraints.
 
 ## Working Rules
 
