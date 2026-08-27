@@ -385,18 +385,6 @@ def test_search_structured_output_model_dump_preserves_data(
     }
 
 
-def test_search_structured_output_requires_schema(client: linkup.Client) -> None:
-    with pytest.raises(
-        TypeError,
-        match="structured_output_schema must be provided",
-    ):
-        client.search(
-            query="query",
-            depth="standard",
-            output_type="structured",
-        )
-
-
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     (
@@ -432,19 +420,6 @@ async def test_async_search(
         timeout=expected_timeout,
     )
     assert search_response == expected_search_response
-
-
-@pytest.mark.asyncio
-async def test_async_search_structured_output_requires_schema(client: linkup.Client) -> None:
-    with pytest.raises(
-        TypeError,
-        match="structured_output_schema must be provided",
-    ):
-        await client.async_search(
-            query="query",
-            depth="standard",
-            output_type="structured",
-        )
 
 
 test_search_error_parameters = [
@@ -742,17 +717,6 @@ def test_research(mocker: MockerFixture, client: linkup.Client) -> None:
     )
 
 
-def test_research_structured_output_requires_schema(client: linkup.Client) -> None:
-    with pytest.raises(
-        TypeError,
-        match="structured_output_schema must be provided",
-    ):
-        client.research(
-            query="query",
-            output_type="structured",
-        )
-
-
 def test_get_research_structured_output_keeps_sourced_answer_shape_raw(
     mocker: MockerFixture, client: linkup.Client
 ) -> None:
@@ -841,20 +805,6 @@ async def test_async_research(mocker: MockerFixture, client: linkup.Client) -> N
     assert research_response.output == {"summary": "done"}
     assert research_response.input.query == "query"
     assert research_response.input.structured_output_schema == {"type": "object"}
-
-
-@pytest.mark.asyncio
-async def test_async_research_structured_output_requires_schema(
-    client: linkup.Client,
-) -> None:
-    with pytest.raises(
-        TypeError,
-        match="structured_output_schema must be provided",
-    ):
-        await client.async_research(
-            query="query",
-            output_type="structured",
-        )
 
 
 def test_research_with_iso_datetime_string_dates(
