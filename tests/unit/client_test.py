@@ -951,6 +951,30 @@ test_fetch_parameters = [
             markdown="Some web page content",
         ),
     ),
+    (
+        {
+            "url": "https://example.com",
+            "schema": {"type": "object", "properties": {"name": {"type": "string"}}},
+            "instructions": "Extract the product name.",
+        },
+        {
+            "url": "https://example.com",
+            "schema": json.dumps({"type": "object", "properties": {"name": {"type": "string"}}}),
+            "instructions": "Extract the product name.",
+        },
+        b"""
+        {
+            "data": {"name": "Example product"},
+            "favicon": "https://favicons.linkup.so?domain=example.com",
+            "markdown": "Example product"
+        }
+        """,
+        linkup.FetchResponse(
+            data={"name": "Example product"},
+            favicon="https://favicons.linkup.so?domain=example.com",
+            markdown="Example product",
+        ),
+    ),
 ]
 
 
@@ -1226,6 +1250,9 @@ def test_create_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
                     },
                     "output": {
                         "contentType": "html",
+                        "data": {
+                            "name": "Example product"
+                        },
                         "favicon": "https://favicons.linkup.so?domain=example.com",
                         "images": [
                             {
@@ -1257,6 +1284,8 @@ def test_create_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
                 url="https://example.com",
                 extract_images=True,
                 include_raw_content=True,
+                schema_={"type": "object", "properties": {"name": {"type": "string"}}},
+                instructions="Extract the product name.",
                 mode="pro",
             ),
         ]
@@ -1281,6 +1310,10 @@ def test_create_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
                     "url": "https://example.com",
                     "extractImages": True,
                     "includeRawContent": True,
+                    "schema": json.dumps(
+                        {"type": "object", "properties": {"name": {"type": "string"}}}
+                    ),
+                    "instructions": "Extract the product name.",
                     "mode": "pro",
                 },
             },
@@ -1298,6 +1331,7 @@ def test_create_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
     assert tasks_response[1].output.images[0].url == "https://example.com/image.png"
     assert tasks_response[1].output.raw_content == "<html>Fetched content</html>"
     assert tasks_response[1].output.content_type == "html"
+    assert tasks_response[1].output.data == {"name": "Example product"}
 
 
 def test_create_tasks_research_model(mocker: MockerFixture, client: linkup.Client) -> None:
