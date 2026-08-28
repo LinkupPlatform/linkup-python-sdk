@@ -2,6 +2,25 @@
 
 <!-- version list -->
 
+## v0.22.0 (2026-08-28)
+
+### Bug Fixes
+
+- Handle fetch target not found errors
+  ([#89](https://github.com/LinkupPlatform/linkup-python-sdk/pull/89),
+  [`d621384`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/d6213840fb0dcbdfb783bf3e4794e6c321eed27e))
+
+### Chores
+
+- Remove cross field valition from SDK
+  ([`249fdd0`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/249fdd0b1cc6f3b347f0779dcb831a7e438ae174))
+
+### Features
+
+- Support structured fetch extraction
+  ([`e927e75`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/e927e75bef4944cb23faba2b9d68f02518925156))
+
+
 ## v0.21.0 (2026-08-18)
 
 ### Chores
