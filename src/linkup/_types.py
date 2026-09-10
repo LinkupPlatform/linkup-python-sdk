@@ -136,7 +136,7 @@ class LinkupSearchTaskInput(_LinkupBaseModel):
 
     Attributes:
         query: The search query.
-        depth: The search depth. "fast" depth is in beta and only works with keyword-based queries.
+        depth: The search depth.
         output_type: The expected search output type.
         include_images: Whether image results should be included.
         from_date: The start date used to filter search sources, if any.
@@ -150,7 +150,7 @@ class LinkupSearchTaskInput(_LinkupBaseModel):
     """
 
     query: str = pydantic.Field(validation_alias="q")
-    depth: Literal["fast", "standard", "deep"]
+    depth: Literal["flash", "fast", "standard", "deep"]
     output_type: Literal["searchResults", "sourcedAnswer", "structured"] = pydantic.Field(
         validation_alias="outputType"
     )

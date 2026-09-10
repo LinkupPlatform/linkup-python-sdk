@@ -80,15 +80,15 @@ pip install linkup-sdk[x402]
 
 #### 📝 Search
 
-The `search` function can be used to performs web searches. It supports three different complexity
+The `search` function can be used to performs web searches. It supports four different complexity
 modes, through the `depth` parameter:
 
-- `"fast"` (**beta**), for sub-second responses to simple, focused queries (must be keyword-based)
-- `"standard"`, for single-iteration agentic search that can interpret the query, run parallel
-  sub-searches, and scrape one URL while remaining fast
-- `"deep"`, for slower, more agentic and complex responses, suited to more complex queries (e.g.
-  "What is the company profile of LangChain accross the last few years, and how does it compare to
-  its concurrents?")
+- `"flash"` is lowest latency: ranked sources and snippets in a few hundred milliseconds, built for
+  low-latency use cases,
+- `"fast"` is higher-quality one-shot retrieval in about a second — the recommended default for
+  most agentic applications,
+- `"standard"` is a single pass of agentic search for queries that span several topics or sources,
+- `"deep"` runs several search iterations, optimizing for coverage and multi-hop agentic workflows
 
 The `search` function also supports three output types, through the `output_type` parameter:
 
@@ -103,7 +103,7 @@ import linkup
 client = linkup.Client()  # API key can be read from the environment variable or passed as an argument
 search_response: linkup.SourcedAnswer = client.search(
     query="What are the 3 major events in the life of Abraham Lincoln?",
-    depth="deep",  # "fast" (beta), "standard", or "deep"
+    depth="deep",  # "flash", "fast", "standard", or "deep"
     output_type="sourcedAnswer",  # "searchResults" or "sourcedAnswer" or "structured"
     structured_output_schema=None,  # must be filled if output_type is "structured"
 )
@@ -231,7 +231,7 @@ async def main() -> None:
     client = linkup.Client()  # API key can be read from the environment variable or passed as an argument
     search_response: linkup.SourcedAnswer = await client.async_search(
         query="What are the 3 major events in the life of Abraham Lincoln?",
-        depth="deep",  # "fast" (beta), "standard", or "deep"
+        depth="deep",  # "flash", "fast", "standard", or "deep"
         output_type="sourcedAnswer",  # "searchResults" or "sourcedAnswer" or "structured"
         structured_output_schema=None,  # must be filled if output_type is "structured"
     )
