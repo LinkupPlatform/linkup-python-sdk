@@ -107,7 +107,7 @@ class LinkupClient:
         self,
         query: str,
         *,
-        depth: Literal["fast", "standard", "deep"],
+        depth: Literal["flash", "fast", "standard", "deep"],
         output_type: Literal["searchResults"],
         structured_output_schema: None = None,
         include_images: bool | None = None,
@@ -126,7 +126,7 @@ class LinkupClient:
         self,
         query: str,
         *,
-        depth: Literal["fast", "standard", "deep"],
+        depth: Literal["flash", "fast", "standard", "deep"],
         output_type: Literal["sourcedAnswer"],
         structured_output_schema: None = None,
         include_images: bool | None = None,
@@ -145,7 +145,7 @@ class LinkupClient:
         self,
         query: str,
         *,
-        depth: Literal["fast", "standard", "deep"],
+        depth: Literal["flash", "fast", "standard", "deep"],
         output_type: Literal["structured"],
         structured_output_schema: type[pydantic.BaseModel] | dict[str, Any] | str,
         include_images: bool | None = None,
@@ -164,7 +164,7 @@ class LinkupClient:
         self,
         query: str,
         *,
-        depth: Literal["fast", "standard", "deep"],
+        depth: Literal["flash", "fast", "standard", "deep"],
         output_type: Literal["structured"],
         structured_output_schema: type[pydantic.BaseModel] | dict[str, Any] | str,
         include_images: bool | None = None,
@@ -183,7 +183,7 @@ class LinkupClient:
         self,
         query: str,
         *,
-        depth: Literal["fast", "standard", "deep"],
+        depth: Literal["flash", "fast", "standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: type[pydantic.BaseModel] | dict[str, Any] | str | None = None,
         include_images: bool | None = None,
@@ -203,7 +203,7 @@ class LinkupClient:
         self,
         query: str,
         *,
-        depth: Literal["fast", "standard", "deep"],
+        depth: Literal["flash", "fast", "standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: type[pydantic.BaseModel] | dict[str, Any] | str | None = None,
         include_images: bool | None = None,
@@ -224,10 +224,12 @@ class LinkupClient:
 
         Args:
             query: The search query.
-            depth: The depth of the search. Can be "fast" (beta), for a sub-second search (query
-                must be keyword-based), "standard", for a simple, straightforward search (query can
-                be free text), or "deep" for a more powerful agentic workflow (query can be free
-                text).
+            depth: The depth of the search. "flash" is lowest latency: ranked sources and snippets
+                in a few hundred milliseconds, built for low-latency use cases. "fast" is
+                higher-quality one-shot retrieval in about a second — the recommended default for
+                most agentic applications. "standard" is a single pass of agentic search for queries
+                that span several topics or sources. "deep" runs several search iterations,
+                optimizing for coverage and multi-hop agentic workflows.
             output_type: The type of output which is expected: "searchResults" will output raw
                 search results, "sourcedAnswer" will output the answer to the query and sources
                 supporting it, and "structured" will base the output on the format provided in
@@ -304,7 +306,7 @@ class LinkupClient:
         self,
         query: str,
         *,
-        depth: Literal["fast", "standard", "deep"],
+        depth: Literal["flash", "fast", "standard", "deep"],
         output_type: Literal["searchResults"],
         structured_output_schema: None = None,
         include_images: bool | None = None,
@@ -323,7 +325,7 @@ class LinkupClient:
         self,
         query: str,
         *,
-        depth: Literal["fast", "standard", "deep"],
+        depth: Literal["flash", "fast", "standard", "deep"],
         output_type: Literal["sourcedAnswer"],
         structured_output_schema: None = None,
         include_images: bool | None = None,
@@ -342,7 +344,7 @@ class LinkupClient:
         self,
         query: str,
         *,
-        depth: Literal["fast", "standard", "deep"],
+        depth: Literal["flash", "fast", "standard", "deep"],
         output_type: Literal["structured"],
         structured_output_schema: type[pydantic.BaseModel] | dict[str, Any] | str,
         include_images: bool | None = None,
@@ -361,7 +363,7 @@ class LinkupClient:
         self,
         query: str,
         *,
-        depth: Literal["fast", "standard", "deep"],
+        depth: Literal["flash", "fast", "standard", "deep"],
         output_type: Literal["structured"],
         structured_output_schema: type[pydantic.BaseModel] | dict[str, Any] | str,
         include_images: bool | None = None,
@@ -380,7 +382,7 @@ class LinkupClient:
         self,
         query: str,
         *,
-        depth: Literal["fast", "standard", "deep"],
+        depth: Literal["flash", "fast", "standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: type[pydantic.BaseModel] | dict[str, Any] | str | None = None,
         include_images: bool | None = None,
@@ -400,7 +402,7 @@ class LinkupClient:
         self,
         query: str,
         *,
-        depth: Literal["fast", "standard", "deep"],
+        depth: Literal["flash", "fast", "standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: type[pydantic.BaseModel] | dict[str, Any] | str | None = None,
         include_images: bool | None = None,
@@ -421,10 +423,12 @@ class LinkupClient:
 
         Args:
             query: The search query.
-            depth: The depth of the search. Can be "fast" (beta), for a sub-second search (query
-                must be keyword-based), "standard", for a simple, straightforward search (query can
-                be free text), or "deep" for a more powerful agentic workflow (query can be free
-                text).
+            depth: The depth of the search. "flash" is lowest latency: ranked sources and snippets
+                in a few hundred milliseconds, built for low-latency use cases. "fast" is
+                higher-quality one-shot retrieval in about a second — the recommended default for
+                most agentic applications. "standard" is a single pass of agentic search for queries
+                that span several topics or sources. "deep" runs several search iterations,
+                optimizing for coverage and multi-hop agentic workflows.
             output_type: The type of output which is expected: "searchResults" will output raw
                 search results, "sourcedAnswer" will output the answer to the query and sources
                 supporting it, and "structured" will base the output on the format provided in
@@ -1460,7 +1464,7 @@ class LinkupClient:
     def _get_search_params(
         self,
         query: str,
-        depth: Literal["fast", "standard", "deep"],
+        depth: Literal["flash", "fast", "standard", "deep"],
         output_type: Literal["searchResults", "sourcedAnswer", "structured"],
         structured_output_schema: type[pydantic.BaseModel] | str | dict[str, Any] | None,
         include_images: bool | None,

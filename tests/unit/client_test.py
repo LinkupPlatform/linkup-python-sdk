@@ -21,8 +21,8 @@ class Company(pydantic.BaseModel):
 
 test_search_parameters = [
     (
-        {"query": "query", "depth": "standard", "output_type": "searchResults"},
-        {"q": "query", "depth": "standard", "outputType": "searchResults"},
+        {"query": "query", "depth": "flash", "output_type": "searchResults"},
+        {"q": "query", "depth": "flash", "outputType": "searchResults"},
         b"""
         {
             "results": [
@@ -1276,7 +1276,7 @@ def test_create_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
         [
             linkup.SearchTaskInput(
                 query="query",
-                depth="deep",
+                depth="flash",
                 output_type="structured",
                 structured_output_schema=Company,
             ),
@@ -1299,7 +1299,7 @@ def test_create_tasks(mocker: MockerFixture, client: linkup.Client) -> None:
                 "type": "search",
                 "input": {
                     "q": "query",
-                    "depth": "deep",
+                    "depth": "flash",
                     "outputType": "structured",
                     "structuredOutputSchema": json.dumps(Company.model_json_schema()),
                 },
