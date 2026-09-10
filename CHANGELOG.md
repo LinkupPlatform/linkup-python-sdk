@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.23.0 (2026-09-10)
+
+### Features
+
+- Support flash search depth
+  ([`09a31b1`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/09a31b1184b541a3ce1afe38ef73aa39544971e5))
+
+
 ## v0.22.0 (2026-08-28)
 
 ### Bug Fixes
