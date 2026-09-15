@@ -268,9 +268,12 @@ class LinkupClient:
             LinkupInvalidRequestError: If the request parameters are invalid, including an invalid
                 or missing structured_output_schema when output_type is "structured".
             LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupIpNotWhitelistedError: If the request IP is not allowed by the API key.
+            LinkupPaymentRequiredError: If the endpoint requires x402 payment.
             LinkupInsufficientCreditError: If you have run out of credit.
             LinkupBudgetLimitExceededError: If the API key has reached its configured budget limit.
             LinkupNoResultError: If the search query did not yield any result.
+            LinkupTooManyRequestsError: If the API rate limit is exceeded.
             LinkupTimeoutError: If the request times out.
         """
         params: dict[str, str | bool | int | list[str]] = self._get_search_params(
@@ -467,9 +470,12 @@ class LinkupClient:
             LinkupInvalidRequestError: If the request parameters are invalid, including an invalid
                 or missing structured_output_schema when output_type is "structured".
             LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupIpNotWhitelistedError: If the request IP is not allowed by the API key.
+            LinkupPaymentRequiredError: If the endpoint requires x402 payment.
             LinkupInsufficientCreditError: If you have run out of credit.
             LinkupBudgetLimitExceededError: If the API key has reached its configured budget limit.
             LinkupNoResultError: If the search query did not yield any result.
+            LinkupTooManyRequestsError: If the API rate limit is exceeded.
             LinkupTimeoutError: If the request times out.
         """
         params: dict[str, str | bool | int | list[str]] = self._get_search_params(
@@ -547,8 +553,12 @@ class LinkupClient:
                 pydantic.BaseModel when provided.
             LinkupInvalidRequestError: If the request parameters are invalid.
             LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupIpNotWhitelistedError: If the request IP is not allowed by the API key.
+            LinkupPaymentRequiredError: If the endpoint requires x402 payment.
             LinkupInsufficientCreditError: If you have run out of credit.
             LinkupBudgetLimitExceededError: If the API key has reached its configured budget limit.
+            LinkupTasksQueueLimitExceededError: If too many tasks are already pending or processing.
+            LinkupTooManyRequestsError: If the API rate limit is exceeded.
             LinkupTimeoutError: If the request times out.
         """
         params = self._get_research_params(
@@ -619,8 +629,12 @@ class LinkupClient:
                 pydantic.BaseModel when provided.
             LinkupInvalidRequestError: If the request parameters are invalid.
             LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupIpNotWhitelistedError: If the request IP is not allowed by the API key.
+            LinkupPaymentRequiredError: If the endpoint requires x402 payment.
             LinkupInsufficientCreditError: If you have run out of credit.
             LinkupBudgetLimitExceededError: If the API key has reached its configured budget limit.
+            LinkupTasksQueueLimitExceededError: If too many tasks are already pending or processing.
+            LinkupTooManyRequestsError: If the API rate limit is exceeded.
             LinkupTimeoutError: If the request times out.
         """
         params = self._get_research_params(
@@ -670,6 +684,7 @@ class LinkupClient:
         Raises:
             LinkupInvalidRequestError: If the pagination or sorting parameters are invalid.
             LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupIpNotWhitelistedError: If the request IP is not allowed by the API key.
             LinkupTimeoutError: If the request times out.
         """
         response = self._request(
@@ -712,6 +727,7 @@ class LinkupClient:
         Raises:
             LinkupInvalidRequestError: If the pagination or sorting parameters are invalid.
             LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupIpNotWhitelistedError: If the request IP is not allowed by the API key.
             LinkupTimeoutError: If the request times out.
         """
         response = await self._async_request(
@@ -740,8 +756,10 @@ class LinkupClient:
             The requested research task.
 
         Raises:
+            LinkupInvalidRequestError: If the research identifier is not a valid UUID.
             LinkupTaskNotFoundError: If the research identifier does not match an existing task.
             LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupIpNotWhitelistedError: If the request IP is not allowed by the API key.
             LinkupTimeoutError: If the request times out.
         """
         response = self._request(
@@ -766,8 +784,10 @@ class LinkupClient:
             The requested research task.
 
         Raises:
+            LinkupInvalidRequestError: If the research identifier is not a valid UUID.
             LinkupTaskNotFoundError: If the research identifier does not match an existing task.
             LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupIpNotWhitelistedError: If the request IP is not allowed by the API key.
             LinkupTimeoutError: If the request times out.
         """
         response = await self._async_request(
@@ -797,8 +817,11 @@ class LinkupClient:
                 an unsupported type.
             LinkupInvalidRequestError: If the task payload is invalid.
             LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupIpNotWhitelistedError: If the request IP is not allowed by the API key.
             LinkupInsufficientCreditError: If you have run out of credit.
+            LinkupBudgetLimitExceededError: If the API key has reached its configured budget limit.
             LinkupTasksQueueLimitExceededError: If too many tasks are already pending or processing.
+            LinkupTooManyRequestsError: If the API rate limit is exceeded.
             LinkupTimeoutError: If the request times out.
         """
         response = self._request(
@@ -830,8 +853,11 @@ class LinkupClient:
                 an unsupported type.
             LinkupInvalidRequestError: If the task payload is invalid.
             LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupIpNotWhitelistedError: If the request IP is not allowed by the API key.
             LinkupInsufficientCreditError: If you have run out of credit.
+            LinkupBudgetLimitExceededError: If the API key has reached its configured budget limit.
             LinkupTasksQueueLimitExceededError: If too many tasks are already pending or processing.
+            LinkupTooManyRequestsError: If the API rate limit is exceeded.
             LinkupTimeoutError: If the request times out.
         """
         response = await self._async_request(
@@ -879,6 +905,7 @@ class LinkupClient:
             LinkupInvalidRequestError: If the filtering, pagination, or sorting parameters are
                 invalid.
             LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupIpNotWhitelistedError: If the request IP is not allowed by the API key.
             LinkupTimeoutError: If the request times out.
         """
         response = self._request(
@@ -932,6 +959,7 @@ class LinkupClient:
             LinkupInvalidRequestError: If the filtering, pagination, or sorting parameters are
                 invalid.
             LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupIpNotWhitelistedError: If the request IP is not allowed by the API key.
             LinkupTimeoutError: If the request times out.
         """
         response = await self._async_request(
@@ -962,8 +990,10 @@ class LinkupClient:
             The requested task, parsed according to its task type.
 
         Raises:
+            LinkupInvalidRequestError: If the task identifier is not a valid UUID.
             LinkupTaskNotFoundError: If the task identifier does not match an existing task.
             LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupIpNotWhitelistedError: If the request IP is not allowed by the API key.
             LinkupTimeoutError: If the request times out.
         """
         response = self._request(
@@ -986,8 +1016,10 @@ class LinkupClient:
             The requested task, parsed according to its task type.
 
         Raises:
+            LinkupInvalidRequestError: If the task identifier is not a valid UUID.
             LinkupTaskNotFoundError: If the task identifier does not match an existing task.
             LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupIpNotWhitelistedError: If the request IP is not allowed by the API key.
             LinkupTimeoutError: If the request times out.
         """
         response = await self._async_request(
@@ -1039,12 +1071,18 @@ class LinkupClient:
 
         Raises:
             LinkupInvalidRequestError: If the provided URL is not valid.
+            LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupIpNotWhitelistedError: If the request IP is not allowed by the API key.
+            LinkupPaymentRequiredError: If the endpoint requires x402 payment.
+            LinkupInsufficientCreditError: If you have run out of credit.
+            LinkupBudgetLimitExceededError: If the API key has reached its configured budget limit.
             LinkupFailedFetchError: If the provided URL can't be fetched.
             LinkupFetchResponseTooLargeError: If the fetch response is too large.
             LinkupFetchTargetNotFoundError: If the target URL is not found.
             LinkupFetchTargetUnreachableError: If the target URL cannot be reached.
             LinkupFetchUnsupportedContentTypeError: If the URL resolves to an unsupported content
                 type.
+            LinkupTooManyRequestsError: If the API rate limit is exceeded.
             LinkupTimeoutError: If the request times out.
         """
         params: dict[str, Any] = self._get_fetch_params(
@@ -1108,12 +1146,18 @@ class LinkupClient:
 
         Raises:
             LinkupInvalidRequestError: If the provided URL is not valid.
+            LinkupAuthenticationError: If the Linkup API key is invalid.
+            LinkupIpNotWhitelistedError: If the request IP is not allowed by the API key.
+            LinkupPaymentRequiredError: If the endpoint requires x402 payment.
+            LinkupInsufficientCreditError: If you have run out of credit.
+            LinkupBudgetLimitExceededError: If the API key has reached its configured budget limit.
             LinkupFailedFetchError: If the provided URL can't be fetched.
             LinkupFetchResponseTooLargeError: If the fetch response is too large.
             LinkupFetchTargetNotFoundError: If the target URL is not found.
             LinkupFetchTargetUnreachableError: If the target URL cannot be reached.
             LinkupFetchUnsupportedContentTypeError: If the URL resolves to an unsupported content
                 type.
+            LinkupTooManyRequestsError: If the API rate limit is exceeded.
             LinkupTimeoutError: If the request times out.
         """
         params: dict[str, Any] = self._get_fetch_params(
