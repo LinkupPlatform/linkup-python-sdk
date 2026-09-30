@@ -100,7 +100,8 @@ The `search` function also supports three output types, through the `output_type
 ```python
 import linkup
 
-client = linkup.Client()  # API key can be read from the environment variable or passed as an argument
+# API key can be read from the environment variable or passed as an argument
+client = linkup.Client()
 search_response: linkup.SourcedAnswer = client.search(
     query="What are the 3 major events in the life of Abraham Lincoln?",
     depth="deep",  # "flash", "fast", "standard", or "deep"
@@ -144,7 +145,8 @@ You can also pass an object JSON `schema`, with optional `instructions`, to extr
 ```python
 import linkup
 
-client = linkup.Client()  # API key can be read from the environment variable or passed as an argument
+# API key can be read from the environment variable or passed as an argument
+client = linkup.Client()
 fetch_response: linkup.FetchResponse = client.fetch(
     url="https://docs.linkup.so",
     render_js=True,
@@ -163,11 +165,11 @@ Which prints:
 
 ```python
 {
-  "markdown": "The production-grade web search API for AI.",
-  "favicon": "https://favicons.linkup.so?domain=docs.linkup.so",
-  "raw_content": "<!DOCTYPE html><html lang=\"en\"><head>...</head><body>...</body></html>",
-  "content_type": "html",
-  "data": {"title": "The production-grade web search API for AI."},
+    "markdown": "The production-grade web search API for AI.",
+    "favicon": "https://favicons.linkup.so?domain=docs.linkup.so",
+    "raw_content": '<!DOCTYPE html><html lang="en"><head>...</head><body>...</body></html>',
+    "content_type": "html",
+    "data": {"title": "The production-grade web search API for AI."},
 }
 ```
 
@@ -227,8 +229,10 @@ import asyncio
 
 import linkup
 
+
 async def main() -> None:
-    client = linkup.Client()  # API key can be read from the environment variable or passed as an argument
+    # API key can be read from the environment variable or passed as an argument
+    client = linkup.Client()
     search_response: linkup.SourcedAnswer = await client.async_search(
         query="What are the 3 major events in the life of Abraham Lincoln?",
         depth="deep",  # "flash", "fast", "standard", or "deep"
@@ -236,6 +240,7 @@ async def main() -> None:
         structured_output_schema=None,  # must be filled if output_type is "structured"
     )
     print(search_response.model_dump())
+
 
 asyncio.run(main())
 ```
