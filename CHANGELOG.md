@@ -2,6 +2,24 @@
 
 <!-- version list -->
 
+## v0.23.1 (2026-09-30)
+
+### Bug Fixes
+
+- Handle request deadline errors
+  ([`cd5c8ef`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/cd5c8efb655f79ef25400504bec93615e3cd3d2d))
+
+### Chores
+
+- Update pre-commit hook versions
+  ([`c1ef211`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/c1ef21125fca2e251c4e3d29a267c2a97612e374))
+
+### Documentation
+
+- Document public API errors
+  ([`a23105c`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/a23105cb517090eb477b477385a4f3bdcc3e107d))
+
+
 ## v0.23.0 (2026-09-10)
 
 ### Features
