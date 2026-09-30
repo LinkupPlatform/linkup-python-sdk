@@ -13,6 +13,7 @@ from ._errors import (
     LinkupIpNotWhitelistedError,
     LinkupNoResultError,
     LinkupPaymentRequiredError,
+    LinkupRequestDeadlineExceededError,
     LinkupTaskNotFoundError,
     LinkupTasksQueueLimitExceededError,
     LinkupTimeoutError,
@@ -64,6 +65,7 @@ InvalidRequestError = LinkupInvalidRequestError
 IpNotWhitelistedError = LinkupIpNotWhitelistedError
 NoResultError = LinkupNoResultError
 PaymentRequiredError = LinkupPaymentRequiredError
+RequestDeadlineExceededError = LinkupRequestDeadlineExceededError
 ResearchTask = LinkupResearchTask
 ResearchTaskInput = LinkupResearchTaskInput
 ResearchTasksPage = LinkupResearchTasksPage
@@ -123,6 +125,7 @@ __all__ = [
     "LinkupIpNotWhitelistedError",
     "LinkupNoResultError",
     "LinkupPaymentRequiredError",
+    "LinkupRequestDeadlineExceededError",
     "LinkupResearchTask",
     "LinkupResearchTaskInput",
     "LinkupResearchTasksPage",
@@ -147,6 +150,7 @@ __all__ = [
     "LinkupUnsupportedTaskTypeError",
     "NoResultError",
     "PaymentRequiredError",
+    "RequestDeadlineExceededError",
     "ResearchTask",
     "ResearchTaskInput",
     "ResearchTasksPage",

@@ -148,6 +148,12 @@ class LinkupTaskNotFoundError(Exception):
     pass
 
 
+class LinkupRequestDeadlineExceededError(Exception):
+    """Request deadline error, raised when the Linkup API returns a 504 status code."""
+
+    pass
+
+
 class LinkupTimeoutError(Exception):
     """Timeout error, raised when the HTTP request to the Linkup API times out.
 

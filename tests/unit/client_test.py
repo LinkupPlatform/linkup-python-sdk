@@ -584,6 +584,19 @@ test_search_error_parameters = [
         """,
         linkup.UnknownError,
     ),
+    (
+        504,
+        b"""
+        {
+            "error": {
+                "code": "REQUEST_DEADLINE_EXCEEDED",
+                "message": "Request deadline exceeded",
+                "details": []
+            }
+        }
+        """,
+        linkup.RequestDeadlineExceededError,
+    ),
 ]
 
 
