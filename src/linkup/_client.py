@@ -23,6 +23,7 @@ from ._errors import (
     LinkupIpNotWhitelistedError,
     LinkupNoResultError,
     LinkupPaymentRequiredError,
+    LinkupRequestDeadlineExceededError,
     LinkupTaskNotFoundError,
     LinkupTasksQueueLimitExceededError,
     LinkupTimeoutError,
@@ -274,6 +275,7 @@ class LinkupClient:
             LinkupBudgetLimitExceededError: If the API key has reached its configured budget limit.
             LinkupNoResultError: If the search query did not yield any result.
             LinkupTooManyRequestsError: If the API rate limit is exceeded.
+            LinkupRequestDeadlineExceededError: If the Linkup API request deadline is exceeded.
             LinkupTimeoutError: If the request times out.
         """
         params: dict[str, str | bool | int | list[str]] = self._get_search_params(
@@ -476,6 +478,7 @@ class LinkupClient:
             LinkupBudgetLimitExceededError: If the API key has reached its configured budget limit.
             LinkupNoResultError: If the search query did not yield any result.
             LinkupTooManyRequestsError: If the API rate limit is exceeded.
+            LinkupRequestDeadlineExceededError: If the Linkup API request deadline is exceeded.
             LinkupTimeoutError: If the request times out.
         """
         params: dict[str, str | bool | int | list[str]] = self._get_search_params(
@@ -559,6 +562,7 @@ class LinkupClient:
             LinkupBudgetLimitExceededError: If the API key has reached its configured budget limit.
             LinkupTasksQueueLimitExceededError: If too many tasks are already pending or processing.
             LinkupTooManyRequestsError: If the API rate limit is exceeded.
+            LinkupRequestDeadlineExceededError: If the Linkup API request deadline is exceeded.
             LinkupTimeoutError: If the request times out.
         """
         params = self._get_research_params(
@@ -635,6 +639,7 @@ class LinkupClient:
             LinkupBudgetLimitExceededError: If the API key has reached its configured budget limit.
             LinkupTasksQueueLimitExceededError: If too many tasks are already pending or processing.
             LinkupTooManyRequestsError: If the API rate limit is exceeded.
+            LinkupRequestDeadlineExceededError: If the Linkup API request deadline is exceeded.
             LinkupTimeoutError: If the request times out.
         """
         params = self._get_research_params(
@@ -1083,6 +1088,7 @@ class LinkupClient:
             LinkupFetchUnsupportedContentTypeError: If the URL resolves to an unsupported content
                 type.
             LinkupTooManyRequestsError: If the API rate limit is exceeded.
+            LinkupRequestDeadlineExceededError: If the Linkup API request deadline is exceeded.
             LinkupTimeoutError: If the request times out.
         """
         params: dict[str, Any] = self._get_fetch_params(
@@ -1158,6 +1164,7 @@ class LinkupClient:
             LinkupFetchUnsupportedContentTypeError: If the URL resolves to an unsupported content
                 type.
             LinkupTooManyRequestsError: If the API rate limit is exceeded.
+            LinkupRequestDeadlineExceededError: If the Linkup API request deadline is exceeded.
             LinkupTimeoutError: If the request times out.
         """
         params: dict[str, Any] = self._get_fetch_params(
@@ -1498,6 +1505,11 @@ class LinkupClient:
                     "parameters you used are valid (correct values, types, mandatory "
                     "parameters, etc.) and you are using the latest version of the Python "
                     "SDK.\n"
+                    f"Original error message: {error_msg}."
+                )
+            if response.status_code == 504 and code == "REQUEST_DEADLINE_EXCEEDED":
+                raise LinkupRequestDeadlineExceededError(
+                    "The Linkup API request deadline was exceeded (504).\n"
                     f"Original error message: {error_msg}."
                 )
             raise LinkupUnknownError(
