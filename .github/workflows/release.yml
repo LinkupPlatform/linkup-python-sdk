@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: Setup | Checkout Repository on Release Branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
@@ -69,21 +69,21 @@ jobs:
 
       - name: Action | Semantic Version Release
         id: release
-        uses: python-semantic-release/python-semantic-release@v10.5.3
+        uses: python-semantic-release/python-semantic-release@350c48fcb3ffcdfd2e0a235206bc2ecea6b69df0 # v10.5.3
         with:
           github_token: ${{ secrets.GH_TOKEN_FOR_SEMANTIC_RELEASE }}
           git_committer_name: "github-actions"
           git_committer_email: "actions@users.noreply.github.com"
 
       - name: Publish | Upload to GitHub Release Assets
-        uses: python-semantic-release/publish-action@v10.4.1
+        uses: python-semantic-release/publish-action@ae6462adc12bd3d1738070d784b65b5189b955a9 # v10.4.1
         if: steps.release.outputs.released == 'true'
         with:
           github_token: ${{ secrets.GH_TOKEN_FOR_SEMANTIC_RELEASE }}
           tag: ${{ steps.release.outputs.tag }}
 
       - name: Upload | Distribution Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: steps.release.outputs.released == 'true'
         with:
           name: distribution-artifacts
@@ -105,14 +105,14 @@ jobs:
 
     steps:
       - name: Setup | Download Build Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         id: artifact-download
         with:
           name: distribution-artifacts
           path: dist
 
       - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
         with:
           packages-dir: dist
           print-hash: true
