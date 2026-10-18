@@ -1370,7 +1370,19 @@ class LinkupClient:
         return retry_response
 
     def _raise_linkup_error(self, response: httpx.Response) -> None:
-        error_data = response.json()
+        try:
+            error_data = response.json()
+        except ValueError:
+            error_data = None
+
+        if not isinstance(error_data, dict):
+            error_data = {}
+        error_data = cast("dict[str, Any]", error_data)
+        if not isinstance(error_data.get("error"), dict):
+            raise LinkupUnknownError(
+                f"The Linkup API returned an unknown error ({response.status_code}).\n"
+                f"Original error message: ({response.text})."
+            )
 
         if "error" in error_data:
             error = error_data["error"]
