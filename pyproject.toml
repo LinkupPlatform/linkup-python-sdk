@@ -5,7 +5,7 @@ keywords = ["api", "client", "linkup", "sdk", "search"]
 license = "MIT"
 name = "linkup-sdk"
 readme = "README.md"
-requires-python = ">=3.10,<4.0"
+requires-python = ">=3.11,<4.0"
 version = "0.23.1"
 
 classifiers = [
@@ -58,7 +58,7 @@ skip_covered = true
 
 [tool.ruff]
 line-length = 100
-target-version = "py310"
+target-version = "py311"
 unsafe-fixes = true
 
 [tool.ruff.lint]
