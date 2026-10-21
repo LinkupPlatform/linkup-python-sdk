@@ -322,7 +322,7 @@ class LinkupClient:
         max_results: int | None = None,
         include_inline_citations: bool | None = None,
         include_sources: bool | None = None,
-        timeout: float | None = None,
+        timeout: float | None = None,  # ruff: ignore[async-function-with-timeout]
     ) -> LinkupSearchResults: ...
 
     @overload
@@ -341,7 +341,7 @@ class LinkupClient:
         max_results: int | None = None,
         include_inline_citations: bool | None = None,
         include_sources: bool | None = None,
-        timeout: float | None = None,
+        timeout: float | None = None,  # ruff: ignore[async-function-with-timeout]
     ) -> LinkupSourcedAnswer: ...
 
     @overload
@@ -360,7 +360,7 @@ class LinkupClient:
         max_results: int | None = None,
         include_inline_citations: bool | None = None,
         include_sources: Literal[False] | None = None,
-        timeout: float | None = None,
+        timeout: float | None = None,  # ruff: ignore[async-function-with-timeout]
     ) -> JSONObject: ...
 
     @overload
@@ -379,7 +379,7 @@ class LinkupClient:
         max_results: int | None = None,
         include_inline_citations: bool | None = None,
         include_sources: Literal[True],
-        timeout: float | None = None,
+        timeout: float | None = None,  # ruff: ignore[async-function-with-timeout]
     ) -> LinkupSearchStructuredResponse: ...
 
     @overload
@@ -398,7 +398,7 @@ class LinkupClient:
         max_results: int | None = None,
         include_inline_citations: bool | None = None,
         include_sources: bool | None = None,
-        timeout: float | None = None,
+        timeout: float | None = None,  # ruff: ignore[async-function-with-timeout]
     ) -> (
         LinkupSearchResults | LinkupSourcedAnswer | JSONObject | LinkupSearchStructuredResponse
     ): ...
@@ -418,7 +418,7 @@ class LinkupClient:
         max_results: int | None = None,
         include_inline_citations: bool | None = None,
         include_sources: bool | None = None,
-        timeout: float | None = None,
+        timeout: float | None = None,  # ruff: ignore[async-function-with-timeout]
     ) -> LinkupSearchResults | LinkupSourcedAnswer | JSONObject | LinkupSearchStructuredResponse:
         """Asynchronously perform a web search using the Linkup API /search endpoint.
 
@@ -597,7 +597,7 @@ class LinkupClient:
         to_date: datetime.date | str | None = None,
         exclude_domains: list[str] | None = None,
         include_domains: list[str] | None = None,
-        timeout: float | None = None,
+        timeout: float | None = None,  # ruff: ignore[async-function-with-timeout]
     ) -> LinkupResearchTask:
         """Asynchronously create a research task using the Linkup API /research endpoint.
 
@@ -712,7 +712,7 @@ class LinkupClient:
         page_size: int | None = None,
         sort_by: Literal["createdAt", "updatedAt"] | None = None,
         sort_direction: Literal["asc", "desc"] | None = None,
-        timeout: float | None = None,
+        timeout: float | None = None,  # ruff: ignore[async-function-with-timeout]
     ) -> LinkupResearchTasksPage:
         """Asynchronously list research tasks for the authenticated organization.
 
@@ -776,7 +776,9 @@ class LinkupClient:
         return self._parse_research_task(response.json())
 
     async def async_get_research(
-        self, research_id: str, timeout: float | None = None
+        self,
+        research_id: str,
+        timeout: float | None = None,  # ruff: ignore[async-function-with-timeout]
     ) -> LinkupResearchTask:
         """Asynchronously retrieve a single research task by identifier.
 
@@ -840,7 +842,9 @@ class LinkupClient:
         return [self._parse_task(task) for task in response_data]
 
     async def async_create_tasks(
-        self, tasks: list[LinkupTaskInput], timeout: float | None = None
+        self,
+        tasks: list[LinkupTaskInput],
+        timeout: float | None = None,  # ruff: ignore[async-function-with-timeout]
     ) -> list[LinkupTask]:
         """Asynchronously create a mixed batch of search, fetch, and research tasks.
 
@@ -941,7 +945,7 @@ class LinkupClient:
         task_type: Literal["search", "fetch", "research"]
         | list[Literal["search", "fetch", "research"]]
         | None = None,
-        timeout: float | None = None,
+        timeout: float | None = None,  # ruff: ignore[async-function-with-timeout]
     ) -> LinkupTasksPage:
         """Asynchronously list tasks for the authenticated organization.
 
@@ -1009,7 +1013,11 @@ class LinkupClient:
 
         return self._parse_task(cast("dict[str, Any]", response.json()))
 
-    async def async_get_task(self, task_id: str, timeout: float | None = None) -> LinkupTask:
+    async def async_get_task(
+        self,
+        task_id: str,
+        timeout: float | None = None,  # ruff: ignore[async-function-with-timeout]
+    ) -> LinkupTask:
         """Asynchronously retrieve a single task by identifier.
 
         Args:
@@ -1117,7 +1125,7 @@ class LinkupClient:
         include_raw_html: bool | None = None,
         render_js: bool | None = None,
         extract_images: bool | None = None,
-        timeout: float | None = None,
+        timeout: float | None = None,  # ruff: ignore[async-function-with-timeout]
         include_raw_content: bool | None = None,
         mode: Literal["standard", "pro"] | None = None,
         schema: type[pydantic.BaseModel] | dict[str, Any] | str | None = None,
@@ -1247,7 +1255,7 @@ class LinkupClient:
         *,
         json: dict[str, Any] | list[dict[str, Any]] | None = None,
         params: dict[str, Any] | None = None,
-        timeout: float | None,
+        timeout: float | None,  # ruff: ignore[async-function-with-timeout]
     ) -> httpx.Response:
         try:
             async with httpx.AsyncClient(
@@ -1334,7 +1342,7 @@ class LinkupClient:
         url: str,
         json: dict[str, Any] | list[dict[str, Any]] | None,
         params: dict[str, Any] | None,
-        timeout: float | None,
+        timeout: float | None,  # ruff: ignore[async-function-with-timeout]
     ) -> httpx.Response:
         if self._x402_signer is None:
             raise RuntimeError("x402 signer is not configured")
