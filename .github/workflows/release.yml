@@ -67,20 +67,25 @@ jobs:
 
           printf '%s\n' "Verified upstream branch has not changed, continuing with release..."
 
+      - name: Setup | Install uv
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+
       - name: Action | Semantic Version Release
         id: release
-        uses: python-semantic-release/python-semantic-release@350c48fcb3ffcdfd2e0a235206bc2ecea6b69df0 # v10.5.3
-        with:
-          github_token: ${{ secrets.GH_TOKEN_FOR_SEMANTIC_RELEASE }}
-          git_committer_name: "github-actions"
-          git_committer_email: "actions@users.noreply.github.com"
+        env:
+          GIT_COMMIT_AUTHOR: "github-actions <actions@users.noreply.github.com>"
+          GIT_COMMITTER_NAME: github-actions
+          GIT_COMMITTER_EMAIL: actions@users.noreply.github.com
+          GH_TOKEN: ${{ secrets.GH_TOKEN_FOR_SEMANTIC_RELEASE }}
+        run: uv run --frozen --no-default-groups --group release semantic-release -v version
 
       - name: Publish | Upload to GitHub Release Assets
-        uses: python-semantic-release/publish-action@ae6462adc12bd3d1738070d784b65b5189b955a9 # v10.4.1
         if: steps.release.outputs.released == 'true'
-        with:
-          github_token: ${{ secrets.GH_TOKEN_FOR_SEMANTIC_RELEASE }}
-          tag: ${{ steps.release.outputs.tag }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN_FOR_SEMANTIC_RELEASE }}
+        run: |
+          uv run --frozen --no-default-groups --group release semantic-release -v publish \
+            --tag "${{ steps.release.outputs.tag }}"
 
       - name: Upload | Distribution Artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -112,7 +117,7 @@ jobs:
           path: dist
 
       - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
         with:
           packages-dir: dist
           print-hash: true
