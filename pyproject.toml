@@ -18,7 +18,6 @@ classifiers = [
 dependencies = ["httpx>=0.23.0", "pydantic>=2.0.0"]
 
 [project.optional-dependencies]
-build = ["uv>=0.11.6,<0.12.0"] # For python-semantic-release build command, used in GitHub actions
 x402 = ["x402[httpx,evm]>=2.0.0"]
 
 [project.urls]
@@ -38,6 +37,7 @@ dev = [
   "python-dotenv>=1.2.2",
   "x402[httpx,evm]>=2.0.0",
 ]
+release = ["python-semantic-release>=10.7.0,<11.0.0"]
 
 [tool.pyright]
 include = ["./src/", "./tests/"]
@@ -123,7 +123,6 @@ packages = ["src/linkup"] # Because project and source code directory names diff
 [tool.semantic_release]
 allow_zero_version = true
 build_command = """
-    python -m pip install -e '.[build]'
     uv lock --upgrade-package "$PACKAGE_NAME"
     git add uv.lock
     uv build
@@ -137,7 +136,8 @@ parse_squash_commits = false
 
 [tool.uv]
 exclude-newer = "2 weeks" # Reduce risks of supply chain attacks
-required-version = ">=0.11.15,<0.12.0"
+exclude-newer-package = { certifi = "2026-10-21T00:00:00Z" } # HACK: this is a temporary workaround and can be removed 2 weeks after this date
+required-version = ">=0.13.5,<0.14.0"
 
 [build-system]
 build-backend = "hatchling.build"
