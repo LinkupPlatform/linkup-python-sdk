@@ -2,6 +2,26 @@
 
 <!-- version list -->
 
+## v0.24.0 (2026-10-22)
+
+### Chores
+
+- **deps**: Bump GH actions
+  ([`d35e5c6`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/d35e5c6820c8730b6e0579c32d0fdd4a54bda33d))
+
+- **deps**: Bump or replace deps with vulnerabilities
+  ([`9062150`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/90621502ee846d35d5e9c711e97cbe7c07c3ec33))
+
+- **python**: Drop 3.10 and test in 3.15
+  ([`ca4e076`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/ca4e0767e909c6ca5f0d573221eaee7af8b0409d))
+
+### Continuous Integration
+
+- Pin github actions to commit SHAs
+  ([#94](https://github.com/LinkupPlatform/linkup-python-sdk/pull/94),
+  [`dacef2c`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/dacef2c451af6889d9b9e38fb9c8eeb57ac016a5))
+
+
 ## v0.23.1 (2026-09-30)
 
 ### Bug Fixes

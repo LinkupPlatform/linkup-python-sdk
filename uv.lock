@@ -1034,7 +1034,7 @@ wheels = [
 
 [[package]]
 name = "linkup-sdk"
-version = "0.23.1"
+version = "0.24.0"
 source = { editable = "." }
 dependencies = [
     { name = "httpx" },
