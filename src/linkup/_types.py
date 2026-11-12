@@ -24,6 +24,7 @@ class LinkupSearchTextResult(_LinkupBaseModel):
         url: The URL of the search result.
         content: The text of the search result.
         favicon: The favicon URL of the search result, if available.
+        published_at: The publication date of the search result, if available.
     """
 
     type: Literal["text"]
@@ -31,6 +32,7 @@ class LinkupSearchTextResult(_LinkupBaseModel):
     url: str
     content: str
     favicon: str
+    published_at: date | None = pydantic.Field(default=None, validation_alias="publishedAt")
 
 
 class LinkupSearchImageResult(_LinkupBaseModel):
@@ -65,12 +67,14 @@ class LinkupSource(_LinkupBaseModel):
         url: The URL of the source.
         snippet: The text excerpt supporting the Linkup answer.
         favicon: The favicon URL of the source, if available.
+        published_at: The publication date of the source, if available.
     """
 
     name: str
     url: str
     snippet: str
     favicon: str
+    published_at: date | None = pydantic.Field(default=None, validation_alias="publishedAt")
 
 
 class LinkupSourcedAnswer(_LinkupBaseModel):
