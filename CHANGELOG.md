@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.24.1 (2026-11-13)
+
+### Bug Fixes
+
+- Expose search result publication dates
+  ([`8b792ee`](https://github.com/LinkupPlatform/linkup-python-sdk/commit/8b792ee53ae2a969c5dff4468ed7c823b59150ce))
+
+
 ## v0.24.0 (2026-10-22)
 
 ### Chores
